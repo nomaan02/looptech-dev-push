@@ -1,0 +1,457 @@
+{% doc %}
+  @prompt
+    Create a rich text block section with full editing capabilities including padding, fonts, bold text, and all standard text formatting options. The rich text content should be centered. Add a compact rounded rectangle toggle button positioned on the right side inside the rich text box. The toggle should be small enough to fit within the box and display the text "Brand New" or "Renewed" inside the rounded rectangle itself. Active state should be filled with color #007bff with white text, inactive state should have black outline with black text. Include smooth sliding animation when switching between states. Make it fully mobile responsive.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-richtext-toggle-{{ ai_gen_id }} {
+    position: relative;
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_right }}px {{ block.settings.padding_bottom }}px {{ block.settings.padding_left }}px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} {
+    text-align: center;
+    color: {{ block.settings.text_color }};
+    font-family: {{ block.settings.text_font.family }}, {{ block.settings.text_font.fallback_families }};
+    font-weight: {{ block.settings.text_font.weight }};
+    font-size: {{ block.settings.font_size }}px;
+    line-height: 1.6;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} p {
+    margin: 0 0 1em;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} p:last-child {
+    margin-bottom: 0;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} strong,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} b {
+    font-weight: bold;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} em,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} i {
+    font-style: italic;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} h1,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} h2,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} h3,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} h4,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} h5,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} h6 {
+    margin: 0 0 0.5em;
+    font-weight: bold;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} ul,
+  .ai-richtext-toggle__content-{{ ai_gen_id }} ol {
+    margin: 0 0 1em;
+    padding-left: 1.5em;
+  }
+
+  .ai-richtext-toggle__content-{{ ai_gen_id }} a {
+    color: {{ block.settings.link_color }};
+    text-decoration: underline;
+  }
+
+  .ai-richtext-toggle__toggle-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    top: {{ block.settings.padding_top }}px;
+    right: {{ block.settings.padding_right }}px;
+    z-index: 10;
+  }
+
+  .ai-richtext-toggle__toggle-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border: 2px solid #000000;
+    border-radius: 20px;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+    width: {{ block.settings.toggle_width }}px;
+    height: {{ block.settings.toggle_height }}px;
+    overflow: hidden;
+  }
+
+  .ai-richtext-toggle__option-{{ ai_gen_id }} {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: {{ block.settings.toggle_font_size }}px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    z-index: 2;
+    position: relative;
+    white-space: nowrap;
+    padding: 0 8px;
+  }
+
+  .ai-richtext-toggle__slider-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #007bff;
+    border-radius: 18px;
+    transition: transform 0.3s ease;
+    z-index: 1;
+  }
+
+  .ai-richtext-toggle__toggle-{{ ai_gen_id }}[data-state="brand-new"] .ai-richtext-toggle__slider-{{ ai_gen_id }} {
+    transform: translateX(0);
+  }
+
+  .ai-richtext-toggle__toggle-{{ ai_gen_id }}[data-state="renewed"] .ai-richtext-toggle__slider-{{ ai_gen_id }} {
+    transform: translateX(100%);
+  }
+
+  .ai-richtext-toggle__toggle-{{ ai_gen_id }}[data-state="brand-new"] .ai-richtext-toggle__option-{{ ai_gen_id }}:first-child {
+    color: #ffffff;
+  }
+
+  .ai-richtext-toggle__toggle-{{ ai_gen_id }}[data-state="brand-new"] .ai-richtext-toggle__option-{{ ai_gen_id }}:last-child {
+    color: #000000;
+  }
+
+  .ai-richtext-toggle__toggle-{{ ai_gen_id }}[data-state="renewed"] .ai-richtext-toggle__option-{{ ai_gen_id }}:first-child {
+    color: #000000;
+  }
+
+  .ai-richtext-toggle__toggle-{{ ai_gen_id }}[data-state="renewed"] .ai-richtext-toggle__option-{{ ai_gen_id }}:last-child {
+    color: #ffffff;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-richtext-toggle-{{ ai_gen_id }} {
+      padding: {{ block.settings.mobile_padding_top }}px {{ block.settings.mobile_padding_right }}px {{ block.settings.mobile_padding_bottom }}px {{ block.settings.mobile_padding_left }}px;
+    }
+
+    .ai-richtext-toggle__content-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_font_size }}px;
+    }
+
+    .ai-richtext-toggle__toggle-wrapper-{{ ai_gen_id }} {
+      top: {{ block.settings.mobile_padding_top }}px;
+      right: {{ block.settings.mobile_padding_right }}px;
+    }
+
+    .ai-richtext-toggle__toggle-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_toggle_width }}px;
+      height: {{ block.settings.mobile_toggle_height }}px;
+    }
+
+    .ai-richtext-toggle__option-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_toggle_font_size }}px;
+      padding: 0 6px;
+    }
+  }
+{% endstyle %}
+
+<richtext-toggle-{{ ai_gen_id }}
+  class="ai-richtext-toggle-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-richtext-toggle__content-{{ ai_gen_id }}">
+    {{ block.settings.richtext_content }}
+  </div>
+
+  <div class="ai-richtext-toggle__toggle-wrapper-{{ ai_gen_id }}">
+    <button
+      class="ai-richtext-toggle__toggle-{{ ai_gen_id }}"
+      data-state="brand-new"
+      aria-label="Toggle between Brand New and Renewed"
+    >
+      <span class="ai-richtext-toggle__slider-{{ ai_gen_id }}"></span>
+      <span class="ai-richtext-toggle__option-{{ ai_gen_id }}">{{ block.settings.option_1_text }}</span>
+      <span class="ai-richtext-toggle__option-{{ ai_gen_id }}">{{ block.settings.option_2_text }}</span>
+    </button>
+  </div>
+</richtext-toggle-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class RichtextToggle{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.toggle = this.querySelector('.ai-richtext-toggle__toggle-{{ ai_gen_id }}');
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.toggle.addEventListener('click', () => {
+          const currentState = this.toggle.getAttribute('data-state');
+          const newState = currentState === 'brand-new' ? 'renewed' : 'brand-new';
+          this.toggle.setAttribute('data-state', newState);
+        });
+      }
+    }
+
+    customElements.define('richtext-toggle-{{ ai_gen_id }}', RichtextToggle{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Rich text with toggle",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "richtext_content",
+      "label": "Rich text content",
+      "default": "<p>This is your rich text content. You can format it with <strong>bold</strong>, <em>italic</em>, and other standard formatting options.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Text style"
+    },
+    {
+      "type": "font_picker",
+      "id": "text_font",
+      "label": "Font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile font size",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Right",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Left",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Mobile padding"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Right",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_left",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Left",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Toggle button"
+    },
+    {
+      "type": "text",
+      "id": "option_1_text",
+      "label": "Option 1 text",
+      "default": "Brand New"
+    },
+    {
+      "type": "text",
+      "id": "option_2_text",
+      "label": "Option 2 text",
+      "default": "Renewed"
+    },
+    {
+      "type": "range",
+      "id": "toggle_width",
+      "min": 120,
+      "max": 240,
+      "step": 10,
+      "unit": "px",
+      "label": "Width",
+      "default": 180
+    },
+    {
+      "type": "range",
+      "id": "toggle_height",
+      "min": 30,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Height",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "toggle_font_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Mobile toggle button"
+    },
+    {
+      "type": "range",
+      "id": "mobile_toggle_width",
+      "min": 100,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Width",
+      "default": 140
+    },
+    {
+      "type": "range",
+      "id": "mobile_toggle_height",
+      "min": 28,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Height",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_toggle_font_size",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 11
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich text with toggle"
+    }
+  ]
+}
+{% endschema %}

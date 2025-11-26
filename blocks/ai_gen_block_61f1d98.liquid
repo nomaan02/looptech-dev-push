@@ -1,0 +1,291 @@
+{% doc %}
+  @prompt
+    Create a rich text announcement bar with centered text and full editing capabilities (padding, fonts, bold text, formatting). On the right side, add a compact pill-shaped toggle button containing two options side by side: "Renewed" and "Brand New". The toggle should be a rounded rectangle container with both options visible at once. The active option should have a filled background color of #007bff with white text, while the inactive option should have a transparent/white background with black text. Include smooth transition animation when switching between options. The toggle should be small and compact, positioned on the right edge of the bar, and be fully mobile responsive. Match the styling shown in the reference design with the pill toggle on the right.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-announcement-bar-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+    position: relative;
+    width: 100%;
+  }
+
+  .ai-announcement-bar__content-{{ ai_gen_id }} {
+    flex: 1;
+    text-align: center;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.font_size }}px;
+    font-family: {{ block.settings.font_family.family }}, {{ block.settings.font_family.fallback_families }};
+    font-weight: {{ block.settings.font_family.weight }};
+    line-height: 1.4;
+  }
+
+  .ai-announcement-bar__content-{{ ai_gen_id }} p {
+    margin: 0;
+  }
+
+  .ai-announcement-bar__content-{{ ai_gen_id }} strong {
+    font-weight: 700;
+  }
+
+  .ai-announcement-bar__toggle-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    right: {{ block.settings.padding_horizontal }}px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .ai-announcement-bar__toggle-{{ ai_gen_id }} {
+    display: inline-flex;
+    background-color: {{ block.settings.toggle_background }};
+    border-radius: 50px;
+    padding: 4px;
+    gap: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-announcement-bar__toggle-option-{{ ai_gen_id }} {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: {{ block.settings.toggle_inactive_text }};
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .ai-announcement-bar__toggle-option-{{ ai_gen_id }}.active {
+    background-color: {{ block.settings.toggle_active_background }};
+    color: {{ block.settings.toggle_active_text }};
+  }
+
+  .ai-announcement-bar__toggle-option-{{ ai_gen_id }}:hover:not(.active) {
+    opacity: 0.7;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-announcement-bar-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 12px;
+      padding: {{ block.settings.padding_top }}px 16px {{ block.settings.padding_bottom }}px;
+    }
+
+    .ai-announcement-bar__content-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | times: 0.9 }}px;
+    }
+
+    .ai-announcement-bar__toggle-wrapper-{{ ai_gen_id }} {
+      position: static;
+      transform: none;
+    }
+
+    .ai-announcement-bar__toggle-option-{{ ai_gen_id }} {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+  }
+{% endstyle %}
+
+<announcement-bar-{{ ai_gen_id }} class="ai-announcement-bar-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-announcement-bar__content-{{ ai_gen_id }}">
+    {{ block.settings.announcement_text }}
+  </div>
+
+  <div class="ai-announcement-bar__toggle-wrapper-{{ ai_gen_id }}">
+    <div class="ai-announcement-bar__toggle-{{ ai_gen_id }}">
+      <button
+        class="ai-announcement-bar__toggle-option-{{ ai_gen_id }} active"
+        data-option="renewed"
+        aria-pressed="true"
+      >
+        {{ block.settings.option_1_text }}
+      </button>
+      <button
+        class="ai-announcement-bar__toggle-option-{{ ai_gen_id }}"
+        data-option="brand-new"
+        aria-pressed="false"
+      >
+        {{ block.settings.option_2_text }}
+      </button>
+    </div>
+  </div>
+</announcement-bar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AnnouncementBar{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.toggleButtons = this.querySelectorAll('.ai-announcement-bar__toggle-option-{{ ai_gen_id }}');
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.toggleButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            this.toggleButtons.forEach((btn) => {
+              btn.classList.remove('active');
+              btn.setAttribute('aria-pressed', 'false');
+            });
+
+            button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
+
+            const selectedOption = button.getAttribute('data-option');
+            this.dispatchEvent(new CustomEvent('toggle-changed', {
+              detail: { option: selectedOption },
+              bubbles: true
+            }));
+          });
+        });
+      }
+    }
+
+    customElements.define('announcement-bar-{{ ai_gen_id }}', AnnouncementBar{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Announcement bar toggle",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "announcement_text",
+      "label": "Announcement text",
+      "default": "<p><strong>Special Offer:</strong> Get 20% off on all products!</p>"
+    },
+    {
+      "type": "header",
+      "content": "Toggle options"
+    },
+    {
+      "type": "text",
+      "id": "option_1_text",
+      "label": "Option 1 text",
+      "default": "Renewed"
+    },
+    {
+      "type": "text",
+      "id": "option_2_text",
+      "label": "Option 2 text",
+      "default": "Brand New"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_family",
+      "label": "Font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_background",
+      "label": "Toggle background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_active_background",
+      "label": "Active option background",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_active_text",
+      "label": "Active option text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_inactive_text",
+      "label": "Inactive option text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar toggle"
+    }
+  ]
+}
+{% endschema %}

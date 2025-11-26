@@ -1,0 +1,428 @@
+{% doc %}
+  @prompt
+    Create a simple announcement bar with two elements: 1) Rich text content absolutely centered relative to the FULL container width (not the remaining space), 2) Toggle on the right side positioned absolutely or with position absolute so it doesn't affect text centering. Layout: Use a relative positioned container with max-width. The text should be centered using text-align center and positioned to center based on the full container width, ignoring the toggle. The toggle should be positioned absolute on the right side so the text centering is calculated from the full width of the container. Toggle specifications: thin segmented control showing "Brand New" and "Renewed" side by side in a slightly rounded rectangle container with thin border, active option has #007bff filled background with white text touching the border edges with NO gap, inactive has black text on transparent background, smooth sliding animation. Include editing controls: custom CSS textarea field, container max-width control (default 1200px), toggle border radius slider (0-20px), toggle padding control, toggle border width control, full text editing (fonts, padding, bold, colors). Container centered on page. NO decorative elements, bars, or extra divs. Fully mobile responsive.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-announcement-bar-{{ ai_gen_id }} {
+    width: 100%;
+    padding: {{ block.settings.container_padding_top }}px 20px {{ block.settings.container_padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-announcement-bar-container-{{ ai_gen_id }} {
+    position: relative;
+    max-width: {{ block.settings.container_max_width }}px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-announcement-bar-text-{{ ai_gen_id }} {
+    text-align: center;
+    width: 100%;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    font-weight: {{ block.settings.text_weight }};
+    padding: 0 {{ block.settings.text_padding }}px;
+  }
+
+  .ai-announcement-bar-toggle-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .ai-announcement-bar-toggle-{{ ai_gen_id }} {
+    display: inline-flex;
+    border: {{ block.settings.toggle_border_width }}px solid {{ block.settings.toggle_border_color }};
+    border-radius: {{ block.settings.toggle_border_radius }}px;
+    padding: {{ block.settings.toggle_padding }}px;
+    background-color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-announcement-bar-toggle-option-{{ ai_gen_id }} {
+    position: relative;
+    padding: {{ block.settings.option_padding_vertical }}px {{ block.settings.option_padding_horizontal }}px;
+    cursor: pointer;
+    font-size: {{ block.settings.toggle_font_size }}px;
+    font-weight: {{ block.settings.toggle_font_weight }};
+    transition: color 0.3s ease;
+    z-index: 2;
+    white-space: nowrap;
+  }
+
+  .ai-announcement-bar-toggle-option-{{ ai_gen_id }}.active {
+    color: {{ block.settings.active_text_color }};
+  }
+
+  .ai-announcement-bar-toggle-option-{{ ai_gen_id }}.inactive {
+    color: {{ block.settings.inactive_text_color }};
+  }
+
+  .ai-announcement-bar-toggle-slider-{{ ai_gen_id }} {
+    position: absolute;
+    top: {{ block.settings.toggle_padding }}px;
+    bottom: {{ block.settings.toggle_padding }}px;
+    background-color: {{ block.settings.active_background_color }};
+    border-radius: calc({{ block.settings.toggle_border_radius }}px - {{ block.settings.toggle_padding }}px);
+    transition: all 0.3s ease;
+    z-index: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-announcement-bar-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.85 }}px;
+      padding: 0 10px;
+    }
+
+    .ai-announcement-bar-toggle-{{ ai_gen_id }} {
+      padding: {{ block.settings.toggle_padding | times: 0.7 }}px;
+    }
+
+    .ai-announcement-bar-toggle-option-{{ ai_gen_id }} {
+      padding: {{ block.settings.option_padding_vertical | times: 0.7 }}px {{ block.settings.option_padding_horizontal | times: 0.7 }}px;
+      font-size: {{ block.settings.toggle_font_size | times: 0.85 }}px;
+    }
+
+    .ai-announcement-bar-toggle-slider-{{ ai_gen_id }} {
+      top: {{ block.settings.toggle_padding | times: 0.7 }}px;
+      bottom: {{ block.settings.toggle_padding | times: 0.7 }}px;
+    }
+  }
+
+  {{ block.settings.custom_css }}
+{% endstyle %}
+
+<announcement-bar-{{ ai_gen_id }} class="ai-announcement-bar-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-announcement-bar-container-{{ ai_gen_id }}">
+    <div class="ai-announcement-bar-text-{{ ai_gen_id }}">
+      {{ block.settings.announcement_text }}
+    </div>
+    
+    <div class="ai-announcement-bar-toggle-wrapper-{{ ai_gen_id }}">
+      <div class="ai-announcement-bar-toggle-{{ ai_gen_id }}">
+        <div 
+          class="ai-announcement-bar-toggle-option-{{ ai_gen_id }} active" 
+          data-option="1"
+        >
+          {{ block.settings.toggle_option_1 }}
+        </div>
+        <div 
+          class="ai-announcement-bar-toggle-option-{{ ai_gen_id }} inactive" 
+          data-option="2"
+        >
+          {{ block.settings.toggle_option_2 }}
+        </div>
+        <div class="ai-announcement-bar-toggle-slider-{{ ai_gen_id }}"></div>
+      </div>
+    </div>
+  </div>
+</announcement-bar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AnnouncementBar{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.toggle = this.querySelector('.ai-announcement-bar-toggle-{{ ai_gen_id }}');
+        this.options = this.querySelectorAll('.ai-announcement-bar-toggle-option-{{ ai_gen_id }}');
+        this.slider = this.querySelector('.ai-announcement-bar-toggle-slider-{{ ai_gen_id }}');
+        this.activeIndex = 0;
+
+        this.setupEventListeners();
+        this.updateSlider();
+      }
+
+      setupEventListeners() {
+        this.options.forEach((option, index) => {
+          option.addEventListener('click', () => {
+            this.setActive(index);
+          });
+        });
+      }
+
+      setActive(index) {
+        if (this.activeIndex === index) return;
+
+        this.options.forEach((opt, i) => {
+          if (i === index) {
+            opt.classList.add('active');
+            opt.classList.remove('inactive');
+          } else {
+            opt.classList.remove('active');
+            opt.classList.add('inactive');
+          }
+        });
+
+        this.activeIndex = index;
+        this.updateSlider();
+      }
+
+      updateSlider() {
+        const activeOption = this.options[this.activeIndex];
+        const togglePadding = parseFloat(getComputedStyle(this.toggle).padding);
+        
+        this.slider.style.left = (activeOption.offsetLeft - togglePadding) + 'px';
+        this.slider.style.width = activeOption.offsetWidth + 'px';
+      }
+    }
+
+    customElements.define('announcement-bar-{{ ai_gen_id }}', AnnouncementBar{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Announcement bar toggle",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Container"
+    },
+    {
+      "type": "range",
+      "id": "container_max_width",
+      "min": 600,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "container_padding_top",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "container_padding_bottom",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "header",
+      "content": "Announcement text"
+    },
+    {
+      "type": "richtext",
+      "id": "announcement_text",
+      "label": "Text",
+      "default": "<p>Free shipping on orders over $50</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "text_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "text_padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Toggle"
+    },
+    {
+      "type": "text",
+      "id": "toggle_option_1",
+      "label": "Option 1 text",
+      "default": "Brand New"
+    },
+    {
+      "type": "text",
+      "id": "toggle_option_2",
+      "label": "Option 2 text",
+      "default": "Renewed"
+    },
+    {
+      "type": "range",
+      "id": "toggle_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "toggle_padding",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "label": "Container padding",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "toggle_border_width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "toggle_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "toggle_font_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "toggle_font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "option_padding_vertical",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Option vertical padding",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "option_padding_horizontal",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Option horizontal padding",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "active_background_color",
+      "label": "Active background",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "active_text_color",
+      "label": "Active text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "inactive_text_color",
+      "label": "Inactive text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Custom CSS"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar toggle"
+    }
+  ]
+}
+{% endschema %}

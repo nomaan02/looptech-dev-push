@@ -1,0 +1,355 @@
+{% doc %}
+  @prompt
+    Create a rich text announcement bar with centered text and full editing capabilities. On the right side, add a thin pill-shaped toggle switch exactly like a segmented control. The toggle should be a thin rounded rectangle outline containing "Renewed" and "Brand New" side by side. Include a sliding pill indicator that smoothly animates between the two options. When "Renewed" is active, the sliding pill fills that side with #007bff background and white text. When "Brand New" is active, the pill slides to that side with the same styling. The inactive option shows black text on transparent background. The toggle must be very thin and sleek, matching the exact proportions shown in the reference image. Make it compact, positioned on the right edge, and fully mobile responsive with smooth sliding transitions.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-announcement-bar-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.padding_vertical }}px {{ block.settings.padding_horizontal }}px;
+    background-color: {{ block.settings.background_color }};
+    position: relative;
+  }
+
+  .ai-announcement-bar__content-{{ ai_gen_id }} {
+    flex: 1;
+    text-align: center;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+  }
+
+  .ai-announcement-bar__content-{{ ai_gen_id }} p {
+    margin: 0;
+  }
+
+  .ai-announcement-bar__toggle-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    right: {{ block.settings.padding_horizontal }}px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .ai-announcement-bar__toggle-{{ ai_gen_id }} {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: {{ block.settings.toggle_border_width }}px solid {{ block.settings.toggle_border_color }};
+    border-radius: {{ block.settings.toggle_border_radius }}px;
+    padding: 0;
+    height: {{ block.settings.toggle_height }}px;
+    overflow: hidden;
+  }
+
+  .ai-announcement-bar__toggle-option-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 2;
+    padding: 0 {{ block.settings.toggle_padding }}px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: {{ block.settings.toggle_text_size }}px;
+    font-weight: 500;
+    white-space: nowrap;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+    color: {{ block.settings.toggle_inactive_text_color }};
+  }
+
+  .ai-announcement-bar__toggle-option-{{ ai_gen_id }}.active {
+    color: {{ block.settings.toggle_active_text_color }};
+  }
+
+  .ai-announcement-bar__toggle-slider-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: {{ block.settings.toggle_active_bg_color }};
+    border-radius: {{ block.settings.toggle_slider_radius }}px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-announcement-bar-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 12px;
+      padding: {{ block.settings.padding_vertical | times: 0.8 }}px {{ block.settings.padding_horizontal | times: 0.8 }}px;
+    }
+
+    .ai-announcement-bar__toggle-wrapper-{{ ai_gen_id }} {
+      position: static;
+      transform: none;
+    }
+
+    .ai-announcement-bar__content-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.9 }}px;
+    }
+
+    .ai-announcement-bar__toggle-{{ ai_gen_id }} {
+      height: {{ block.settings.toggle_height | times: 0.9 }}px;
+    }
+
+    .ai-announcement-bar__toggle-option-{{ ai_gen_id }} {
+      font-size: {{ block.settings.toggle_text_size | times: 0.9 }}px;
+      padding: 0 {{ block.settings.toggle_padding | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<announcement-toggle-{{ ai_gen_id }}
+  class="ai-announcement-bar-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-announcement-bar__content-{{ ai_gen_id }}">
+    {{ block.settings.announcement_text }}
+  </div>
+
+  <div class="ai-announcement-bar__toggle-wrapper-{{ ai_gen_id }}">
+    <div class="ai-announcement-bar__toggle-{{ ai_gen_id }}">
+      <div class="ai-announcement-bar__toggle-slider-{{ ai_gen_id }}"></div>
+      <button
+        class="ai-announcement-bar__toggle-option-{{ ai_gen_id }} active"
+        data-option="renewed"
+        aria-pressed="true"
+      >
+        {{ block.settings.option_1_text }}
+      </button>
+      <button
+        class="ai-announcement-bar__toggle-option-{{ ai_gen_id }}"
+        data-option="brand-new"
+        aria-pressed="false"
+      >
+        {{ block.settings.option_2_text }}
+      </button>
+    </div>
+  </div>
+</announcement-toggle-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AnnouncementToggle{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.toggle = this.querySelector('.ai-announcement-bar__toggle-{{ ai_gen_id }}');
+        this.options = this.querySelectorAll('.ai-announcement-bar__toggle-option-{{ ai_gen_id }}');
+        this.slider = this.querySelector('.ai-announcement-bar__toggle-slider-{{ ai_gen_id }}');
+        
+        this.setupEventListeners();
+        this.updateSlider();
+      }
+
+      setupEventListeners() {
+        this.options.forEach((option) => {
+          option.addEventListener('click', () => {
+            this.options.forEach((opt) => {
+              opt.classList.remove('active');
+              opt.setAttribute('aria-pressed', 'false');
+            });
+            
+            option.classList.add('active');
+            option.setAttribute('aria-pressed', 'true');
+            
+            this.updateSlider();
+          });
+        });
+      }
+
+      updateSlider() {
+        const activeOption = this.querySelector('.ai-announcement-bar__toggle-option-{{ ai_gen_id }}.active');
+        if (activeOption) {
+          const offsetLeft = activeOption.offsetLeft;
+          const width = activeOption.offsetWidth;
+          
+          this.slider.style.transform = `translateX(${offsetLeft}px)`;
+          this.slider.style.width = `${width}px`;
+        }
+      }
+    }
+
+    customElements.define('announcement-toggle-{{ ai_gen_id }}', AnnouncementToggle{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Announcement toggle",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Announcement text"
+    },
+    {
+      "type": "richtext",
+      "id": "announcement_text",
+      "label": "Text",
+      "default": "<p>Free shipping on orders over £50</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Toggle options"
+    },
+    {
+      "type": "text",
+      "id": "option_1_text",
+      "label": "Option 1 text",
+      "default": "Renewed"
+    },
+    {
+      "type": "text",
+      "id": "option_2_text",
+      "label": "Option 2 text",
+      "default": "Brand New"
+    },
+    {
+      "type": "range",
+      "id": "toggle_height",
+      "min": 24,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Toggle height",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "toggle_padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Toggle padding",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "toggle_text_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Toggle text size",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "toggle_border_width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "toggle_border_radius",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "toggle_slider_radius",
+      "min": 10,
+      "max": 38,
+      "step": 2,
+      "unit": "px",
+      "label": "Slider radius",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "toggle_border_color",
+      "label": "Toggle border",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "toggle_active_bg_color",
+      "label": "Active background",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_active_text_color",
+      "label": "Active text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_inactive_text_color",
+      "label": "Inactive text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 16,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement toggle"
+    }
+  ]
+}
+{% endschema %}

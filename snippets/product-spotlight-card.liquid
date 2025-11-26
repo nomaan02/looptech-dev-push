@@ -1,0 +1,166 @@
+{%- comment -%}
+  Product card snippet - styled like Back Market
+  
+  Usage: {% render 'product-spotlight-card', product: product, show_rating: true, show_starting_at: true, show_new_price: false, section_id: section.id %}
+  
+  Params:
+  - product: Product object (required)
+  - show_rating: show/hide ratings (optional, defaults to true)
+  - show_starting_at: show/hide "Starting at" text (optional, defaults to true)
+  - show_new_price: show/hide "New" price comparison (optional, defaults to false)
+  - section_id: section ID for unique gradient IDs (required)
+{%- endcomment -%}
+
+{%- liquid
+  # default show_rating to true if not specified
+  unless show_rating == false
+    assign show_rating = true
+  endunless
+  
+  # default show_starting_at to true if not specified
+  unless show_starting_at == false
+    assign show_starting_at = true
+  endunless
+  
+  # default show_new_price to false if not specified
+  unless show_new_price == true
+    assign show_new_price = false
+  endunless
+-%}
+
+<article class="spotlight-product-card" data-product-id="{{ product.id }}">
+  <a href="{{ product.url }}" class="spotlight-card-link" aria-label="View {{ product.title | escape }}">
+    
+    {%- # product image -%}
+    <div class="spotlight-card-image-wrapper">
+      {%- if product.featured_image -%}
+        {%- assign product_alt = product.featured_image.alt | default: product.title | escape -%}
+        {{
+          product.featured_image |
+          image_url: width: 500 |
+          image_tag:
+            loading: 'lazy',
+            widths: '250, 500',
+            sizes: '(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 30vw',
+            alt: product_alt,
+            class: 'spotlight-card-image'
+        }}
+      {%- else -%}
+        <div class="spotlight-card-image-placeholder">
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- # color swatches - always render to keep card height consistent -%}
+    <div class="spotlight-card-swatches">
+      {%- if product.options_with_values.size > 0 -%}
+        {%- for option in product.options_with_values -%}
+          {%- assign option_name_downcase = option.name | downcase -%}
+          {%- if option_name_downcase == 'color' or option_name_downcase == 'colour' -%}
+            {%- if option.values.size > 1 -%}
+              {%- assign max_swatches = 3 -%}
+              {%- for value in option.values limit: max_swatches -%}
+                <span 
+                  class="spotlight-swatch" 
+                  style="background-color: {{ value | downcase | replace: ' ', '' }};"
+                  title="{{ value | escape }}"
+                  aria-label="{{ value | escape }}"
+                ></span>
+              {%- endfor -%}
+              {%- if option.values.size > max_swatches -%}
+                <span class="spotlight-swatch-more">+{{ option.values.size | minus: max_swatches }}</span>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- # card content -%}
+    <div class="spotlight-card-info">
+      
+      {%- # product title -%}
+      <h3 class="spotlight-card-title">{{ product.title | truncate: 50 }}</h3>
+
+      {%- # product specs if available -%}
+      {%- if product.metafields.custom.specs != blank -%}
+        <p class="product-specs">{{ product.metafields.custom.specs }}</p>
+      {%- elsif product.variants.size > 0 and product.variants.first.title != 'Default Title' -%}
+        {%- assign variant = product.variants.first -%}
+        {%- if variant.option1 and variant.option2 -%}
+          <p class="product-specs">{{ variant.option1 }} · {{ variant.option2 }}</p>
+        {%- elsif variant.option1 -%}
+          <p class="product-specs">{{ variant.option1 }}</p>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- # star rating - always render container to keep height consistent -%}
+      <div class="spotlight-card-rating">
+        {%- if show_rating -%}
+          {%- if product.metafields.reviews.rating.value != blank -%}
+            {%- assign rating_value = product.metafields.reviews.rating.value -%}
+            {%- assign rating_count = product.metafields.reviews.rating_count.value | default: 0 -%}
+            
+            {%- if rating_count > 0 -%}
+              <div role="img" aria-label="Rated {{ rating_value }} out of 5 stars">
+                <div class="spotlight-star-rating">
+                  {%- assign rating_decimal = rating_value | times: 1.0 -%}
+                  {%- assign full_stars = rating_decimal | floor -%}
+                  {%- assign remaining = rating_decimal | minus: full_stars -%}
+                  {%- assign next_star_position = full_stars | plus: 1 -%}
+                  
+                  {%- for i in (1..5) -%}
+                    {%- if i <= full_stars -%}
+                      <svg class="spotlight-star spotlight-star-filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {%- elsif i == next_star_position and remaining >= 0.5 -%}
+                      <svg class="spotlight-star spotlight-star-half" width="16" height="16" viewBox="0 0 24 24">
+                        <defs>
+                          <linearGradient id="half-{{ section_id }}-{{ product.id }}">
+                            <stop offset="50%" stop-color="currentColor"/>
+                            <stop offset="50%" stop-color="#d1d5db"/>
+                          </linearGradient>
+                        </defs>
+                        <path fill="url(#half-{{ section_id }}-{{ product.id }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {%- else -%}
+                      <svg class="spotlight-star spotlight-star-empty" width="16" height="16" viewBox="0 0 24 24" fill="#d1d5db">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+                <span class="spotlight-rating-text">{{ rating_value }}/5</span>
+                {%- if rating_count > 0 -%}
+                  <span class="spotlight-rating-count">({{ rating_count }})</span>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+
+      {%- # pricing section -%}
+      <div class="spotlight-card-price">
+        {%- if show_new_price and product.compare_at_price > product.price -%}
+          <p class="spotlight-price-new"><del>New {{ product.compare_at_price | money }}</del></p>
+        {%- endif -%}
+        {%- if show_starting_at -%}
+          <p class="spotlight-price-label">Starting at</p>
+        {%- endif -%}
+        <div class="spotlight-price-wrapper">
+          <span class="spotlight-price-current">{{ product.price | money }}</span>
+          {%- if product.compare_at_price > product.price -%}
+            <span class="spotlight-price-compare">
+              {{ product.compare_at_price | money }}
+              <span class="spotlight-price-label-new">new</span>
+            </span>
+          {%- endif -%}
+        </div>
+      </div>
+
+    </div>
+  </a>
+</article>

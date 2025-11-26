@@ -1,0 +1,403 @@
+{% doc %}
+  @prompt
+    Create a simple announcement bar with two elements: 1) Rich text content absolutely centered relative to the FULL container width (not the remaining space), 2) Toggle on the right side positioned absolutely so it doesn't affect text centering. Layout: Use a relative positioned container with max-width. The text should be centered using text-align center based on the full container width, ignoring the toggle. The toggle should be positioned absolute on the right side. Toggle specifications: thin segmented control showing "Brand New" and "Renewed" side by side in a slightly rounded rectangle container with thin border. CRITICAL: Each toggle option must be a clickable link - include URL input fields in settings for "Brand New URL" and "Renewed URL" so the merchant can link each option to different store URLs. The active state should be determined by checking the current URL. Active option has #007bff filled background with white text touching the border edges with NO gap, inactive has black text on transparent background, smooth transition when hovering. Include editing controls: URL fields for both toggle options, custom CSS textarea field, container max-width control (default 1200px), toggle border radius slider (0-20px), toggle padding control, toggle border width control, full text editing (fonts, padding, bold, colors). Container centered on page. NO decorative elements. Fully mobile responsive.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-announcement-bar-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.vertical_padding }}px 20px;
+  }
+
+  .ai-announcement-bar-container-{{ ai_gen_id }} {
+    position: relative;
+    max-width: {{ block.settings.container_max_width }}px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-announcement-bar-text-{{ ai_gen_id }} {
+    width: 100%;
+    text-align: center;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    font-weight: {{ block.settings.text_weight }};
+    padding: 0 20px;
+  }
+
+  .ai-announcement-bar-toggle-{{ ai_gen_id }} {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    border: {{ block.settings.toggle_border_width }}px solid {{ block.settings.toggle_border_color }};
+    border-radius: {{ block.settings.toggle_border_radius }}px;
+    overflow: hidden;
+    background-color: transparent;
+  }
+
+  .ai-announcement-bar-toggle-option-{{ ai_gen_id }} {
+    padding: {{ block.settings.toggle_padding_vertical }}px {{ block.settings.toggle_padding_horizontal }}px;
+    font-size: {{ block.settings.toggle_font_size }}px;
+    font-weight: {{ block.settings.toggle_font_weight }};
+    text-decoration: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .ai-announcement-bar-toggle-option-{{ ai_gen_id }}:not(.active) {
+    background-color: transparent;
+    color: {{ block.settings.toggle_inactive_text_color }};
+  }
+
+  .ai-announcement-bar-toggle-option-{{ ai_gen_id }}.active {
+    background-color: {{ block.settings.toggle_active_bg_color }};
+    color: {{ block.settings.toggle_active_text_color }};
+  }
+
+  .ai-announcement-bar-toggle-option-{{ ai_gen_id }}:hover:not(.active) {
+    background-color: {{ block.settings.toggle_hover_bg_color }};
+    color: {{ block.settings.toggle_hover_text_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-announcement-bar-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.85 }}px;
+      padding: 0 10px;
+    }
+
+    .ai-announcement-bar-toggle-{{ ai_gen_id }} {
+      position: relative;
+      right: auto;
+      top: auto;
+      transform: none;
+      margin-top: 10px;
+    }
+
+    .ai-announcement-bar-container-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ai-announcement-bar-toggle-option-{{ ai_gen_id }} {
+      font-size: {{ block.settings.toggle_font_size | times: 0.9 }}px;
+      padding: {{ block.settings.toggle_padding_vertical | times: 0.8 }}px {{ block.settings.toggle_padding_horizontal | times: 0.8 }}px;
+    }
+  }
+
+  {{ block.settings.custom_css }}
+{% endstyle %}
+
+<announcement-bar-{{ ai_gen_id }}
+  class="ai-announcement-bar-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-announcement-bar-container-{{ ai_gen_id }}">
+    <div class="ai-announcement-bar-text-{{ ai_gen_id }}">
+      {{ block.settings.announcement_text }}
+    </div>
+
+    <div class="ai-announcement-bar-toggle-{{ ai_gen_id }}">
+      <a
+        href="{{ block.settings.toggle_option_1_url }}"
+        class="ai-announcement-bar-toggle-option-{{ ai_gen_id }} toggle-option-1"
+        data-url="{{ block.settings.toggle_option_1_url }}"
+      >
+        {{ block.settings.toggle_option_1_text }}
+      </a>
+      <a
+        href="{{ block.settings.toggle_option_2_url }}"
+        class="ai-announcement-bar-toggle-option-{{ ai_gen_id }} toggle-option-2"
+        data-url="{{ block.settings.toggle_option_2_url }}"
+      >
+        {{ block.settings.toggle_option_2_text }}
+      </a>
+    </div>
+  </div>
+</announcement-bar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AnnouncementBar{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.setActiveToggle();
+      }
+
+      setActiveToggle() {
+        const currentUrl = window.location.href;
+        const toggleOptions = this.querySelectorAll('.ai-announcement-bar-toggle-option-{{ ai_gen_id }}');
+
+        toggleOptions.forEach((option) => {
+          const optionUrl = option.getAttribute('data-url');
+          
+          if (optionUrl && currentUrl.includes(optionUrl)) {
+            option.classList.add('active');
+          } else {
+            option.classList.remove('active');
+          }
+        });
+
+        const hasActive = Array.from(toggleOptions).some(option => option.classList.contains('active'));
+        
+        if (!hasActive && toggleOptions.length > 0) {
+          toggleOptions[0].classList.add('active');
+        }
+      }
+    }
+
+    customElements.define('announcement-bar-{{ ai_gen_id }}', AnnouncementBar{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Announcement toggle",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Container"
+    },
+    {
+      "type": "range",
+      "id": "container_max_width",
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Container max width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "vertical_padding",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "header",
+      "content": "Announcement text"
+    },
+    {
+      "type": "richtext",
+      "id": "announcement_text",
+      "label": "Text",
+      "default": "<p>Welcome to our store</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "text_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Toggle options"
+    },
+    {
+      "type": "text",
+      "id": "toggle_option_1_text",
+      "label": "Option 1 text",
+      "default": "Brand New"
+    },
+    {
+      "type": "url",
+      "id": "toggle_option_1_url",
+      "label": "Option 1 URL"
+    },
+    {
+      "type": "text",
+      "id": "toggle_option_2_text",
+      "label": "Option 2 text",
+      "default": "Renewed"
+    },
+    {
+      "type": "url",
+      "id": "toggle_option_2_url",
+      "label": "Option 2 URL"
+    },
+    {
+      "type": "header",
+      "content": "Toggle style"
+    },
+    {
+      "type": "range",
+      "id": "toggle_font_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "toggle_font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "toggle_padding_vertical",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "toggle_padding_horizontal",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "toggle_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "toggle_border_width",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "toggle_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "header",
+      "content": "Toggle colors"
+    },
+    {
+      "type": "color",
+      "id": "toggle_active_bg_color",
+      "label": "Active background",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_active_text_color",
+      "label": "Active text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "toggle_inactive_text_color",
+      "label": "Inactive text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "toggle_hover_bg_color",
+      "label": "Hover background",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "toggle_hover_text_color",
+      "label": "Hover text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Custom CSS"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement toggle"
+    }
+  ]
+}
+{% endschema %}
