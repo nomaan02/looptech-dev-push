@@ -4,8 +4,20 @@
 {%- endcomment -%}
 
 {%- liquid
+  # Mode Detection for Brand New / Refurbished Toggle
+  assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
+  assign current_mode = 'new'
+  if url_mode == 'refurbished'
+    assign current_mode = 'refurbished'
+  endif
+
   # grab all the section settings
-  assign featured_collection = section.settings.featured_collection
+  # Select collection based on mode
+  if current_mode == 'refurbished' and section.settings.featured_collection_refurbished != blank
+    assign featured_collection = section.settings.featured_collection_refurbished
+  else
+    assign featured_collection = section.settings.featured_collection
+  endif
   assign hero_image = section.settings.hero_image
   assign hero_position = section.settings.hero_position
   assign section_heading = section.settings.section_heading
@@ -423,11 +435,26 @@
   grid-template-columns: {{ right_column_width }}% {{ left_column_width }}%;
 }
 
-/* hero image column */
+/* hero image column - desktop visibility control */
 #shopify-section-{{ section.id }} .hero-column {
   position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   overflow: hidden;
+}
+
+/* Desktop hero visibility */
+@media (min-width: 768px) {
+  #shopify-section-{{ section.id }} .hero-column {
+    display: {% if section.settings.desktop_show_hero %}block{% else %}none{% endif %};
+  }
+
+  /* Adjust grid when hero is hidden on desktop */
+  {% unless section.settings.desktop_show_hero %}
+    #shopify-section-{{ section.id }} .spotlight-layout[data-hero-position="left"],
+    #shopify-section-{{ section.id }} .spotlight-layout[data-hero-position="right"] {
+      grid-template-columns: 1fr;
+    }
+  {% endunless %}
 }
 
 #shopify-section-{{ section.id }} .hero-image {
@@ -670,7 +697,6 @@
 #shopify-section-{{ section.id }} .carousel-track {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(280px, calc(33.33% - 14px));
   gap: 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
@@ -678,6 +704,15 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 20px 0;
+}
+
+/* Desktop: responsive products per view */
+@media (min-width: 768px) {
+  #shopify-section-{{ section.id }} .carousel-track {
+    {% assign desktop_ppv = section.settings.desktop_products_per_view | default: 3 %}
+    {% assign column_width = 100.0 | divided_by: desktop_ppv %}
+    grid-auto-columns: minmax(280px, calc({{ column_width }}% - 14px));
+  }
 }
 
 #shopify-section-{{ section.id }} .carousel-track::-webkit-scrollbar {
@@ -1066,9 +1101,9 @@
     min-height: auto;
   }
 
-  /* Hide hero image on mobile */
+  /* Mobile hero visibility control */
   #shopify-section-{{ section.id }} .hero-column {
-    display: none;
+    display: {% if section.settings.mobile_show_hero %}block{% else %}none{% endif %};
   }
 
   #shopify-section-{{ section.id }} .carousel-column {
@@ -1170,10 +1205,17 @@
     padding: 0;
   }
 
-  /* Full-width product cards */
+  /* Full-width product cards with settings */
   #shopify-section-{{ section.id }} .carousel-track {
-    grid-auto-columns: 90vw;
-    gap: 16px;
+    {% case section.settings.mobile_card_width %}
+      {% when 'full' %}
+        grid-auto-columns: 100vw;
+      {% when 'medium' %}
+        grid-auto-columns: 80vw;
+      {% else %}
+        grid-auto-columns: 90vw;
+    {% endcase %}
+    gap: {{ section.settings.mobile_card_spacing | default: 16 }}px;
     padding: 0 16px;
   }
   
@@ -1827,6 +1869,74 @@
       "id": "featured_collection",
       "label": "Product Collection",
       "info": "Main collection to display"
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection_refurbished",
+      "label": "Refurbished Collection",
+      "info": "Collection to show when in refurbished mode"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "desktop_show_hero",
+      "label": "Show hero image on desktop",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "desktop_products_per_view",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Products per view (desktop)",
+      "default": 3,
+      "info": "Number of product cards visible at once on desktop"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_show_hero",
+      "label": "Show hero image on mobile",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "mobile_card_width",
+      "label": "Mobile card width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full width (100vw)"
+        },
+        {
+          "value": "large",
+          "label": "Large (90vw)"
+        },
+        {
+          "value": "medium",
+          "label": "Medium (80vw)"
+        }
+      ],
+      "default": "large",
+      "info": "Card width on mobile devices"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_spacing",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile card spacing",
+      "default": 16,
+      "info": "Gap between cards on mobile"
     },
     {
       "type": "range",

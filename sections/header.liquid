@@ -109,7 +109,7 @@
       display: none;
     }
   }
-  {%- if section.settings.menu == blank -%}
+  {%- if active_menu == blank -%}
     @media screen and (min-width: 992px) {
       .gradient.wbmenuup.header__inline-menu {
         padding: 0;
@@ -190,9 +190,29 @@
     endif
   endfor
 -%}
+
+{%- comment -%}
+  Mode Detection for Brand New / Refurbished Toggle
+  Switches between different menus based on URL parameter (?mode=refurbished or ?mode=new)
+{%- endcomment -%}
+{%- liquid
+  # Detect mode from URL parameter
+  assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
+  assign current_mode = 'new'
+  if url_mode == 'refurbished'
+    assign current_mode = 'refurbished'
+  endif
+
+  # Select appropriate menu based on mode
+  if current_mode == 'refurbished' and section.settings.menu_refurbished != blank
+    assign active_menu = linklists[section.settings.menu_refurbished]
+  else
+    assign active_menu = section.settings.menu
+  endif
+-%}
 <{% if section.settings.sticky_header_type != 'none' %}sticky-header data-sticky-type="{{ section.settings.sticky_header_type }}"{% else %}div{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient header-wrapper--border-bottom dropm-menu" data-maindrop="{{ section.settings.main_drop_menu }}">
 <div class="page-width">
-  <header class="header header--{{ section.settings.logo_position }} header--menu-{{ menu__position }}{% if section.settings.logo_position == 'middle-left' and section.settings.menu == blank %} search-full-width{% endif %} header--mobile-left{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if settings.wb_cartnumber == 'wb_shoptotal' or settings.wb_cartnumber == 'wb_shopqtytotal' %} wbcartbth{% endif %}">
+  <header class="header header--{{ section.settings.logo_position }} header--menu-{{ menu__position }}{% if section.settings.logo_position == 'middle-left' and active_menu == blank %} search-full-width{% endif %} header--mobile-left{% if active_menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if settings.wb_cartnumber == 'wb_shoptotal' or settings.wb_cartnumber == 'wb_shopqtytotal' %} wbcartbth{% endif %}">
       <header-drawer data-breakpoint="tablet" class="mobile-drawer">
         <details id="Details-menu-drawer-container" class="menu-drawer-container">
           <summary class="header__icon header__icon--menu header__icon--summary link focus-inset" aria-label="{{ 'sections.header.menu' | t }}">
@@ -202,16 +222,16 @@
             </span>
           </summary>
             <div id="menu-drawer" class="{{ flex-menu }} color-{{ section.settings.color__dropmenu }} gradient menu-drawer motion-reduce" tabindex="-1">
-              <ul class="mobilemenu-tab {{ tabmenu_hide }} {% if section.settings.menu == blank %} hidden {% endif %}">
+              <ul class="mobilemenu-tab {{ tabmenu_hide }} {% if active_menu == blank %} hidden {% endif %}">
                 <li class="nav-item active" data-id="menu1">{{ 'sections.header.menu' | t }}</li>
                 <li class="nav-item" data-id="menu2">{{ 'wbcustomlabel.wballtext.category' | t }}</li>
               </ul>
               <div>
-                <div id="menu1" class="mobile_menu_tab menu-drawer__inner-container tab-pane fade {% if section.settings.menu != blank %} active {% endif %}">
+                <div id="menu1" class="mobile_menu_tab menu-drawer__inner-container tab-pane fade {% if active_menu != blank %} active {% endif %}">
                   <div class="menu-drawer__navigation-container">
                     <nav class="menu-drawer__navigation">
                       <ul class="menu-drawer__menu has-submenu list-menu">
-                        {%- for link in section.settings.menu.links -%}
+                        {%- for link in active_menu.links -%}
                           {%- liquid 
                             assign assignsubmenu = true
                             assign blank_link = false
@@ -349,7 +369,7 @@
                     </nav>
                   </div>
                 </div>
-                <div id="menu2" class="mobile_menu_tab menu-drawer__inner-container tab-pane fade {% if section.settings.menu == blank %} active {% endif %}">
+                <div id="menu2" class="mobile_menu_tab menu-drawer__inner-container tab-pane fade {% if active_menu == blank %} active {% endif %}">
                   {% for block in section.blocks %}
                     {% if block.type == 'categories' %}
                       <div class="menu-drawer__navigation-container">
@@ -536,7 +556,7 @@
               <div class="menu-drawer__utility-links">
                 {%- for block in section.blocks -%}
                   {%- if block.settings.secmenu != blank -%}
-                    <nav class="wbsecmenu secondary-menu-{{ block.id }} {% if section.settings.menu == blank %} wbsecmenupad{% endif %}">
+                    <nav class="wbsecmenu secondary-menu-{{ block.id }} {% if active_menu == blank %} wbsecmenupad{% endif %}">
                       <ul class="list-menu list-menu--inline">
                       {%- for link in block.settings.secmenu.links -%}
                           <li>
@@ -1012,15 +1032,15 @@
             </nav>
           {% endif %}
         {% endfor %}
-        {%- if section.settings.menu != blank -%}
+        {%- if active_menu != blank -%}
           {% unless section.settings.logo_position == 'top-center' %}
             <div class="wbtmenu wbmenuup header__inline-menu">
               <div class="wbmenubtm">
                   {% comment %}Simple Menu{% endcomment %}
-                  {%- if section.settings.menu != blank -%}
+                  {%- if active_menu != blank -%}
                     <nav class="wbsimplemenuxs">
                       <ul class="list-menu list-menu--inline">
-                        {%- for link in section.settings.menu.links -%}
+                        {%- for link in active_menu.links -%}
                           {%- liquid 
                             assign assignsubmenu = true
                             assign displaymegamenu = false
@@ -1431,7 +1451,7 @@
         {% if section.settings.logo_position == 'top-center' %}
           {%- for block in section.blocks -%}
             {%- if block.settings.secmenu != blank and block.settings.showsmenu_top == true -%}
-              <nav class="wbsecmenu secondary-menu-{{ block.id }} {% if section.settings.menu == blank %} wbsecmenupad{% endif %}">
+              <nav class="wbsecmenu secondary-menu-{{ block.id }} {% if active_menu == blank %} wbsecmenupad{% endif %}">
                 <ul class="list-menu list-menu--inline">
                 {%- for link in block.settings.secmenu.links -%}
                     <li>
@@ -1482,7 +1502,7 @@
             </localization-form>
           {% endif %}
         </div>
-        {%- if section.settings.logo_position == 'top-center' or section.settings.logo_position == 'middle-left' and section.settings.menu != blank -%} 
+        {%- if section.settings.logo_position == 'top-center' or section.settings.logo_position == 'middle-left' and active_menu != blank -%} 
           <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>  
           <details-modal class="header__search">
             <details>
@@ -1719,7 +1739,7 @@
   </header>
 </div>
   {%- unless section.settings.logo_position == 'middle-left' or section.settings.logo_position == 'top-left' -%}
-    {% if section.settings.menu != blank or secondary__menu != blank and showsmenu_top != true %}
+    {% if active_menu != blank or secondary__menu != blank and showsmenu_top != true %}
       <div class="color-{{ section.settings.color_schememenu }} gradient wbmenuup header__inline-menu">
         <div class="page-width wbmenubtm">
           {%- unless section.settings.logo_position == 'top-center' -%}
@@ -1908,10 +1928,10 @@
               {% endif %}
             {% endfor %}
           {% endunless %}
-          {%- if section.settings.menu != blank -%}
+          {%- if active_menu != blank -%}
             <nav class="wbsimplemenuxs header-bottom">
               <ul class="list-menu list-menu--inline">
-              {%- for link in section.settings.menu.links -%}
+              {%- for link in active_menu.links -%}
                 {%- liquid 
                   assign assignsubmenu = true
                   assign displaymegamenu = false
@@ -2081,7 +2101,7 @@
           {%- for block in section.blocks -%}
             {%- if block.settings.secmenu != blank -%}
               {%- if block.settings.showsmenu_top != true and section.settings.logo_position == 'top-center' -%}
-                <nav class="{% if block.settings.main_mega_menu == blank and section.settings.menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if section.settings.menu == blank %} wbsecmenupad{% endif %}">
+                <nav class="{% if block.settings.main_mega_menu == blank and active_menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if active_menu == blank %} wbsecmenupad{% endif %}">
                   <ul class="list-menu list-menu--inline">
                   {%- for link in block.settings.secmenu.links -%}
                       <li>
@@ -2096,7 +2116,7 @@
                   </ul>
                 </nav>
                 {% elsif section.settings.logo_position == 'top-left' %}
-                  <nav class="{% if block.settings.main_mega_menu == blank and section.settings.menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if section.settings.menu == blank %} wbsecmenupad{% endif %}">
+                  <nav class="{% if block.settings.main_mega_menu == blank and active_menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if active_menu == blank %} wbsecmenupad{% endif %}">
                   <ul class="list-menu list-menu--inline">
                   {%- for link in block.settings.secmenu.links -%}
                       <li>
@@ -2132,7 +2152,7 @@
     {% endif %}
   {%- endunless -%}
   {%- unless section.settings.logo_position == 'middle-left' or section.settings.logo_position == 'top-center' -%}
-    {% if section.settings.menu != blank or secondary__menu != blank %}
+    {% if active_menu != blank or secondary__menu != blank %}
       <div class="color-{{ section.settings.color_schememenu }} gradient wbmenuup header__inline-menu">
         <div class="page-width wbmenubtm">
           {%- unless section.settings.logo_position == 'top-center' -%}
@@ -2321,10 +2341,10 @@
               {% endif %}
             {% endfor %}
           {% endunless %}
-          {%- if section.settings.menu != blank -%}
+          {%- if active_menu != blank -%}
             <nav class="wbsimplemenuxs header-bottom">
               <ul class="list-menu list-menu--inline">
-              {%- for link in section.settings.menu.links -%}
+              {%- for link in active_menu.links -%}
                 {%- liquid 
                   assign assignsubmenu = true
                   assign displaymegamenu = false
@@ -2495,7 +2515,7 @@
           {%- for block in section.blocks -%}
             {%- if block.settings.secmenu != blank -%}
               {%- if block.settings.showsmenu_top != true and section.settings.logo_position == 'top-center' -%}
-                <nav class="{% if block.settings.main_mega_menu == blank and section.settings.menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if section.settings.menu == blank %} wbsecmenupad{% endif %}">
+                <nav class="{% if block.settings.main_mega_menu == blank and active_menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if active_menu == blank %} wbsecmenupad{% endif %}">
                   <ul class="list-menu list-menu--inline">
                   {%- for link in block.settings.secmenu.links -%}
                       <li>
@@ -2510,7 +2530,7 @@
                   </ul>
                 </nav>
                 {% elsif section.settings.logo_position == 'top-left' %}
-                  <nav class="{% if block.settings.main_mega_menu == blank and section.settings.menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if section.settings.menu == blank %} wbsecmenupad{% endif %}">
+                  <nav class="{% if block.settings.main_mega_menu == blank and active_menu == blank %}wbsecmenu_width{% endif %} wbsecmenu header-bottom secondary-menu-{{ block.id }} {% if active_menu == blank %} wbsecmenupad{% endif %}">
                   <ul class="list-menu list-menu--inline">
                   {%- for link in block.settings.secmenu.links -%}
                       <li>
@@ -2842,6 +2862,13 @@ customElements.define('sticky-header', StickyHeader);
       "id": "menu",
       "default": "main-menu",
       "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "text",
+      "id": "menu_refurbished",
+      "label": "Refurbished Menu Handle",
+      "info": "Enter the menu handle (e.g., 'refurbished-menu'). Create this menu in Navigation > Menus settings first.",
+      "placeholder": "refurbished-menu"
     },
     {
       "type": "select",
