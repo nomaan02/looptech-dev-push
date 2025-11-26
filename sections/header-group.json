@@ -186,7 +186,7 @@
         "show_menu_link": false,
         "shop_dropformat": false,
         "menu": "main-menu",
-        "menu_refurbished": "",
+        "menu_refurbished": "refurbished-menu",
         "main_drop_menu": "click",
         "color_schememenu": "",
         "color__dropmenu": "background-1",
@@ -203,7 +203,7 @@
       "type": "mode-toggle",
       "name": "Mode Toggle",
       "settings": {
-        "heading": "Shop Our Products",
+        "heading": "Browse Between Brand New & Renewed Devices With Ease!",
         "new_label": "Brand New",
         "refurb_label": "Renewed",
         "color_scheme": "background-1",
