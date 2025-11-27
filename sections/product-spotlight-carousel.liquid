@@ -33,44 +33,61 @@
   assign left_column_width = section.settings.left_column_width
   assign carousel_bg_color = section.settings.carousel_background_color
   assign brand_logo_size = section.settings.brand_logo_size
-  
+  assign section_height = section.settings.section_height
+  assign desktop_column_layout = section.settings.desktop_column_layout
+  assign mobile_column_layout = section.settings.mobile_column_layout
+  assign desktop_show_hero = section.settings.desktop_show_hero
+  assign mobile_show_hero = section.settings.mobile_show_hero
+
   # defaults if nothing is set
   if section_heading == blank
     assign section_heading = ''
   endif
-  
+
   if products_limit == blank
     assign products_limit = 12
   endif
-  
+
   if show_ratings == nil
     assign show_ratings = true
   endif
-  
+
   if show_starting_at_text == nil
     assign show_starting_at_text = true
   endif
-  
+
   if show_new_price_comparison == nil
     assign show_new_price_comparison = false
   endif
-  
+
   if hero_position == blank
     assign hero_position = 'left'
   endif
-  
+
   if left_column_width == blank
     assign left_column_width = 30
   endif
-  
+
   if carousel_bg_color == blank
     assign carousel_bg_color = '#ffffff'
   endif
-  
+
   if brand_logo_size == blank
     assign brand_logo_size = 64
   endif
-  
+
+  if section_height == blank
+    assign section_height = 600
+  endif
+
+  if desktop_column_layout == blank
+    assign desktop_column_layout = 'two-column'
+  endif
+
+  if mobile_column_layout == blank
+    assign mobile_column_layout = 'single-column'
+  endif
+
   assign right_column_width = 100 | minus: left_column_width
   
   # pull in products from the selected collection
@@ -80,8 +97,14 @@
 -%}
 
 {%- if featured_collection != blank -%}
-<div class="product-spotlight-section" data-section-id="{{ section.id }}">
-  
+<div class="product-spotlight-section"
+     data-section-id="{{ section.id }}"
+     data-section-height="{{ section_height }}"
+     data-desktop-layout="{{ desktop_column_layout }}"
+     data-mobile-layout="{{ mobile_column_layout }}"
+     data-desktop-show-hero="{{ desktop_show_hero }}"
+     data-mobile-show-hero="{{ mobile_show_hero }}">
+
   {%- # section heading above the carousel -%}
   {%- if section_heading != blank -%}
     <div class="page-width">
@@ -486,6 +509,15 @@
 }
 
 /* ============================================
+   Section Height Control
+   ============================================ */
+
+#shopify-section-{{ section.id }} .product-spotlight-section[data-section-height] .spotlight-layout {
+  min-height: var(--section-height, 600px);
+  height: var(--section-height, 600px);
+}
+
+/* ============================================
    two column layout grid
    left = hero image, right = carousel
    ============================================ */
@@ -494,6 +526,32 @@
   display: grid;
   gap: 0;
   min-height: 350px;
+}
+
+/* Desktop Column Layout Control */
+@media (min-width: 768px) {
+  /* Desktop: Single column layout (carousel only) */
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-desktop-layout="single-column"] .spotlight-layout {
+    grid-template-columns: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-desktop-layout="single-column"] .hero-column {
+    display: none;
+  }
+
+  /* Desktop: Two column layout (default) */
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-desktop-layout="two-column"] .spotlight-layout {
+    grid-template-columns: {{ left_column_width }}% {{ right_column_width }}%;
+  }
+
+  /* Hide hero if desktop_show_hero is false */
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-desktop-show-hero="false"] .hero-column {
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-desktop-show-hero="false"][data-desktop-layout="two-column"] .spotlight-layout {
+    grid-template-columns: 100%;
+  }
 }
 
 /* default: hero on left */
@@ -1172,7 +1230,33 @@
     min-height: auto;
   }
 
-  /* Mobile hero visibility control */
+  /* Mobile Column Layout Control */
+  /* Mobile: Single column layout (carousel only) - default */
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-mobile-layout="single-column"] .spotlight-layout {
+    grid-template-columns: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-mobile-layout="single-column"] .hero-column {
+    display: none;
+  }
+
+  /* Mobile: Two column layout (stacked vertically) */
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-mobile-layout="two-column"] .spotlight-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-mobile-layout="two-column"] .hero-column {
+    display: block;
+    min-height: 250px;
+  }
+
+  /* Hide hero if mobile_show_hero is false */
+  #shopify-section-{{ section.id }} .product-spotlight-section[data-mobile-show-hero="false"] .hero-column {
+    display: none;
+  }
+
+  /* Legacy mobile hero visibility control (fallback) */
   #shopify-section-{{ section.id }} .hero-column {
     display: {% if section.settings.mobile_show_hero %}block{% else %}none{% endif %};
   }
@@ -1415,10 +1499,19 @@
    */
   function init() {
     if (!track) return;
-    
+
     // save initial products so we can restore them later
     originalProductsHTML = track.innerHTML;
-    
+
+    // Set section height CSS variable from data attribute
+    const sectionElement = document.querySelector(`#shopify-section-${sectionId} .product-spotlight-section`);
+    if (sectionElement) {
+      const sectionHeight = sectionElement.getAttribute('data-section-height');
+      if (sectionHeight) {
+        sectionElement.style.setProperty('--section-height', `${sectionHeight}px`);
+      }
+    }
+
     calculateItemsPerPage();
     updateNavigationState();
     createDots();
@@ -1969,13 +2062,46 @@
     },
     {
       "type": "header",
-      "content": "Desktop Settings"
+      "content": "Section Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 400,
+      "max": 900,
+      "step": 50,
+      "unit": "px",
+      "label": "Carousel Height",
+      "default": 600,
+      "info": "Overall height of the carousel section"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_layout",
+      "label": "Desktop Column Layout",
+      "options": [
+        {
+          "value": "two-column",
+          "label": "2 Columns (Hero + Carousel)"
+        },
+        {
+          "value": "single-column",
+          "label": "1 Column (Carousel Only)"
+        }
+      ],
+      "default": "two-column",
+      "info": "Choose layout for desktop view"
     },
     {
       "type": "checkbox",
       "id": "desktop_show_hero",
       "label": "Show hero image on desktop",
-      "default": true
+      "default": true,
+      "info": "Only applies when 2-column layout is selected"
     },
     {
       "type": "range",
@@ -1989,13 +2115,31 @@
     },
     {
       "type": "header",
-      "content": "Mobile Settings"
+      "content": "Mobile Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_column_layout",
+      "label": "Mobile Column Layout",
+      "options": [
+        {
+          "value": "two-column",
+          "label": "2 Columns (Hero + Carousel)"
+        },
+        {
+          "value": "single-column",
+          "label": "1 Column (Carousel Only)"
+        }
+      ],
+      "default": "single-column",
+      "info": "Choose layout for mobile view"
     },
     {
       "type": "checkbox",
       "id": "mobile_show_hero",
       "label": "Show hero image on mobile",
-      "default": false
+      "default": false,
+      "info": "Only applies when 2-column layout is selected"
     },
     {
       "type": "select",
