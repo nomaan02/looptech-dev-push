@@ -108,7 +108,7 @@
   endif
 
   if mobile_product_image_height == blank
-    assign mobile_product_image_height = 220
+    assign mobile_product_image_height = 250
   endif
 
   if mobile_card_padding == blank
@@ -2259,35 +2259,35 @@
     {
       "type": "range",
       "id": "mobile_card_width_percent",
-      "min": 60,
+      "min": 10,
       "max": 100,
-      "step": 5,
+      "step": 1,
       "unit": "%",
       "label": "Mobile Card Width",
       "default": 70,
-      "info": "Percentage of screen width (60-70% recommended for peek effect)"
+      "info": "Percentage of screen width - full flexibility from tiny (10%) to full width (100%). 60-70% recommended for peek effect"
     },
     {
       "type": "range",
       "id": "mobile_card_height",
-      "min": 320,
-      "max": 550,
+      "min": 200,
+      "max": 900,
       "step": 10,
       "unit": "px",
       "label": "Mobile Card Height",
       "default": 420,
-      "info": "Overall height of each product card on mobile"
+      "info": "Overall height of each product card on mobile - from compact (200px) to extra tall (900px)"
     },
     {
       "type": "range",
       "id": "mobile_product_image_height",
-      "min": 150,
-      "max": 320,
+      "min": 100,
+      "max": 600,
       "step": 10,
       "unit": "px",
       "label": "Mobile Product Image Height",
-      "default": 220,
-      "info": "Height of the product image within the card"
+      "default": 250,
+      "info": "Height of the product image within the card - from small (100px) to large (600px)"
     },
     {
       "type": "range",
