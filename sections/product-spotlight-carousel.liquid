@@ -39,6 +39,16 @@
   assign desktop_show_hero = section.settings.desktop_show_hero
   assign mobile_show_hero = section.settings.mobile_show_hero
 
+  # Mobile-specific customization settings
+  assign mobile_card_width_percent = section.settings.mobile_card_width_percent
+  assign mobile_card_height = section.settings.mobile_card_height
+  assign mobile_product_image_height = section.settings.mobile_product_image_height
+  assign mobile_card_padding = section.settings.mobile_card_padding
+  assign mobile_nav_tab_height = section.settings.mobile_nav_tab_height
+  assign mobile_nav_tab_padding = section.settings.mobile_nav_tab_padding
+  assign mobile_nav_tab_spacing = section.settings.mobile_nav_tab_spacing
+  assign mobile_nav_icon_size = section.settings.mobile_nav_icon_size
+
   # defaults if nothing is set
   if section_heading == blank
     assign section_heading = ''
@@ -88,6 +98,39 @@
     assign mobile_column_layout = 'single-column'
   endif
 
+  # Mobile customization defaults
+  if mobile_card_width_percent == blank
+    assign mobile_card_width_percent = 70
+  endif
+
+  if mobile_card_height == blank
+    assign mobile_card_height = 420
+  endif
+
+  if mobile_product_image_height == blank
+    assign mobile_product_image_height = 220
+  endif
+
+  if mobile_card_padding == blank
+    assign mobile_card_padding = 12
+  endif
+
+  if mobile_nav_tab_height == blank
+    assign mobile_nav_tab_height = 36
+  endif
+
+  if mobile_nav_tab_padding == blank
+    assign mobile_nav_tab_padding = 16
+  endif
+
+  if mobile_nav_tab_spacing == blank
+    assign mobile_nav_tab_spacing = 8
+  endif
+
+  if mobile_nav_icon_size == blank
+    assign mobile_nav_icon_size = 18
+  endif
+
   assign right_column_width = 100 | minus: left_column_width
   
   # pull in products from the selected collection
@@ -103,7 +146,16 @@
      data-desktop-layout="{{ desktop_column_layout }}"
      data-mobile-layout="{{ mobile_column_layout }}"
      data-desktop-show-hero="{{ desktop_show_hero }}"
-     data-mobile-show-hero="{{ mobile_show_hero }}">
+     data-mobile-show-hero="{{ mobile_show_hero }}"
+     data-mobile-card-width="{{ mobile_card_width_percent }}"
+     data-mobile-card-height="{{ mobile_card_height }}"
+     data-mobile-image-height="{{ mobile_product_image_height }}"
+     data-mobile-card-padding="{{ mobile_card_padding }}"
+     data-mobile-card-spacing="{{ section.settings.mobile_card_spacing }}"
+     data-mobile-nav-height="{{ mobile_nav_tab_height }}"
+     data-mobile-nav-padding="{{ mobile_nav_tab_padding }}"
+     data-mobile-nav-spacing="{{ mobile_nav_tab_spacing }}"
+     data-mobile-icon-size="{{ mobile_nav_icon_size }}">
 
   {%- # section heading above the carousel -%}
   {%- if section_heading != blank -%}
@@ -1271,8 +1323,9 @@
      Desktop uses vertical layout with logos (defined above 768px)
      Mobile uses compact horizontal pills with inline icon+text
      ============================================ */
+  /* Mobile: Navigation bar with customizable spacing */
   #shopify-section-{{ section.id }} .brand-navigation-bar {
-    gap: 8px;
+    gap: var(--mobile-nav-spacing, 8px);
     margin: 0 16px 20px 16px;
     padding: 0;
     justify-content: flex-start;
@@ -1284,21 +1337,21 @@
   #shopify-section-{{ section.id }} .brand-navigation-bar::-webkit-scrollbar {
     display: none;
   }
-  
+
   #shopify-section-{{ section.id }} .brand-tab-wrapper {
     gap: 0;
     flex-direction: row;
     flex-shrink: 0;
   }
-  
-  /* Horizontal pill-shaped buttons */
+
+  /* Mobile: Horizontal pill-shaped buttons with customizable dimensions */
   #shopify-section-{{ section.id }} .brand-tab-button {
-    width: 150px;
-    padding-left: 16px;
-    padding-right: 16px;
-    height: 36px;
-    border-radius: 18px;
-    /* padding: 0 16px;*/
+    width: auto;
+    min-width: 120px;
+    padding-left: var(--mobile-nav-padding, 16px);
+    padding-right: var(--mobile-nav-padding, 16px);
+    height: var(--mobile-nav-height, 36px);
+    border-radius: calc(var(--mobile-nav-height, 36px) / 2);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1317,28 +1370,31 @@
     border-color: #007aff;
     box-shadow: 0 2px 4px rgba(0, 122, 255, 0.25);
   }
-  
-  /* Icon on left, smaller size */
+
+  /* Mobile: Icon with customizable size */
   #shopify-section-{{ section.id }} .brand-icon-container {
-    width: 20px;
-    height: 20px;
+    width: var(--mobile-icon-size, 18px);
+    height: var(--mobile-icon-size, 18px);
     padding: 0;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  
+
   #shopify-section-{{ section.id }} .brand-icon-container svg {
-    width: 18px;
-    height: 18px;
+    width: var(--mobile-icon-size, 18px);
+    height: var(--mobile-icon-size, 18px);
     color: #6b7280;
   }
 
   #shopify-section-{{ section.id }} .brand-tab-button.active .brand-icon-container svg {
     color: #ffffff;
   }
-  
-  /* Text on right, inline with icon */
+
+  /* Mobile: Text sizing */
   #shopify-section-{{ section.id }} .brand-label-text {
-    font-size: 14px;
+    font-size: calc(var(--mobile-nav-height, 36px) * 0.39);
     font-weight: 500;
     color: #1f2937;
     white-space: nowrap;
@@ -1348,10 +1404,10 @@
     color: #ffffff;
   }
 
-  /* Logo images in horizontal layout */
+  /* Mobile: Logo images */
   #shopify-section-{{ section.id }} .brand-logo-img {
-    max-width: 20px;
-    max-height: 20px;
+    max-width: var(--mobile-icon-size, 18px);
+    max-height: var(--mobile-icon-size, 18px);
   }
 
   /* Full-width carousel container */
@@ -1360,18 +1416,27 @@
     padding: 0;
   }
 
-  /* Full-width product cards with settings */
+  /* Mobile: Product cards with customizable width for peek effect */
   #shopify-section-{{ section.id }} .carousel-track {
-    {% case section.settings.mobile_card_width %}
-      {% when 'full' %}
-        grid-auto-columns: 100vw;
-      {% when 'medium' %}
-        grid-auto-columns: 80vw;
-      {% else %}
-        grid-auto-columns: 90vw;
-    {% endcase %}
-    gap: {{ section.settings.mobile_card_spacing | default: 16 }}px;
-    padding: 0 16px;
+    grid-auto-columns: var(--mobile-card-width, 70vw);
+    gap: var(--mobile-card-spacing, 16px);
+    padding: 0 calc((100vw - var(--mobile-card-width, 70vw)) / 2);
+    justify-content: flex-start;
+    scroll-padding-left: calc((100vw - var(--mobile-card-width, 70vw)) / 2);
+  }
+
+  /* Mobile: Card dimensions and spacing */
+  #shopify-section-{{ section.id }} .spotlight-product-card {
+    height: var(--mobile-card-height, 420px);
+    padding: var(--mobile-card-padding, 12px);
+    min-height: auto;
+  }
+
+  /* Mobile: Product image height control */
+  #shopify-section-{{ section.id }} .spotlight-card-image-wrapper {
+    height: var(--mobile-image-height, 220px);
+    max-height: var(--mobile-image-height, 220px);
+    aspect-ratio: unset;
   }
   
   #shopify-section-{{ section.id }} .carousel-fade-overlay {
@@ -1503,12 +1568,54 @@
     // save initial products so we can restore them later
     originalProductsHTML = track.innerHTML;
 
-    // Set section height CSS variable from data attribute
+    // Set CSS custom properties from data attributes
     const sectionElement = document.querySelector(`#shopify-section-${sectionId} .product-spotlight-section`);
     if (sectionElement) {
+      // Section height
       const sectionHeight = sectionElement.getAttribute('data-section-height');
       if (sectionHeight) {
         sectionElement.style.setProperty('--section-height', `${sectionHeight}px`);
+      }
+
+      // Mobile card customization (only applies on mobile devices)
+      const mobileCardWidth = sectionElement.getAttribute('data-mobile-card-width');
+      const mobileCardHeight = sectionElement.getAttribute('data-mobile-card-height');
+      const mobileImageHeight = sectionElement.getAttribute('data-mobile-image-height');
+      const mobileCardPadding = sectionElement.getAttribute('data-mobile-card-padding');
+      const mobileNavHeight = sectionElement.getAttribute('data-mobile-nav-height');
+      const mobileNavPadding = sectionElement.getAttribute('data-mobile-nav-padding');
+      const mobileNavSpacing = sectionElement.getAttribute('data-mobile-nav-spacing');
+      const mobileIconSize = sectionElement.getAttribute('data-mobile-icon-size');
+
+      if (mobileCardWidth) {
+        sectionElement.style.setProperty('--mobile-card-width', `${mobileCardWidth}vw`);
+      }
+      if (mobileCardHeight) {
+        sectionElement.style.setProperty('--mobile-card-height', `${mobileCardHeight}px`);
+      }
+      if (mobileImageHeight) {
+        sectionElement.style.setProperty('--mobile-image-height', `${mobileImageHeight}px`);
+      }
+      if (mobileCardPadding) {
+        sectionElement.style.setProperty('--mobile-card-padding', `${mobileCardPadding}px`);
+      }
+      if (mobileNavHeight) {
+        sectionElement.style.setProperty('--mobile-nav-height', `${mobileNavHeight}px`);
+      }
+      if (mobileNavPadding) {
+        sectionElement.style.setProperty('--mobile-nav-padding', `${mobileNavPadding}px`);
+      }
+      if (mobileNavSpacing) {
+        sectionElement.style.setProperty('--mobile-nav-spacing', `${mobileNavSpacing}px`);
+      }
+      if (mobileIconSize) {
+        sectionElement.style.setProperty('--mobile-icon-size', `${mobileIconSize}px`);
+      }
+
+      // Also set mobile-card-spacing from existing mobile_card_spacing setting
+      const mobileCardSpacing = sectionElement.getAttribute('data-mobile-card-spacing') || '{{ section.settings.mobile_card_spacing | default: 16 }}';
+      if (mobileCardSpacing) {
+        sectionElement.style.setProperty('--mobile-card-spacing', `${mobileCardSpacing}px`);
       }
     }
 
@@ -2142,36 +2249,119 @@
       "info": "Only applies when 2-column layout is selected"
     },
     {
-      "type": "select",
-      "id": "mobile_card_width",
-      "label": "Mobile card width",
-      "options": [
-        {
-          "value": "full",
-          "label": "Full width (100vw)"
-        },
-        {
-          "value": "large",
-          "label": "Large (90vw)"
-        },
-        {
-          "value": "medium",
-          "label": "Medium (80vw)"
-        }
-      ],
-      "default": "large",
-      "info": "Card width on mobile devices"
+      "type": "header",
+      "content": "Mobile Card Customization (Mobile Only)"
+    },
+    {
+      "type": "paragraph",
+      "content": "These settings control the product card appearance on mobile devices only. Adjust sizing to create a centered card with visible 'peek' to the next product for better swipe indication."
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width_percent",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Mobile Card Width",
+      "default": 70,
+      "info": "Percentage of screen width (60-70% recommended for peek effect)"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_height",
+      "min": 320,
+      "max": 550,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile Card Height",
+      "default": 420,
+      "info": "Overall height of each product card on mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_product_image_height",
+      "min": 150,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile Product Image Height",
+      "default": 220,
+      "info": "Height of the product image within the card"
     },
     {
       "type": "range",
       "id": "mobile_card_spacing",
-      "min": 0,
-      "max": 40,
+      "min": 8,
+      "max": 32,
       "step": 4,
       "unit": "px",
-      "label": "Mobile card spacing",
+      "label": "Mobile Card Spacing",
       "default": 16,
-      "info": "Gap between cards on mobile"
+      "info": "Gap between cards on mobile (affects peek visibility)"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Card Inner Padding",
+      "default": 12,
+      "info": "Internal padding inside each card"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Navigation Tabs (Mobile Only)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Control the size and spacing of the brand navigation tabs on mobile devices."
+    },
+    {
+      "type": "range",
+      "id": "mobile_nav_tab_height",
+      "min": 28,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Tab Height",
+      "default": 36,
+      "info": "Height of navigation tab buttons on mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_nav_tab_padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Tab Horizontal Padding",
+      "default": 16,
+      "info": "Left and right padding inside tab buttons"
+    },
+    {
+      "type": "range",
+      "id": "mobile_nav_tab_spacing",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Tab Spacing",
+      "default": 8,
+      "info": "Gap between navigation tabs"
+    },
+    {
+      "type": "range",
+      "id": "mobile_nav_icon_size",
+      "min": 14,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Tab Icon Size",
+      "default": 18,
+      "info": "Size of icons within navigation tabs"
     },
     {
       "type": "range",
