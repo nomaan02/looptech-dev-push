@@ -49,6 +49,15 @@
   assign mobile_nav_tab_spacing = section.settings.mobile_nav_tab_spacing
   assign mobile_nav_icon_size = section.settings.mobile_nav_icon_size
 
+  # Desktop brand tab customization settings
+  assign desktop_tab_width = section.settings.desktop_tab_width
+  assign desktop_tab_height = section.settings.desktop_tab_height
+  assign desktop_tab_logo_size = section.settings.desktop_tab_logo_size
+  assign desktop_tab_text_position = section.settings.desktop_tab_text_position
+  assign desktop_tab_text_size = section.settings.desktop_tab_text_size
+  assign desktop_tab_gap = section.settings.desktop_tab_gap
+  assign desktop_tab_border_radius = section.settings.desktop_tab_border_radius
+
   # defaults if nothing is set
   if section_heading == blank
     assign section_heading = ''
@@ -131,6 +140,35 @@
     assign mobile_nav_icon_size = 18
   endif
 
+  # Desktop brand tab customization defaults
+  if desktop_tab_width == blank
+    assign desktop_tab_width = 120
+  endif
+
+  if desktop_tab_height == blank
+    assign desktop_tab_height = 90
+  endif
+
+  if desktop_tab_logo_size == blank
+    assign desktop_tab_logo_size = 70
+  endif
+
+  if desktop_tab_text_position == blank
+    assign desktop_tab_text_position = 'inside'
+  endif
+
+  if desktop_tab_text_size == blank
+    assign desktop_tab_text_size = 14
+  endif
+
+  if desktop_tab_gap == blank
+    assign desktop_tab_gap = 24
+  endif
+
+  if desktop_tab_border_radius == blank
+    assign desktop_tab_border_radius = 16
+  endif
+
   assign right_column_width = 100 | minus: left_column_width
   
   # pull in products from the selected collection
@@ -155,7 +193,14 @@
      data-mobile-nav-height="{{ mobile_nav_tab_height }}"
      data-mobile-nav-padding="{{ mobile_nav_tab_padding }}"
      data-mobile-nav-spacing="{{ mobile_nav_tab_spacing }}"
-     data-mobile-icon-size="{{ mobile_nav_icon_size }}">
+     data-mobile-icon-size="{{ mobile_nav_icon_size }}"
+     data-desktop-tab-width="{{ desktop_tab_width }}"
+     data-desktop-tab-height="{{ desktop_tab_height }}"
+     data-desktop-tab-logo-size="{{ desktop_tab_logo_size }}"
+     data-desktop-tab-text-position="{{ desktop_tab_text_position }}"
+     data-desktop-tab-text-size="{{ desktop_tab_text_size }}"
+     data-desktop-tab-gap="{{ desktop_tab_gap }}"
+     data-desktop-tab-border-radius="{{ desktop_tab_border_radius }}">
 
   {%- # section heading above the carousel -%}
   {%- if section_heading != blank -%}
@@ -178,8 +223,8 @@
             <div class="brand-navigation-bar" role="tablist" aria-label="Product collections">
               
               {%- # default "show all" tab -%}
-              <div class="brand-tab-wrapper">
-                <button 
+              <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
+                <button
                   class="brand-tab-button active" 
                   data-filter="all" 
                   data-collection="{{ featured_collection }}"
@@ -202,8 +247,8 @@
               {%- # loop through brand blocks from theme editor -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'brand_tab' and block.settings.collection != blank -%}
-                  <div class="brand-tab-wrapper">
-                    <button 
+                  <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
+                    <button
                       class="brand-tab-button" 
                       data-filter="{{ block.settings.collection }}"
                       data-collection="{{ block.settings.collection }}"
@@ -379,8 +424,8 @@
             <div class="brand-navigation-bar" role="tablist" aria-label="Product collections">
               
               {%- # default "show all" tab -%}
-              <div class="brand-tab-wrapper">
-                <button 
+              <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
+                <button
                   class="brand-tab-button active" 
                   data-filter="all" 
                   data-collection="{{ featured_collection }}"
@@ -403,8 +448,8 @@
               {%- # loop through brand blocks from theme editor -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'brand_tab' and block.settings.collection != blank -%}
-                  <div class="brand-tab-wrapper">
-                    <button 
+                  <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
+                    <button
                       class="brand-tab-button" 
                       data-filter="{{ block.settings.collection }}"
                       data-collection="{{ block.settings.collection }}"
@@ -669,46 +714,78 @@
   background-color: {{ carousel_bg_color }};
 }
 
-/* Desktop only - ensure vertical brand tabs above mobile breakpoint */
+/* Desktop only - customizable brand tabs with CSS variables */
 @media (min-width: 768px) {
+  #shopify-section-{{ section.id }} .brand-navigation-bar {
+    gap: var(--desktop-tab-gap, 24px);
+  }
+
   #shopify-section-{{ section.id }} .brand-tab-wrapper {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 12px;
     flex-shrink: 0;
   }
-  
+
+  /* Text position: inside (flex-direction: column within button) */
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] {
+    flex-direction: row;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] .brand-tab-button {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Text position: below (text outside button) */
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-tab-button {
+    flex-direction: row;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-label-text {
+    position: static;
+  }
+
   #shopify-section-{{ section.id }} .brand-tab-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 90px;
+    width: var(--desktop-tab-width, 120px);
+    height: var(--desktop-tab-height, 90px);
     background: #ffffff;
     border: 2px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 0;
+    border-radius: var(--desktop-tab-border-radius, 16px);
+    padding: 8px;
+    transition: all 0.3s ease;
   }
-  
+
   #shopify-section-{{ section.id }} .brand-icon-container {
-    width: 70px;
-    height: 70px;
+    width: var(--desktop-tab-logo-size, 70px);
+    height: var(--desktop-tab-logo-size, 70px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
+    flex-shrink: 0;
   }
-  
+
   #shopify-section-{{ section.id }} .brand-logo-img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     object-position: center;
   }
-  
+
+  #shopify-section-{{ section.id }} .brand-icon-container svg {
+    width: 100%;
+    height: 100%;
+  }
+
   #shopify-section-{{ section.id }} .brand-label-text {
-    font-size: 14px;
+    font-size: var(--desktop-tab-text-size, 14px);
     font-weight: 600;
     color: #1f2937;
     text-align: center;
@@ -1617,6 +1694,33 @@
       if (mobileCardSpacing) {
         sectionElement.style.setProperty('--mobile-card-spacing', `${mobileCardSpacing}px`);
       }
+
+      // Desktop brand tab customization (only applies on desktop devices)
+      const desktopTabWidth = sectionElement.getAttribute('data-desktop-tab-width');
+      const desktopTabHeight = sectionElement.getAttribute('data-desktop-tab-height');
+      const desktopTabLogoSize = sectionElement.getAttribute('data-desktop-tab-logo-size');
+      const desktopTabTextSize = sectionElement.getAttribute('data-desktop-tab-text-size');
+      const desktopTabGap = sectionElement.getAttribute('data-desktop-tab-gap');
+      const desktopTabBorderRadius = sectionElement.getAttribute('data-desktop-tab-border-radius');
+
+      if (desktopTabWidth) {
+        sectionElement.style.setProperty('--desktop-tab-width', `${desktopTabWidth}px`);
+      }
+      if (desktopTabHeight) {
+        sectionElement.style.setProperty('--desktop-tab-height', `${desktopTabHeight}px`);
+      }
+      if (desktopTabLogoSize) {
+        sectionElement.style.setProperty('--desktop-tab-logo-size', `${desktopTabLogoSize}px`);
+      }
+      if (desktopTabTextSize) {
+        sectionElement.style.setProperty('--desktop-tab-text-size', `${desktopTabTextSize}px`);
+      }
+      if (desktopTabGap) {
+        sectionElement.style.setProperty('--desktop-tab-gap', `${desktopTabGap}px`);
+      }
+      if (desktopTabBorderRadius) {
+        sectionElement.style.setProperty('--desktop-tab-border-radius', `${desktopTabBorderRadius}px`);
+      }
     }
 
     calculateItemsPerPage();
@@ -2362,6 +2466,97 @@
       "label": "Mobile Tab Icon Size",
       "default": 18,
       "info": "Size of icons within navigation tabs"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Brand Tab Customization (Desktop Only)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Full control over brand navigation tabs on desktop. These settings only affect desktop view and have no impact on mobile."
+    },
+    {
+      "type": "range",
+      "id": "desktop_tab_width",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Tab Width",
+      "default": 120,
+      "info": "Width of each brand tab button on desktop (80-200px)"
+    },
+    {
+      "type": "range",
+      "id": "desktop_tab_height",
+      "min": 60,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Tab Height",
+      "default": 90,
+      "info": "Height of each brand tab button on desktop (60-150px)"
+    },
+    {
+      "type": "range",
+      "id": "desktop_tab_logo_size",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Logo Size",
+      "default": 70,
+      "info": "Size of the logo/icon container within the tab (30-120px)"
+    },
+    {
+      "type": "select",
+      "id": "desktop_tab_text_position",
+      "label": "Desktop Tab Text Position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "Inside Tab (Below Logo)"
+        },
+        {
+          "value": "below",
+          "label": "Below Tab (Outside Button)"
+        }
+      ],
+      "default": "inside",
+      "info": "Choose whether the brand name text appears inside the tab button or below it"
+    },
+    {
+      "type": "range",
+      "id": "desktop_tab_text_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Desktop Tab Text Size",
+      "default": 14,
+      "info": "Font size of the brand name text (10-20px)"
+    },
+    {
+      "type": "range",
+      "id": "desktop_tab_gap",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop Tab Spacing",
+      "default": 24,
+      "info": "Gap between brand tabs on desktop (8-48px)"
+    },
+    {
+      "type": "range",
+      "id": "desktop_tab_border_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Desktop Tab Border Radius",
+      "default": 16,
+      "info": "Corner roundness of tab buttons (0=square, 32=very rounded)"
     },
     {
       "type": "range",
