@@ -58,6 +58,16 @@
   assign desktop_tab_gap = section.settings.desktop_tab_gap
   assign desktop_tab_border_radius = section.settings.desktop_tab_border_radius
 
+  # Desktop navigation bar container settings
+  assign desktop_nav_bar_padding_top = section.settings.desktop_nav_bar_padding_top
+  assign desktop_nav_bar_padding_bottom = section.settings.desktop_nav_bar_padding_bottom
+  assign desktop_nav_bar_padding_left = section.settings.desktop_nav_bar_padding_left
+  assign desktop_nav_bar_padding_right = section.settings.desktop_nav_bar_padding_right
+  assign desktop_nav_bar_margin_top = section.settings.desktop_nav_bar_margin_top
+  assign desktop_nav_bar_margin_bottom = section.settings.desktop_nav_bar_margin_bottom
+  assign desktop_nav_bar_margin_left = section.settings.desktop_nav_bar_margin_left
+  assign desktop_nav_bar_margin_right = section.settings.desktop_nav_bar_margin_right
+
   # defaults if nothing is set
   if section_heading == blank
     assign section_heading = ''
@@ -169,6 +179,39 @@
     assign desktop_tab_border_radius = 16
   endif
 
+  # Desktop navigation bar container defaults
+  if desktop_nav_bar_padding_top == blank
+    assign desktop_nav_bar_padding_top = 10
+  endif
+
+  if desktop_nav_bar_padding_bottom == blank
+    assign desktop_nav_bar_padding_bottom = 12
+  endif
+
+  if desktop_nav_bar_padding_left == blank
+    assign desktop_nav_bar_padding_left = 0
+  endif
+
+  if desktop_nav_bar_padding_right == blank
+    assign desktop_nav_bar_padding_right = 12
+  endif
+
+  if desktop_nav_bar_margin_top == blank
+    assign desktop_nav_bar_margin_top = 10
+  endif
+
+  if desktop_nav_bar_margin_bottom == blank
+    assign desktop_nav_bar_margin_bottom = 20
+  endif
+
+  if desktop_nav_bar_margin_left == blank
+    assign desktop_nav_bar_margin_left = 24
+  endif
+
+  if desktop_nav_bar_margin_right == blank
+    assign desktop_nav_bar_margin_right = 24
+  endif
+
   assign right_column_width = 100 | minus: left_column_width
   
   # pull in products from the selected collection
@@ -200,7 +243,15 @@
      data-desktop-tab-text-position="{{ desktop_tab_text_position }}"
      data-desktop-tab-text-size="{{ desktop_tab_text_size }}"
      data-desktop-tab-gap="{{ desktop_tab_gap }}"
-     data-desktop-tab-border-radius="{{ desktop_tab_border_radius }}">
+     data-desktop-tab-border-radius="{{ desktop_tab_border_radius }}"
+     data-desktop-nav-bar-padding-top="{{ desktop_nav_bar_padding_top }}"
+     data-desktop-nav-bar-padding-bottom="{{ desktop_nav_bar_padding_bottom }}"
+     data-desktop-nav-bar-padding-left="{{ desktop_nav_bar_padding_left }}"
+     data-desktop-nav-bar-padding-right="{{ desktop_nav_bar_padding_right }}"
+     data-desktop-nav-bar-margin-top="{{ desktop_nav_bar_margin_top }}"
+     data-desktop-nav-bar-margin-bottom="{{ desktop_nav_bar_margin_bottom }}"
+     data-desktop-nav-bar-margin-left="{{ desktop_nav_bar_margin_left }}"
+     data-desktop-nav-bar-margin-right="{{ desktop_nav_bar_margin_right }}">
 
   {%- # section heading above the carousel -%}
   {%- if section_heading != blank -%}
@@ -712,87 +763,6 @@
   flex-direction: column;
   gap: 24px;
   background-color: {{ carousel_bg_color }};
-}
-
-/* Desktop only - customizable brand tabs with CSS variables */
-@media (min-width: 768px) {
-  #shopify-section-{{ section.id }} .brand-navigation-bar {
-    gap: var(--desktop-tab-gap, 24px);
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-wrapper {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  /* Text position: inside (flex-direction: column within button) */
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] {
-    flex-direction: row;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] .brand-tab-button {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  /* Text position: below (text outside button) */
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-tab-button {
-    flex-direction: row;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-label-text {
-    position: static;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--desktop-tab-width, 120px);
-    height: var(--desktop-tab-height, 90px);
-    background: #ffffff;
-    border: 2px solid #e5e7eb;
-    border-radius: var(--desktop-tab-border-radius, 16px);
-    padding: 8px;
-    transition: all 0.3s ease;
-  }
-
-  #shopify-section-{{ section.id }} .brand-icon-container {
-    width: var(--desktop-tab-logo-size, 70px);
-    height: var(--desktop-tab-logo-size, 70px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  #shopify-section-{{ section.id }} .brand-logo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-  }
-
-  #shopify-section-{{ section.id }} .brand-icon-container svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  #shopify-section-{{ section.id }} .brand-label-text {
-    font-size: var(--desktop-tab-text-size, 14px);
-    font-weight: 600;
-    color: #1f2937;
-    text-align: center;
-    white-space: nowrap;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-  }
 }
 
 /* ============================================
@@ -1342,6 +1312,76 @@
   }
 }
 
+/* ============================================
+   DESKTOP CUSTOMIZATION - Brand Navigation Tabs
+   This media query comes AFTER base styles to properly override them
+   All settings controlled via CSS custom properties set by JavaScript
+   ============================================ */
+@media (min-width: 768px) {
+  /* Navigation Bar Container - padding and margin customization */
+  #shopify-section-{{ section.id }} .brand-navigation-bar {
+    gap: var(--desktop-tab-gap, 24px) !important;
+    padding-top: var(--desktop-nav-bar-padding-top, 10px) !important;
+    padding-bottom: var(--desktop-nav-bar-padding-bottom, 12px) !important;
+    padding-left: var(--desktop-nav-bar-padding-left, 0px) !important;
+    padding-right: var(--desktop-nav-bar-padding-right, 12px) !important;
+    margin-top: var(--desktop-nav-bar-margin-top, 10px) !important;
+    margin-bottom: var(--desktop-nav-bar-margin-bottom, 20px) !important;
+    margin-left: var(--desktop-nav-bar-margin-left, 24px) !important;
+    margin-right: var(--desktop-nav-bar-margin-right, 24px) !important;
+  }
+
+  /* Tab Wrapper - controls layout based on text position */
+  #shopify-section-{{ section.id }} .brand-tab-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Text position: inside (text below logo within button) */
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] {
+    flex-direction: row !important;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] .brand-tab-button {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  /* Text position: below (text outside button) */
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-tab-button {
+    flex-direction: row !important;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-label-text {
+    position: static !important;
+  }
+
+  /* Tab Button - size and style customization */
+  #shopify-section-{{ section.id }} .brand-tab-button {
+    width: var(--desktop-tab-width, 120px) !important;
+    height: var(--desktop-tab-height, 90px) !important;
+    border-radius: var(--desktop-tab-border-radius, 16px) !important;
+    padding: 8px !important;
+  }
+
+  /* Logo/Icon Container - size customization */
+  #shopify-section-{{ section.id }} .brand-icon-container {
+    width: var(--desktop-tab-logo-size, 70px) !important;
+    height: var(--desktop-tab-logo-size, 70px) !important;
+  }
+
+  /* Brand Label Text - font size customization */
+  #shopify-section-{{ section.id }} .brand-label-text {
+    font-size: var(--desktop-tab-text-size, 14px) !important;
+  }
+}
+
 /* phones and small tablets */
 @media (max-width: 767px) {
   #shopify-section-{{ section.id }} .product-spotlight-section {
@@ -1720,6 +1760,41 @@
       }
       if (desktopTabBorderRadius) {
         sectionElement.style.setProperty('--desktop-tab-border-radius', `${desktopTabBorderRadius}px`);
+      }
+
+      // Desktop navigation bar container customization
+      const desktopNavBarPaddingTop = sectionElement.getAttribute('data-desktop-nav-bar-padding-top');
+      const desktopNavBarPaddingBottom = sectionElement.getAttribute('data-desktop-nav-bar-padding-bottom');
+      const desktopNavBarPaddingLeft = sectionElement.getAttribute('data-desktop-nav-bar-padding-left');
+      const desktopNavBarPaddingRight = sectionElement.getAttribute('data-desktop-nav-bar-padding-right');
+      const desktopNavBarMarginTop = sectionElement.getAttribute('data-desktop-nav-bar-margin-top');
+      const desktopNavBarMarginBottom = sectionElement.getAttribute('data-desktop-nav-bar-margin-bottom');
+      const desktopNavBarMarginLeft = sectionElement.getAttribute('data-desktop-nav-bar-margin-left');
+      const desktopNavBarMarginRight = sectionElement.getAttribute('data-desktop-nav-bar-margin-right');
+
+      if (desktopNavBarPaddingTop) {
+        sectionElement.style.setProperty('--desktop-nav-bar-padding-top', `${desktopNavBarPaddingTop}px`);
+      }
+      if (desktopNavBarPaddingBottom) {
+        sectionElement.style.setProperty('--desktop-nav-bar-padding-bottom', `${desktopNavBarPaddingBottom}px`);
+      }
+      if (desktopNavBarPaddingLeft) {
+        sectionElement.style.setProperty('--desktop-nav-bar-padding-left', `${desktopNavBarPaddingLeft}px`);
+      }
+      if (desktopNavBarPaddingRight) {
+        sectionElement.style.setProperty('--desktop-nav-bar-padding-right', `${desktopNavBarPaddingRight}px`);
+      }
+      if (desktopNavBarMarginTop) {
+        sectionElement.style.setProperty('--desktop-nav-bar-margin-top', `${desktopNavBarMarginTop}px`);
+      }
+      if (desktopNavBarMarginBottom) {
+        sectionElement.style.setProperty('--desktop-nav-bar-margin-bottom', `${desktopNavBarMarginBottom}px`);
+      }
+      if (desktopNavBarMarginLeft) {
+        sectionElement.style.setProperty('--desktop-nav-bar-margin-left', `${desktopNavBarMarginLeft}px`);
+      }
+      if (desktopNavBarMarginRight) {
+        sectionElement.style.setProperty('--desktop-nav-bar-margin-right', `${desktopNavBarMarginRight}px`);
       }
     }
 
@@ -2557,6 +2632,102 @@
       "label": "Desktop Tab Border Radius",
       "default": 16,
       "info": "Corner roundness of tab buttons (0=square, 32=very rounded)"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Navigation Bar Container (Desktop Only)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Control the padding and margin of the brand navigation bar container that holds all tabs. Desktop only."
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_padding_top",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Navigation Bar Padding Top",
+      "default": 10,
+      "info": "Top padding inside the navigation bar container"
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_padding_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Navigation Bar Padding Bottom",
+      "default": 12,
+      "info": "Bottom padding inside the navigation bar container"
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_padding_left",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Navigation Bar Padding Left",
+      "default": 0,
+      "info": "Left padding inside the navigation bar container"
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_padding_right",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Navigation Bar Padding Right",
+      "default": 12,
+      "info": "Right padding inside the navigation bar container"
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_margin_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Navigation Bar Margin Top",
+      "default": 10,
+      "info": "Top margin outside the navigation bar container"
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_margin_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Navigation Bar Margin Bottom",
+      "default": 20,
+      "info": "Bottom margin outside the navigation bar container"
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_margin_left",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Navigation Bar Margin Left",
+      "default": 24,
+      "info": "Left margin outside the navigation bar container"
+    },
+    {
+      "type": "range",
+      "id": "desktop_nav_bar_margin_right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Navigation Bar Margin Right",
+      "default": 24,
+      "info": "Right margin outside the navigation bar container"
     },
     {
       "type": "range",
