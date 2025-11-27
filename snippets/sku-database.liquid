@@ -1,0 +1,81 @@
+{% comment %}
+  Looptech SKU Database
+
+  This file defines all valid SKU codes and their meanings.
+  Use this as the single source of truth for SKU validation and display.
+
+  Structure:
+    - Brands (4 characters)
+    - Models (5-6 characters, grouped by brand)
+    - Capacities (3-4 characters)
+    - Conditions (3-4 characters)
+    - Colors (3 characters)
+
+  Sourced from: sku-generator.jsx
+  Last Updated: 2025-11-27
+{% endcomment %}
+
+{%- liquid
+  # ============================================
+  # BRAND CODES
+  # ============================================
+  assign sku_brands = 'APPL:Apple,SAMS:Samsung,MSFT:Microsoft,DELL:Dell,LNVO:Lenovo,ASUS:Asus,HPXX:HP,ACERX:Acer,MSIX:MSI,HUAW:Huawei,GOOG:Google'
+
+  # ============================================
+  # CONDITION CODES (Critical for toggle)
+  # ============================================
+  assign sku_conditions = 'NEW:Brand New:new,REFA:Grade A:refurbished,REFB:Grade B:refurbished,REFC:Grade C:refurbished'
+
+  # ============================================
+  # CAPACITY CODES
+  # ============================================
+  assign sku_capacities = '064:64GB,128:128GB,256:256GB,512:512GB,01T:1TB,02T:2TB,08G:8GB RAM,16G:16GB RAM,32G:32GB RAM'
+
+  # ============================================
+  # COLOR CODES
+  # ============================================
+  assign sku_colors = 'BLK:Black,WHT:White,SIL:Silver,GRA:Graphite,GLD:Gold,BLU:Blue,GRN:Green,PNK:Pink,PRP:Purple,RED:Red,NAT:Natural,TIT:Titanium'
+
+  # ============================================
+  # MODEL CODES BY BRAND
+  # ============================================
+
+  # Apple Models
+  assign sku_models_APPL = 'IPH16P:iPhone 16 Pro,IPH16:iPhone 16,IPH15P:iPhone 15 Pro,IPH15:iPhone 15,IPH14P:iPhone 14 Pro,IPH14:iPhone 14,IPH13P:iPhone 13 Pro,IPH13:iPhone 13,IPDPR:iPad Pro,IPDAI:iPad Air,MBPM1:MacBook Pro M1,MBPM2:MacBook Pro M2,MBPM3:MacBook Pro M3,MBAM1:MacBook Air M1,MBAM2:MacBook Air M2,WTCHS:Apple Watch SE,WTCH9:Apple Watch S9,AIRPD:AirPods Pro'
+
+  # Samsung Models
+  assign sku_models_SAMS = 'S24UL:Galaxy S24 Ultra,S24PL:Galaxy S24+,S24XX:Galaxy S24,S23UL:Galaxy S23 Ultra,S23PL:Galaxy S23+,ZFLD5:Galaxy Z Fold 5,ZFLP5:Galaxy Z Flip 5,TABS9:Galaxy Tab S9,BUDS:Galaxy Buds'
+
+  # Microsoft Models
+  assign sku_models_MSFT = 'SFPR9:Surface Pro 9,SFPR8:Surface Pro 8,SFLP5:Surface Laptop 5,SFLP4:Surface Laptop 4,SFGO3:Surface Go 3'
+
+  # Dell Models
+  assign sku_models_DELL = 'XPS13:XPS 13,XPS15:XPS 15,XPS17:XPS 17,INSP5:Inspiron 15,LATD5:Latitude 5000,ALIWR:Alienware'
+
+  # Lenovo Models
+  assign sku_models_LNVO = 'THKX1:ThinkPad X1,THKT4:ThinkPad T14,YOGAX:Yoga,LEGN5:Legion 5,IDPD5:IdeaPad 5'
+
+  # Asus Models
+  assign sku_models_ASUS = 'ROGZP:ROG Zephyrus,ROGST:ROG Strix,ZENBK:ZenBook,VIVBK:VivoBook,TUFGM:TUF Gaming'
+
+  # HP Models
+  assign sku_models_HPXX = 'SPECX:Spectre x360,ENVYX:Envy,PAVLN:Pavilion,OMEN:OMEN,ELITB:EliteBook'
+
+  # Acer Models
+  assign sku_models_ACERX = 'SWFT3:Swift 3,ASPIR:Aspire,NITRO:Nitro 5,PREDH:Predator Helios'
+
+  # MSI Models
+  assign sku_models_MSIX = 'KATNA:Katana,STLTH:Stealth,RAIDR:Raider,CREAT:Creator'
+
+  # Huawei Models
+  assign sku_models_HUAW = 'MTBKX:MateBook X,MTBK14:MateBook 14,P60PR:P60 Pro,MT60P:Mate 60 Pro'
+
+  # Google Models
+  assign sku_models_GOOG = 'PXL9P:Pixel 9 Pro,PXL9:Pixel 9,PXL8P:Pixel 8 Pro,PXL8:Pixel 8,PXLTB:Pixel Tablet'
+
+  # ============================================
+  # HELPER: Get Brand Name from Code
+  # ============================================
+  # Usage: {% render 'sku-database' %}
+  #        {% assign brand_name = sku_brands | split: brand_code | last %}
+-%}

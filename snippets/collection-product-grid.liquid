@@ -1,0 +1,190 @@
+{%- comment -%}
+  Collection Product Grid with SKU-Based Filtering
+
+  This snippet renders a product grid that respects the current toggle mode.
+  Products are filtered based on their SKU condition code.
+
+  Parameters:
+    - collection: Collection object (required)
+    - products_per_page: Number of products to display (default: 24)
+    - show_condition_badge: Show condition badges on products (default: true)
+    - grid_columns_desktop: Number of columns on desktop (default: 4)
+    - grid_columns_mobile: Number of columns on mobile (default: 2)
+
+  Usage:
+    {% render 'collection-product-grid', collection: collection %}
+    {% render 'collection-product-grid', collection: collection, products_per_page: 12, show_condition_badge: true %}
+{%- endcomment -%}
+
+{%- liquid
+  # Detect current mode
+  assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
+  assign current_mode = 'new'
+  if url_mode == 'refurbished'
+    assign current_mode = 'refurbished'
+  endif
+
+  # Set defaults
+  if products_per_page == blank
+    assign products_per_page = 24
+  endif
+
+  if show_condition_badge == nil
+    assign show_condition_badge = true
+  endif
+
+  if grid_columns_desktop == blank
+    assign grid_columns_desktop = 4
+  endif
+
+  if grid_columns_mobile == blank
+    assign grid_columns_mobile = 2
+  endif
+
+  # Counter for displayed products
+  assign displayed_count = 0
+-%}
+
+<div class="collection-product-grid" data-mode="{{ current_mode }}" data-collection="{{ collection.handle }}">
+  <div class="collection-grid"
+       style="--grid-columns-desktop: {{ grid_columns_desktop }}; --grid-columns-mobile: {{ grid_columns_mobile }};">
+
+    {%- for product in collection.products -%}
+      {%- liquid
+        # Parse product SKU using sku-parser snippet
+        render 'sku-parser', sku: product.variants.first.sku
+        assign should_display = false
+
+        if sku_is_valid
+          # Check if product SKU matches current mode
+          if current_mode == 'new' and sku_condition == 'NEW'
+            assign should_display = true
+          elsif current_mode == 'refurbished'
+            if sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
+              assign should_display = true
+            endif
+          endif
+        else
+          # Fallback for products without proper SKU - show in both modes
+          assign should_display = true
+        endif
+      -%}
+
+      {%- if should_display and displayed_count < products_per_page -%}
+        <div class="collection-grid-item" data-product-id="{{ product.id }}">
+          {%- render 'card-product',
+            card_product: product,
+            show_vendor: section.settings.show_vendor,
+            show_rating: section.settings.show_rating,
+            show_quick_add: section.settings.enable_quick_add,
+            section_id: section.id
+          -%}
+
+          {%- if show_condition_badge -%}
+            <div class="product-condition-badge-wrapper">
+              {%- render 'condition-badge', product: product -%}
+            </div>
+          {%- endif -%}
+        </div>
+        {%- assign displayed_count = displayed_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+  </div>
+
+  {%- if displayed_count == 0 -%}
+    <div class="collection-empty">
+      <div class="collection-empty-content">
+        <h3 class="collection-empty-title">No {{ current_mode }} products found</h3>
+        <p class="collection-empty-message">
+          This collection doesn't have any {{ current_mode }} products at the moment.
+        </p>
+        <a href="{{ routes.all_products_collection_url }}?mode={{ current_mode }}" class="button button--primary">
+          Browse All {{ current_mode | capitalize }} Products
+        </a>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="collection-product-count">
+      <p>Showing {{ displayed_count }} {{ current_mode }} product{% if displayed_count != 1 %}s{% endif %}</p>
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .collection-product-grid {
+    width: 100%;
+  }
+
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns-desktop, 4), 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .collection-grid-item {
+    position: relative;
+  }
+
+  .product-condition-badge-wrapper {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 2;
+  }
+
+  .collection-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 3rem 1.5rem;
+  }
+
+  .collection-empty-content {
+    text-align: center;
+    max-width: 500px;
+  }
+
+  .collection-empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: rgb(var(--color-foreground));
+  }
+
+  .collection-empty-message {
+    font-size: 1rem;
+    color: rgba(var(--color-foreground), 0.7);
+    margin-bottom: 1.5rem;
+  }
+
+  .collection-product-count {
+    text-align: center;
+    padding: 1rem;
+    color: rgba(var(--color-foreground), 0.6);
+    font-size: 0.875rem;
+  }
+
+  /* Mobile responsive */
+  @media screen and (max-width: 749px) {
+    .collection-grid {
+      grid-template-columns: repeat(var(--grid-columns-mobile, 2), 1fr);
+      gap: 1rem;
+    }
+
+    .collection-empty {
+      min-height: 300px;
+      padding: 2rem 1rem;
+    }
+
+    .collection-empty-title {
+      font-size: 1.25rem;
+    }
+
+    .collection-empty-message {
+      font-size: 0.875rem;
+    }
+  }
+</style>

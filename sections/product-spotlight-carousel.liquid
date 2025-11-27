@@ -1,6 +1,11 @@
 {%- comment -%}
   Product carousel with brand tabs - styled like Back Market
   includes logo tabs and nice product cards
+
+  SKU-Based Filtering:
+  Products are filtered based on their SKU condition code (4th segment):
+  - Brand New mode: Shows products with 'NEW' condition
+  - Refurbished mode: Shows products with 'REFA', 'REFB', or 'REFC' conditions
 {%- endcomment -%}
 
 {%- liquid
@@ -180,17 +185,50 @@
 
               {%- # track holds all the products, gradient overlay fades the right edge -%}
               <div class="carousel-track-container">
-                <div class="carousel-track" data-collection="all">
+                <div class="carousel-track" data-collection="all" data-mode="{{ current_mode }}">
                   {%- if collection_products.size > 0 -%}
-                    {%- for product in collection_products limit: products_limit -%}
-                      {%- render 'product-spotlight-card',
-                        product: product,
-                        show_rating: show_ratings,
-                        show_starting_at: show_starting_at_text,
-                        show_new_price: show_new_price_comparison,
-                        section_id: section.id
+                    {%- liquid
+                      # Filter products by SKU condition based on current mode
+                      assign displayed_count = 0
+                    -%}
+                    {%- for product in collection_products -%}
+                      {%- liquid
+                        # Parse SKU to check condition
+                        render 'sku-parser', sku: product.variants.first.sku
+                        assign should_display = false
+
+                        if sku_is_valid
+                          # Check if product SKU matches current mode
+                          if current_mode == 'new' and sku_condition == 'NEW'
+                            assign should_display = true
+                          elsif current_mode == 'refurbished'
+                            if sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
+                              assign should_display = true
+                            endif
+                          endif
+                        else
+                          # Fallback for products without proper SKU - show in both modes
+                          assign should_display = true
+                        endif
                       -%}
+
+                      {%- if should_display and displayed_count < products_limit -%}
+                        {%- render 'product-spotlight-card',
+                          product: product,
+                          show_rating: show_ratings,
+                          show_starting_at: show_starting_at_text,
+                          show_new_price: show_new_price_comparison,
+                          section_id: section.id
+                        -%}
+                        {%- assign displayed_count = displayed_count | plus: 1 -%}
+                      {%- endif -%}
                     {%- endfor -%}
+
+                    {%- if displayed_count == 0 -%}
+                      <div class="carousel-empty">
+                        <p>No {{ current_mode }} products available in this collection.</p>
+                      </div>
+                    {%- endif -%}
                   {%- else -%}
                     <div class="carousel-empty">
                       <p>No products available in this collection.</p>
@@ -348,17 +386,50 @@
 
               {%- # track holds all the products, gradient overlay fades the right edge -%}
               <div class="carousel-track-container">
-                <div class="carousel-track" data-collection="all">
+                <div class="carousel-track" data-collection="all" data-mode="{{ current_mode }}">
                   {%- if collection_products.size > 0 -%}
-                    {%- for product in collection_products limit: products_limit -%}
-                      {%- render 'product-spotlight-card',
-                        product: product,
-                        show_rating: show_ratings,
-                        show_starting_at: show_starting_at_text,
-                        show_new_price: show_new_price_comparison,
-                        section_id: section.id
+                    {%- liquid
+                      # Filter products by SKU condition based on current mode
+                      assign displayed_count = 0
+                    -%}
+                    {%- for product in collection_products -%}
+                      {%- liquid
+                        # Parse SKU to check condition
+                        render 'sku-parser', sku: product.variants.first.sku
+                        assign should_display = false
+
+                        if sku_is_valid
+                          # Check if product SKU matches current mode
+                          if current_mode == 'new' and sku_condition == 'NEW'
+                            assign should_display = true
+                          elsif current_mode == 'refurbished'
+                            if sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
+                              assign should_display = true
+                            endif
+                          endif
+                        else
+                          # Fallback for products without proper SKU - show in both modes
+                          assign should_display = true
+                        endif
                       -%}
+
+                      {%- if should_display and displayed_count < products_limit -%}
+                        {%- render 'product-spotlight-card',
+                          product: product,
+                          show_rating: show_ratings,
+                          show_starting_at: show_starting_at_text,
+                          show_new_price: show_new_price_comparison,
+                          section_id: section.id
+                        -%}
+                        {%- assign displayed_count = displayed_count | plus: 1 -%}
+                      {%- endif -%}
                     {%- endfor -%}
+
+                    {%- if displayed_count == 0 -%}
+                      <div class="carousel-empty">
+                        <p>No {{ current_mode }} products available in this collection.</p>
+                      </div>
+                    {%- endif -%}
                   {%- else -%}
                     <div class="carousel-empty">
                       <p>No products available in this collection.</p>
@@ -1308,10 +1379,15 @@
 }
 </style>
 
+{%- # Load SKU Parser JavaScript for filtering -%}
+<script src="{{ 'sku-parser.js' | asset_url }}" defer></script>
+
 <script>
 /**
  * carousel JS - handles filtering, arrows, touch etc
  * based on Back Market design
+ *
+ * Includes SKU-based product filtering for Brand New/Refurbished toggle
  */
 (function() {
   'use strict';
@@ -1545,6 +1621,7 @@
 
   /**
    * fetch products from a specific collection via API
+   * Includes SKU-based filtering based on current mode
    */
   async function loadCollectionProducts(collectionHandle) {
     if (!track) return;
@@ -1554,24 +1631,38 @@
       track.style.opacity = '0.5';
       track.style.pointerEvents = 'none';
 
-      // hit the shopify API
-      const response = await fetch(`/collections/${collectionHandle}/products.json?limit={{ products_limit }}`);
-      
+      // Get current mode from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentMode = urlParams.get('mode') || 'new';
+
+      // hit the shopify API (fetch more than limit to account for filtering)
+      const fetchLimit = Math.max({{ products_limit }} * 3, 100);
+      const response = await fetch(`/collections/${collectionHandle}/products.json?limit=${fetchLimit}`);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
+      // Filter products by SKU condition using LooptechSKU parser
+      let filteredProducts = data.products || [];
+      if (window.LooptechSKU) {
+        filteredProducts = window.LooptechSKU.filterByMode(data.products || [], currentMode);
+      }
+
+      // Limit to products_limit after filtering
+      filteredProducts = filteredProducts.slice(0, {{ products_limit }});
+
       // can remove this in prod if needed
-      console.log('Loaded collection:', collectionHandle, 'Products:', data.products?.length);
+      console.log('Loaded collection:', collectionHandle, 'Total:', data.products?.length, 'Filtered:', filteredProducts.length, 'Mode:', currentMode);
 
       // clear everything first
       track.innerHTML = '';
 
-      if (data.products && data.products.length > 0) {
+      if (filteredProducts.length > 0) {
         // build cards for each product
-        data.products.forEach((product, index) => {
+        filteredProducts.forEach((product, index) => {
           try {
             const card = createProductCard(product);
             track.appendChild(card);
@@ -1580,8 +1671,8 @@
           }
         });
       } else {
-        // no products found
-        track.innerHTML = '<div class="carousel-empty"><p>No products found in this collection.</p></div>';
+        // no products found after filtering
+        track.innerHTML = `<div class="carousel-empty"><p>No ${currentMode} products found in this collection.</p></div>`;
       }
 
       // reset to first page

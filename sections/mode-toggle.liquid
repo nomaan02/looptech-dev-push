@@ -1,6 +1,13 @@
 {%- comment -%}
   Mode Toggle Section
   Switches between Brand New and Refurbished product views
+
+  This toggle works with the SKU-based product filtering system.
+  Products are filtered based on their SKU condition code:
+    - NEW → Brand New mode
+    - REFA, REFB, REFC → Refurbished mode
+
+  Compatible with both collection-based and SKU-based filtering.
 {%- endcomment -%}
 
 {%- liquid
@@ -9,6 +16,13 @@
   assign current_mode = 'new'
   if url_mode == 'refurbished'
     assign current_mode = 'refurbished'
+  endif
+
+  # For SKU-based sections, determine which condition codes to match
+  if current_mode == 'new'
+    assign target_conditions = 'NEW'
+  else
+    assign target_conditions = 'REFA,REFB,REFC'
   endif
 -%}
 
@@ -187,6 +201,18 @@
   "class": "section",
   "settings": [
     {
+      "type": "paragraph",
+      "content": "This toggle switches between Brand New and Refurbished product views across your entire store."
+    },
+    {
+      "type": "paragraph",
+      "content": "**How it works:** Products are filtered based on their SKU condition code (4th segment). Brand New shows products with 'NEW' condition. Refurbished shows products with 'REFA', 'REFB', or 'REFC' conditions."
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
       "type": "text",
       "id": "heading",
       "label": "Section Heading",
@@ -197,13 +223,35 @@
       "type": "text",
       "id": "new_label",
       "label": "Brand New Button Label",
-      "default": "Brand New"
+      "default": "Brand New",
+      "info": "Shows products with SKU condition code: NEW"
     },
     {
       "type": "text",
       "id": "refurb_label",
       "label": "Refurbished Button Label",
-      "default": "Refurbished"
+      "default": "Refurbished",
+      "info": "Shows products with SKU condition codes: REFA, REFB, REFC"
+    },
+    {
+      "type": "header",
+      "content": "Collection Mapping"
+    },
+    {
+      "type": "paragraph",
+      "content": "**Brand New Mode:** Displays products from your main collections (e.g., 'all-new', 'new-phones', 'new-laptops') and filters by SKU condition 'NEW'."
+    },
+    {
+      "type": "paragraph",
+      "content": "**Refurbished Mode:** Displays products from your refurbished collections (e.g., 'all-refurbished', 'refurbished-phones', 'refurbished-laptops') and filters by SKU conditions 'REFA', 'REFB', 'REFC'."
+    },
+    {
+      "type": "paragraph",
+      "content": "Configure collection settings in individual sections (Product Spotlight Carousel, Featured Collections, etc.)."
+    },
+    {
+      "type": "header",
+      "content": "Design Settings"
     },
     {
       "type": "color_scheme",
@@ -234,7 +282,8 @@
   ],
   "presets": [
     {
-      "name": "Mode Toggle"
+      "name": "Mode Toggle",
+      "category": "Custom"
     }
   ]
 }

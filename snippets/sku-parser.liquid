@@ -1,0 +1,61 @@
+{% comment %}
+  SKU Parser for Looptech Products
+
+  Parses SKU strings according to the Looptech SKU format:
+  BRAND-MODEL-CAPACITY-CONDITION-COLOR-SEQUENCE
+
+  Example: APPL-IPH14P-256-NEW-GRA-001
+
+  Input: sku (string) - Product variant SKU
+  Output Variables:
+    - sku_brand (e.g., "APPL")
+    - sku_model (e.g., "IPH14P")
+    - sku_capacity (e.g., "256")
+    - sku_condition (e.g., "NEW", "REFA", "REFB", "REFC")
+    - sku_color (e.g., "GRA")
+    - sku_sequence (e.g., "001")
+    - sku_mode (e.g., "new" or "refurbished")
+    - sku_is_valid (boolean)
+
+  Usage:
+    {% render 'sku-parser', sku: variant.sku %}
+    {% if sku_mode == current_mode %}
+      <!-- Show product -->
+    {% endif %}
+{% endcomment %}
+
+{%- liquid
+  assign sku_parts = sku | split: '-'
+  assign sku_parts_count = sku_parts | size
+
+  # Initialize variables
+  assign sku_is_valid = false
+  assign sku_mode = 'unknown'
+  assign sku_brand = ''
+  assign sku_model = ''
+  assign sku_capacity = ''
+  assign sku_condition = ''
+  assign sku_color = ''
+  assign sku_sequence = ''
+
+  # Validate SKU has minimum 6 parts
+  if sku_parts_count >= 6
+    assign sku_brand = sku_parts[0]
+    assign sku_model = sku_parts[1]
+    assign sku_capacity = sku_parts[2]
+    assign sku_condition = sku_parts[3]
+    assign sku_color = sku_parts[4]
+    assign sku_sequence = sku_parts[5]
+    assign sku_is_valid = true
+
+    # Determine mode from condition code
+    if sku_condition == 'NEW'
+      assign sku_mode = 'new'
+    elsif sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
+      assign sku_mode = 'refurbished'
+    else
+      assign sku_mode = 'unknown'
+      assign sku_is_valid = false
+    endif
+  endif
+-%}

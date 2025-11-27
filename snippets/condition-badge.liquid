@@ -1,0 +1,111 @@
+{%- comment -%}
+  Condition Badge
+
+  Displays the product condition based on SKU parsing.
+
+  Parameters:
+    - product: Product object (optional)
+    - sku: SKU string (optional)
+    - show_badge: Boolean to control visibility (default: true)
+
+  Usage:
+    {% render 'condition-badge', product: product %}
+    {% render 'condition-badge', sku: variant.sku %}
+    {% render 'condition-badge', product: product, show_badge: section.settings.show_condition_badge %}
+{%- endcomment -%}
+
+{%- liquid
+  # Get SKU from product or parameter
+  if product
+    assign badge_sku = product.variants.first.sku
+  elsif sku
+    assign badge_sku = sku
+  endif
+
+  # Parse SKU
+  assign sku_parts = badge_sku | split: '-'
+  assign condition_code = sku_parts[3] | default: ''
+
+  # Determine badge label and class based on condition code
+  case condition_code
+    when 'NEW'
+      assign badge_label = 'Brand New'
+      assign badge_class = 'condition-badge--new'
+      assign badge_color_bg = '#10b981'
+      assign badge_color_text = '#ffffff'
+    when 'REFA'
+      assign badge_label = 'Grade A'
+      assign badge_class = 'condition-badge--grade-a'
+      assign badge_color_bg = '#3b82f6'
+      assign badge_color_text = '#ffffff'
+    when 'REFB'
+      assign badge_label = 'Grade B'
+      assign badge_class = 'condition-badge--grade-b'
+      assign badge_color_bg = '#f59e0b'
+      assign badge_color_text = '#ffffff'
+    when 'REFC'
+      assign badge_label = 'Grade C'
+      assign badge_class = 'condition-badge--grade-c'
+      assign badge_color_bg = '#6b7280'
+      assign badge_color_text = '#ffffff'
+    else
+      assign badge_label = ''
+      assign badge_class = ''
+  endcase
+
+  # Check if badge should be shown
+  if show_badge == nil
+    assign show_badge = true
+  endif
+-%}
+
+{%- if badge_label != blank and show_badge -%}
+  <span class="condition-badge {{ badge_class }}"
+        style="background-color: {{ badge_color_bg }}; color: {{ badge_color_text }};"
+        data-condition="{{ condition_code }}">
+    {{ badge_label }}
+  </span>
+{%- endif -%}
+
+<style>
+  .condition-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .condition-badge--new {
+    background-color: #10b981;
+    color: white;
+  }
+
+  .condition-badge--grade-a {
+    background-color: #3b82f6;
+    color: white;
+  }
+
+  .condition-badge--grade-b {
+    background-color: #f59e0b;
+    color: white;
+  }
+
+  .condition-badge--grade-c {
+    background-color: #6b7280;
+    color: white;
+  }
+
+  /* Responsive sizing */
+  @media screen and (max-width: 749px) {
+    .condition-badge {
+      font-size: 0.625rem;
+      padding: 0.2rem 0.5rem;
+    }
+  }
+</style>
