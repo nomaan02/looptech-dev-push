@@ -207,8 +207,10 @@
           "settings": {
             "label": "ALL CATEGORIES",
             "position": "left",
-            "enable_dropdown": false,
+            "enable_dropdown": true,
             "link": "shopify://collections",
+            "menu": "main-menu",
+            "display_style": "grid_with_images",
             "dropdown_title": "Browse All Categories",
             "show_icon": true
           }
@@ -220,6 +222,8 @@
             "position": "center",
             "enable_dropdown": true,
             "link": "shopify://products/apple-macbook-pro-2018",
+            "menu": "",
+            "display_style": "grid_with_images",
             "dropdown_title": "Shop Laptops",
             "show_icon": false
           }
@@ -231,6 +235,8 @@
             "position": "center",
             "enable_dropdown": true,
             "link": "",
+            "menu": "",
+            "display_style": "grid_with_images",
             "dropdown_title": "Shop Desktop PCs",
             "show_icon": false
           }
@@ -242,6 +248,8 @@
             "position": "center",
             "enable_dropdown": true,
             "link": "",
+            "menu": "",
+            "display_style": "grid_with_images",
             "dropdown_title": "Shop Gaming PCs",
             "show_icon": false
           }
@@ -253,6 +261,8 @@
             "position": "center",
             "enable_dropdown": true,
             "link": "",
+            "menu": "",
+            "display_style": "grid_with_images",
             "dropdown_title": "Shop Accessories",
             "show_icon": false
           }
@@ -264,6 +274,8 @@
             "position": "center",
             "enable_dropdown": false,
             "link": "/pages/about",
+            "menu": "",
+            "display_style": "grid_with_images",
             "dropdown_title": "",
             "show_icon": false
           }
@@ -275,6 +287,8 @@
             "position": "center",
             "enable_dropdown": false,
             "link": "/pages/contact",
+            "menu": "",
+            "display_style": "grid_with_images",
             "dropdown_title": "",
             "show_icon": false
           }
