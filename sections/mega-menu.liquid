@@ -1,10 +1,9 @@
 {% comment %}
   Enhanced Mega Menu Navigation Section
-  - Block-based architecture for complete customization
-  - Each nav item has its own mega menu dropdown with category images
-  - Full schema control for all elements
-  - Background blur effect when open
-  - Mobile responsive with hamburger menu
+  - Block-based architecture with Shopify menu integration
+  - Assign menus to navigation items with full image control
+  - Immediate blur effect response
+  - Full customization of dropdown presentation
 {% endcomment %}
 
 {{ 'mega-menu.css' | asset_url | stylesheet_tag }}
@@ -168,14 +167,16 @@
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
-    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+    transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
     z-index: 100;
+    pointer-events: none;
   }
 
   .mega-menu-nav-dropdown.is-open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
   }
 
   .mega-menu-nav-dropdown-inner {
@@ -225,6 +226,43 @@
       grid-template-columns: repeat({{ section.settings.categories_per_row }}, 1fr);
       gap: 1.5rem;
     }
+  }
+
+  /* List Layout */
+  .mega-menu-nav-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .mega-menu-nav-list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mega-menu-nav-list {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+  }
+
+  .mega-menu-nav-list-item {
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: {{ section.settings.text_color }};
+    text-decoration: none;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+    display: block;
+  }
+
+  .mega-menu-nav-list-item:hover {
+    background-color: {{ section.settings.hover_bg_color }};
+    color: {{ section.settings.primary_color }};
   }
 
   /* Category Card */
@@ -346,17 +384,19 @@
     -webkit-backdrop-filter: blur({{ section.settings.blur_amount }}px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
+    transition: opacity 0.15s, visibility 0.15s;
+    pointer-events: none;
   }
 
   .mega-menu-nav-overlay.is-open {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
   }
 
   /* Content Blur */
   .mega-menu-content-blur {
-    transition: filter 0.3s;
+    transition: filter 0.15s;
   }
 
   .mega-menu-content-blur.is-blurred {
@@ -366,6 +406,16 @@
   /* Utilities */
   .mega-menu-hidden {
     display: none !important;
+  }
+
+  /* Hover area extension for better UX */
+  .mega-menu-nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
   }
 </style>
 
@@ -474,22 +524,125 @@
             <h3 class="mega-menu-dropdown-title">{{ block.settings.dropdown_title }}</h3>
           {% endif %}
 
-          <div class="mega-menu-nav-grid">
-            {% for category_block in section.blocks %}
-              {% if category_block.type == 'category' and category_block.settings.parent_nav_item == block.id %}
-                <a href="{{ category_block.settings.category_url }}" class="mega-menu-nav-category">
-                  <div class="mega-menu-nav-category-image-wrapper">
-                    {% if category_block.settings.category_image != blank %}
-                      {{ category_block.settings.category_image | image_url: width: 400 | image_tag: class: 'mega-menu-nav-category-image', loading: 'lazy', alt: category_block.settings.category_title }}
-                    {% else %}
-                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                    {% endif %}
-                  </div>
-                  <span class="mega-menu-nav-category-title">{{ category_block.settings.category_title }}</span>
-                </a>
+          {% liquid
+            assign menu_handle = block.settings.menu
+            assign display_style = block.settings.display_style
+            assign menu_content = linklists[menu_handle]
+          %}
+
+          {% if display_style == 'grid_with_images' %}
+            <!-- Grid with Images -->
+            <div class="mega-menu-nav-grid">
+              {% if menu_content and menu_content.links.size > 0 %}
+                {% for link in menu_content.links %}
+                  {% liquid
+                    # Find matching menu_item block for this link
+                    assign link_image = null
+                    for menu_item_block in section.blocks
+                      if menu_item_block.type == 'menu_item'
+                        if menu_item_block.settings.parent_nav_item == block.id
+                          if menu_item_block.settings.menu_link_title == link.title or menu_item_block.settings.menu_link_url == link.url
+                            assign link_image = menu_item_block.settings.menu_item_image
+                            break
+                          endif
+                        endif
+                      endif
+                    endfor
+                  %}
+                  <a href="{{ link.url }}" class="mega-menu-nav-category">
+                    <div class="mega-menu-nav-category-image-wrapper">
+                      {% if link_image != blank %}
+                        {{ link_image | image_url: width: 400 | image_tag: class: 'mega-menu-nav-category-image', loading: 'lazy', alt: link.title }}
+                      {% else %}
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      {% endif %}
+                    </div>
+                    <span class="mega-menu-nav-category-title">{{ link.title }}</span>
+                  </a>
+                {% endfor %}
+              {% else %}
+                <!-- Fallback to category blocks if no menu assigned -->
+                {% for category_block in section.blocks %}
+                  {% if category_block.type == 'category' and category_block.settings.parent_nav_item == block.id %}
+                    <a href="{{ category_block.settings.category_url }}" class="mega-menu-nav-category">
+                      <div class="mega-menu-nav-category-image-wrapper">
+                        {% if category_block.settings.category_image != blank %}
+                          {{ category_block.settings.category_image | image_url: width: 400 | image_tag: class: 'mega-menu-nav-category-image', loading: 'lazy', alt: category_block.settings.category_title }}
+                        {% else %}
+                          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                        {% endif %}
+                      </div>
+                      <span class="mega-menu-nav-category-title">{{ category_block.settings.category_title }}</span>
+                    </a>
+                  {% endif %}
+                {% endfor %}
               {% endif %}
-            {% endfor %}
-          </div>
+            </div>
+
+          {% elsif display_style == 'list' %}
+            <!-- Simple List -->
+            <div class="mega-menu-nav-list">
+              {% if menu_content and menu_content.links.size > 0 %}
+                {% for link in menu_content.links %}
+                  <a href="{{ link.url }}" class="mega-menu-nav-list-item">{{ link.title }}</a>
+                {% endfor %}
+              {% else %}
+                <!-- Fallback to category blocks -->
+                {% for category_block in section.blocks %}
+                  {% if category_block.type == 'category' and category_block.settings.parent_nav_item == block.id %}
+                    <a href="{{ category_block.settings.category_url }}" class="mega-menu-nav-list-item">{{ category_block.settings.category_title }}</a>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
+
+          {% else %}
+            <!-- Default: Grid with Images (same as above) -->
+            <div class="mega-menu-nav-grid">
+              {% if menu_content and menu_content.links.size > 0 %}
+                {% for link in menu_content.links %}
+                  {% liquid
+                    assign link_image = null
+                    for menu_item_block in section.blocks
+                      if menu_item_block.type == 'menu_item'
+                        if menu_item_block.settings.parent_nav_item == block.id
+                          if menu_item_block.settings.menu_link_title == link.title or menu_item_block.settings.menu_link_url == link.url
+                            assign link_image = menu_item_block.settings.menu_item_image
+                            break
+                          endif
+                        endif
+                      endif
+                    endfor
+                  %}
+                  <a href="{{ link.url }}" class="mega-menu-nav-category">
+                    <div class="mega-menu-nav-category-image-wrapper">
+                      {% if link_image != blank %}
+                        {{ link_image | image_url: width: 400 | image_tag: class: 'mega-menu-nav-category-image', loading: 'lazy', alt: link.title }}
+                      {% else %}
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      {% endif %}
+                    </div>
+                    <span class="mega-menu-nav-category-title">{{ link.title }}</span>
+                  </a>
+                {% endfor %}
+              {% else %}
+                {% for category_block in section.blocks %}
+                  {% if category_block.type == 'category' and category_block.settings.parent_nav_item == block.id %}
+                    <a href="{{ category_block.settings.category_url }}" class="mega-menu-nav-category">
+                      <div class="mega-menu-nav-category-image-wrapper">
+                        {% if category_block.settings.category_image != blank %}
+                          {{ category_block.settings.category_image | image_url: width: 400 | image_tag: class: 'mega-menu-nav-category-image', loading: 'lazy', alt: category_block.settings.category_title }}
+                        {% else %}
+                          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                        {% endif %}
+                      </div>
+                      <span class="mega-menu-nav-category-title">{{ category_block.settings.category_title }}</span>
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
       </div>
     {% endif %}
@@ -503,13 +656,25 @@
           <div class="mega-menu-mobile-nav-item">
             {% if block.settings.enable_dropdown %}
               <div class="mega-menu-mobile-nav-title">{{ block.settings.label }}</div>
-              {% for category_block in section.blocks %}
-                {% if category_block.type == 'category' and category_block.settings.parent_nav_item == block.id %}
-                  <a href="{{ category_block.settings.category_url }}" class="mega-menu-mobile-link">
-                    {{ category_block.settings.category_title }}
-                  </a>
-                {% endif %}
-              {% endfor %}
+
+              {% liquid
+                assign menu_handle = block.settings.menu
+                assign menu_content = linklists[menu_handle]
+              %}
+
+              {% if menu_content and menu_content.links.size > 0 %}
+                {% for link in menu_content.links %}
+                  <a href="{{ link.url }}" class="mega-menu-mobile-link">{{ link.title }}</a>
+                {% endfor %}
+              {% else %}
+                {% for category_block in section.blocks %}
+                  {% if category_block.type == 'category' and category_block.settings.parent_nav_item == block.id %}
+                    <a href="{{ category_block.settings.category_url }}" class="mega-menu-mobile-link">
+                      {{ category_block.settings.category_title }}
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             {% else %}
               <a href="{{ block.settings.link }}" class="mega-menu-mobile-link">{{ block.settings.label }}</a>
             {% endif %}
@@ -529,6 +694,7 @@
     if (!header) return;
 
     const triggers = document.querySelectorAll('[data-nav-trigger]');
+    const navItems = document.querySelectorAll('[data-nav-item]');
     const dropdowns = document.querySelectorAll('[data-nav-dropdown]');
     const mobileToggle = document.querySelector('[data-mobile-toggle]');
     const mobileMenu = document.querySelector('[data-mobile-menu]');
@@ -538,7 +704,8 @@
 
     let activeDropdown = null;
     let isMobileOpen = false;
-    let closeTimeout = null;
+    let closeTimeoutId = null;
+    let isOverNavArea = false;
 
     // Desktop menu functions
     function openDropdown(triggerId) {
@@ -547,12 +714,16 @@
 
       if (!trigger || !dropdown) return;
 
-      // Close active dropdown if different
-      if (activeDropdown && activeDropdown !== triggerId) {
-        closeDropdown(activeDropdown);
+      // Clear any pending close
+      if (closeTimeoutId) {
+        clearTimeout(closeTimeoutId);
+        closeTimeoutId = null;
       }
 
-      clearTimeout(closeTimeout);
+      // Close active dropdown if different
+      if (activeDropdown && activeDropdown !== triggerId) {
+        closeDropdownImmediate(activeDropdown);
+      }
 
       dropdown.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
@@ -561,9 +732,10 @@
       blurContent(true);
 
       activeDropdown = triggerId;
+      isOverNavArea = true;
     }
 
-    function closeDropdown(triggerId) {
+    function closeDropdownImmediate(triggerId) {
       const trigger = document.querySelector(`[data-nav-trigger="${triggerId}"]`);
       const dropdown = document.querySelector(`[data-nav-dropdown="${triggerId}"]`);
 
@@ -580,11 +752,26 @@
       }
     }
 
+    function closeDropdownDelayed(triggerId) {
+      // Small delay to allow moving between trigger and dropdown
+      if (closeTimeoutId) {
+        clearTimeout(closeTimeoutId);
+      }
+
+      closeTimeoutId = setTimeout(() => {
+        if (!isOverNavArea) {
+          closeDropdownImmediate(triggerId);
+        }
+        closeTimeoutId = null;
+      }, 100);
+    }
+
     function closeAllDropdowns() {
       dropdowns.forEach(dropdown => {
         const triggerId = dropdown.dataset.navDropdown;
-        closeDropdown(triggerId);
+        closeDropdownImmediate(triggerId);
       });
+      isOverNavArea = false;
     }
 
     // Mobile menu functions
@@ -609,16 +796,20 @@
     }
 
     function blurContent(blur) {
-      const mainContent = document.querySelector('main, .main-content, #MainContent, #shopify-section-template--*');
+      const mainContent = document.querySelector('main, .main-content, #MainContent');
       if (mainContent) {
-        mainContent.classList.toggle('mega-menu-content-blur', blur);
-        mainContent.classList.toggle('is-blurred', blur);
+        if (blur) {
+          mainContent.classList.add('mega-menu-content-blur', 'is-blurred');
+        } else {
+          mainContent.classList.remove('mega-menu-content-blur', 'is-blurred');
+        }
       }
     }
 
     // Event listeners for desktop
     triggers.forEach(trigger => {
       const triggerId = trigger.dataset.navTrigger;
+      const navItem = trigger.closest('[data-nav-item]');
 
       // Click to toggle
       trigger.addEventListener('click', (e) => {
@@ -626,7 +817,8 @@
         e.stopPropagation();
 
         if (activeDropdown === triggerId) {
-          closeDropdown(triggerId);
+          closeDropdownImmediate(triggerId);
+          isOverNavArea = false;
         } else {
           openDropdown(triggerId);
         }
@@ -635,8 +827,26 @@
       // Hover to open (desktop only)
       if (window.innerWidth >= 1024) {
         trigger.addEventListener('mouseenter', () => {
+          isOverNavArea = true;
           openDropdown(triggerId);
         });
+
+        trigger.addEventListener('mouseleave', () => {
+          isOverNavArea = false;
+          closeDropdownDelayed(triggerId);
+        });
+
+        // Track nav item hover
+        if (navItem) {
+          navItem.addEventListener('mouseenter', () => {
+            isOverNavArea = true;
+          });
+
+          navItem.addEventListener('mouseleave', () => {
+            isOverNavArea = false;
+            closeDropdownDelayed(triggerId);
+          });
+        }
       }
     });
 
@@ -645,25 +855,43 @@
       const triggerId = dropdown.dataset.navDropdown;
 
       dropdown.addEventListener('mouseenter', () => {
-        clearTimeout(closeTimeout);
+        isOverNavArea = true;
+        if (closeTimeoutId) {
+          clearTimeout(closeTimeoutId);
+          closeTimeoutId = null;
+        }
       });
 
-      dropdown.addEventListener('mouseleave', () => {
-        closeTimeout = setTimeout(() => {
-          closeDropdown(triggerId);
-        }, 300);
+      dropdown.addEventListener('mouseleave', (e) => {
+        isOverNavArea = false;
+
+        // Check if mouse left to go back to trigger
+        const relatedTarget = e.relatedTarget;
+        const trigger = document.querySelector(`[data-nav-trigger="${triggerId}"]`);
+        const navItem = trigger?.closest('[data-nav-item]');
+
+        if (relatedTarget && navItem && navItem.contains(relatedTarget)) {
+          isOverNavArea = true;
+          return;
+        }
+
+        // Immediately close if leaving dropdown area completely
+        closeDropdownImmediate(triggerId);
       });
     });
 
-    // Close when mouse leaves trigger
-    triggers.forEach(trigger => {
-      const triggerId = trigger.dataset.navTrigger;
+    // Header-level tracking
+    header.addEventListener('mouseleave', (e) => {
+      // Check if we're truly leaving the header area
+      const rect = header.getBoundingClientRect();
+      const mouseY = e.clientY;
 
-      trigger.addEventListener('mouseleave', () => {
-        closeTimeout = setTimeout(() => {
-          closeDropdown(triggerId);
-        }, 300);
-      });
+      if (mouseY < rect.top || mouseY > rect.bottom + 20) {
+        isOverNavArea = false;
+        if (activeDropdown) {
+          closeDropdownImmediate(activeDropdown);
+        }
+      }
     });
 
     // Mobile toggle
@@ -671,7 +899,7 @@
       mobileToggle.addEventListener('click', toggleMobileMenu);
     }
 
-    // Overlay click
+    // Overlay click - immediate close
     if (overlay) {
       overlay.addEventListener('click', () => {
         closeAllDropdowns();
@@ -679,7 +907,7 @@
       });
     }
 
-    // Escape key
+    // Escape key - immediate close
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeAllDropdowns();
@@ -691,6 +919,19 @@
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 1024 && isMobileOpen) {
         toggleMobileMenu();
+      }
+    });
+
+    // Close dropdowns when scrolling
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      if (activeDropdown) {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          if (activeDropdown && window.scrollY > 50) {
+            closeAllDropdowns();
+          }
+        }, 100);
       }
     });
   })();
@@ -981,13 +1222,34 @@
           "id": "enable_dropdown",
           "label": "Enable Mega Menu Dropdown",
           "default": false,
-          "info": "If enabled, this item will show a dropdown with categories. If disabled, it's a regular link."
+          "info": "If enabled, this item will show a dropdown with menu items"
         },
         {
           "type": "url",
           "id": "link",
           "label": "Link",
           "info": "Only used if dropdown is disabled"
+        },
+        {
+          "type": "header",
+          "content": "Dropdown Content"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "info": "Select a Shopify menu to display in the dropdown. Create menus in Navigation settings."
+        },
+        {
+          "type": "select",
+          "id": "display_style",
+          "label": "Display Style",
+          "options": [
+            { "value": "grid_with_images", "label": "Grid with Images" },
+            { "value": "list", "label": "Simple List (no images)" }
+          ],
+          "default": "grid_with_images",
+          "info": "Choose how menu items are displayed"
         },
         {
           "type": "text",
@@ -998,21 +1260,55 @@
         {
           "type": "checkbox",
           "id": "show_icon",
-          "label": "Show Icon",
+          "label": "Show Grid Icon",
           "default": false,
-          "info": "Show a grid icon before the label (typically used for ALL CATEGORIES)"
+          "info": "Show a grid icon before the label (typically for ALL CATEGORIES)"
         }
       ]
     },
     {
-      "type": "category",
-      "name": "Category",
+      "type": "menu_item",
+      "name": "Menu Item Image",
       "settings": [
         {
           "type": "text",
           "id": "parent_nav_item",
           "label": "Parent Navigation Item ID",
-          "info": "Enter the ID of the navigation item this category belongs to. Find the ID in the block list."
+          "info": "Enter the ID of the navigation item this image belongs to"
+        },
+        {
+          "type": "text",
+          "id": "menu_link_title",
+          "label": "Menu Link Title",
+          "info": "Enter the EXACT title of the menu link (case-sensitive)"
+        },
+        {
+          "type": "url",
+          "id": "menu_link_url",
+          "label": "Menu Link URL (Optional)",
+          "info": "Alternative: Enter the URL to match if title matching doesn't work"
+        },
+        {
+          "type": "image_picker",
+          "id": "menu_item_image",
+          "label": "Image",
+          "info": "Upload an image for this menu item (recommended: 400x400px square)"
+        }
+      ]
+    },
+    {
+      "type": "category",
+      "name": "Category (Legacy)",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "⚠️ This block type is deprecated. Use 'Navigation Item' with a menu and 'Menu Item Image' blocks instead."
+        },
+        {
+          "type": "text",
+          "id": "parent_nav_item",
+          "label": "Parent Navigation Item ID",
+          "info": "Enter the ID of the navigation item this category belongs to"
         },
         {
           "type": "text",
@@ -1045,7 +1341,8 @@
             "position": "left",
             "enable_dropdown": true,
             "show_icon": true,
-            "dropdown_title": "Browse All Categories"
+            "dropdown_title": "Browse All Categories",
+            "display_style": "grid_with_images"
           }
         },
         {
@@ -1054,7 +1351,8 @@
             "label": "LAPTOPS",
             "position": "center",
             "enable_dropdown": true,
-            "dropdown_title": "Shop Laptops"
+            "dropdown_title": "Shop Laptops",
+            "display_style": "grid_with_images"
           }
         },
         {
@@ -1063,7 +1361,8 @@
             "label": "DESKTOP PCs",
             "position": "center",
             "enable_dropdown": true,
-            "dropdown_title": "Shop Desktop PCs"
+            "dropdown_title": "Shop Desktop PCs",
+            "display_style": "grid_with_images"
           }
         },
         {
@@ -1072,7 +1371,8 @@
             "label": "GAMING PCs",
             "position": "center",
             "enable_dropdown": true,
-            "dropdown_title": "Shop Gaming PCs"
+            "dropdown_title": "Shop Gaming PCs",
+            "display_style": "grid_with_images"
           }
         },
         {
@@ -1081,7 +1381,8 @@
             "label": "ACCESSORIES",
             "position": "center",
             "enable_dropdown": true,
-            "dropdown_title": "Shop Accessories"
+            "dropdown_title": "Shop Accessories",
+            "display_style": "grid_with_images"
           }
         },
         {
