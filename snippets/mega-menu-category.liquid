@@ -1,0 +1,23 @@
+{% comment %}
+  Mega Menu Category Snippet
+  Copy to snippets/mega-menu-category.liquid
+  
+  Usage:
+  {% render 'mega-menu-category', block: block %}
+{% endcomment %}
+
+<a href="{{ block.settings.link }}" class="mega-menu-category">
+    <div class="mega-menu-category-image-wrapper">
+      {% if block.settings.image != blank %}
+        {{ block.settings.image | image_url: width: 400 | image_tag: 
+          class: 'mega-menu-category-image',
+          alt: block.settings.title,
+          loading: 'lazy'
+        }}
+      {% else %}
+        {{ 'collection-1' | placeholder_svg_tag: 'mega-menu-category-image' }}
+      {% endif %}
+    </div>
+    <span class="mega-menu-category-title">{{ block.settings.title }}</span>
+  </a>
+  
