@@ -526,9 +526,9 @@
         "left_column_width": 30,
         "hero_position": "left",
         "section_heading": "Top brands. Renewed.",
-        "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE_4.png",
+        "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
         "featured_collection": "ignore-dev-purpose-tester",
-        "featured_collection_refurbished": "",
+        "featured_collection_refurbished": "ignore-dev-purpose-tester",
         "section_height": 650,
         "desktop_column_layout": "two-column",
         "desktop_show_hero": true,
@@ -544,19 +544,11 @@
         "mobile_nav_tab_padding": 8,
         "mobile_nav_tab_spacing": 4,
         "mobile_nav_icon_size": 16,
-        "desktop_tab_width": 115,
-        "desktop_tab_height": 85,
-        "desktop_tab_logo_size": 55,
-        "desktop_tab_text_position": "below",
-        "desktop_tab_text_size": 12,
-        "desktop_tab_gap": 24,
-        "desktop_tab_border_radius": 12,
         "products_limit": 7,
         "show_ratings": true,
         "show_starting_at_text": false,
         "show_new_price_comparison": false,
-        "carousel_background_color": "#f2f2f2",
-        "brand_logo_size": 64
+        "carousel_background_color": "#f2f2f2"
       }
     },
     "product_with_offer_banner_DMRJ84": {
