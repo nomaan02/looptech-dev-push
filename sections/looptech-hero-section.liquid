@@ -41,7 +41,6 @@
     border-radius: 1rem;
     background: linear-gradient(135deg, hsl(var(--lt-navy)) 0%, hsl(var(--lt-purple)) 100%);
     padding: 3rem;
-    min-height: 320px;
     display: flex;
     align-items: center;
   }
@@ -256,7 +255,6 @@
     overflow: hidden;
     border-radius: 1rem;
     padding: 1.5rem;
-    min-height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -266,11 +264,6 @@
 
   .looptech-promo-tile:hover {
     transform: scale(1.02);
-  }
-
-  .looptech-promo-tile.full-height {
-    height: 100%;
-    min-height: 336px;
   }
 
   /* Shark Tile */
@@ -332,18 +325,22 @@
   }
 
   /* Shop Now Button */
-  .looptech-shop-btn {
+  .looptech-btn-wrapper {
     position: relative;
     z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    margin-top: auto;
+  }
 
-    display: inline-flex;          /* was inline-block */
+  .looptech-shop-btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    
+
     padding: 0.625rem 1.25rem;
     min-height: 40px;
-
 
     background: #ffffff;
     color: hsl(240, 10%, 10%);
@@ -352,14 +349,13 @@
     font-size: 0.875rem;
     line-height: 1;
     white-space: nowrap;
-   
+
     text-decoration: none;
     border: 1px solid rgba(0,0,0,0.08);
     cursor: pointer;
-    
+
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     transition: background 0.2s ease;
-    margin-top: 1rem;
   }
 
   .looptech-shop-btn:hover {
@@ -457,7 +453,7 @@
 
       {%- comment -%} Block 1: Welcome Banner (Full Width) {%- endcomment -%}
       {% if block.type == 'welcome_banner' %}
-        <div class="looptech-welcome-banner" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);">
+        <div class="looptech-welcome-banner" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); height: {{ block.settings.banner_height }}px;">
           <div class="looptech-banner-content">
 
             {%- comment -%} Left Content {%- endcomment -%}
@@ -521,7 +517,7 @@
 
         {%- comment -%} Horizontal Promo Tiles (Shark & Black Friday) {%- endcomment -%}
         {% if block.type == 'promo_tile_horizontal' %}
-          <div class="looptech-promo-tile {{ block.settings.tile_style }}" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);">
+          <div class="looptech-promo-tile {{ block.settings.tile_style }}" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); height: {{ block.settings.tile_height }}px;">
 
             {% if block.settings.background_image != blank %}
               {{ block.settings.background_image | image_url: width: 800 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
@@ -558,7 +554,9 @@
             {% endif %}
 
             {% if block.settings.show_button and block.settings.button_text != blank %}
-              <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
+              <div class="looptech-btn-wrapper">
+                <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
+              </div>
             {% endif %}
           </div>
         {% endif %}
@@ -579,7 +577,7 @@
 
           {%- comment -%} Vertical Promo Tile (Apple) {%- endcomment -%}
           <div class="looptech-promo-right">
-            <div class="looptech-promo-tile {{ block.settings.tile_style }} full-height" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);">
+            <div class="looptech-promo-tile {{ block.settings.tile_style }} full-height" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); height: {{ block.settings.tile_height }}px;">
 
               {% if block.settings.background_image != blank %}
                 {{ block.settings.background_image | image_url: width: 600 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
@@ -614,7 +612,9 @@
               {% endif %}
 
               {% if block.settings.show_button and block.settings.button_text != blank %}
-                <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
+                <div class="looptech-btn-wrapper">
+                  <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
+                </div>
               {% endif %}
             </div>
           </div>
@@ -770,6 +770,21 @@
         },
         {
           "type": "header",
+          "content": "Dimensions"
+        },
+        {
+          "type": "range",
+          "id": "banner_height",
+          "label": "Banner Height",
+          "min": 200,
+          "max": 600,
+          "step": 20,
+          "default": 320,
+          "unit": "px",
+          "info": "Control the height of the banner. Images will be clipped if they exceed this height."
+        },
+        {
+          "type": "header",
           "content": "Colors"
         },
         {
@@ -854,6 +869,21 @@
           "id": "decorative_image",
           "label": "Decorative Image (Optional)",
           "info": "Recommended: 200px × 200px (square or portrait). Replaces default SVG decoration."
+        },
+        {
+          "type": "header",
+          "content": "Dimensions"
+        },
+        {
+          "type": "range",
+          "id": "tile_height",
+          "label": "Tile Height",
+          "min": 120,
+          "max": 400,
+          "step": 10,
+          "default": 160,
+          "unit": "px",
+          "info": "Control the height of the tile. Images will be clipped if they exceed this height."
         },
         {
           "type": "header",
@@ -947,6 +977,21 @@
           "id": "product_grid_image",
           "label": "Product Grid Image (Optional)",
           "info": "Recommended: 200px × 200px (square). Replaces default Apple product grid."
+        },
+        {
+          "type": "header",
+          "content": "Dimensions"
+        },
+        {
+          "type": "range",
+          "id": "tile_height",
+          "label": "Tile Height",
+          "min": 250,
+          "max": 600,
+          "step": 10,
+          "default": 336,
+          "unit": "px",
+          "info": "Control the height of the tile. Should match the combined height of horizontal tiles. Images will be clipped if they exceed this height."
         },
         {
           "type": "header",
