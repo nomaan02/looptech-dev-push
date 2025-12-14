@@ -32,8 +32,7 @@
   assign show_new_price_comparison = section.settings.show_new_price_comparison
   assign left_column_width = section.settings.left_column_width
   assign carousel_bg_color = section.settings.carousel_background_color
-  assign brand_logo_size = section.settings.brand_logo_size
-  assign section_height = section.settsings.section_height
+  assign section_height = section.settings.section_height
   assign desktop_column_layout = section.settings.desktop_column_layout
   assign mobile_column_layout = section.settings.mobile_column_layout
   assign desktop_show_hero = section.settings.desktop_show_hero
@@ -49,24 +48,6 @@
   assign mobile_nav_tab_spacing = section.settings.mobile_nav_tab_spacing
   assign mobile_nav_icon_size = section.settings.mobile_nav_icon_size
 
-  # Desktop brand tab customization settings
-  assign desktop_tab_width = section.settings.desktop_tab_width
-  assign desktop_tab_height = section.settings.desktop_tab_height
-  assign desktop_tab_logo_size = section.settings.desktop_tab_logo_size
-  assign desktop_tab_text_position = section.settings.desktop_tab_text_position
-  assign desktop_tab_text_size = section.settings.desktop_tab_text_size
-  assign desktop_tab_gap = section.settings.desktop_tab_gap
-  assign desktop_tab_border_radius = section.settings.desktop_tab_border_radius
-
-  # Desktop navigation bar container settings
-  assign desktop_nav_bar_padding_top = section.settings.desktop_nav_bar_padding_top
-  assign desktop_nav_bar_padding_bottom = section.settings.desktop_nav_bar_padding_bottom
-  assign desktop_nav_bar_padding_left = section.settings.desktop_nav_bar_padding_left
-  assign desktop_nav_bar_padding_right = section.settings.desktop_nav_bar_padding_right
-  assign desktop_nav_bar_margin_top = section.settings.desktop_nav_bar_margin_top
-  assign desktop_nav_bar_margin_bottom = section.settings.desktop_nav_bar_margin_bottom
-  assign desktop_nav_bar_margin_left = section.settings.desktop_nav_bar_margin_left
-  assign desktop_nav_bar_margin_right = section.settings.desktop_nav_bar_margin_right
 
   # defaults if nothing is set
   if section_heading == blank
@@ -101,9 +82,6 @@
     assign carousel_bg_color = '#ffffff'
   endif
 
-  if brand_logo_size == blank
-    assign brand_logo_size = 64
-  endif
 
   if section_height == blank
     assign section_height = 600
@@ -150,67 +128,6 @@
     assign mobile_nav_icon_size = 18
   endif
 
-  # Desktop brand tab customization defaults
-  if desktop_tab_width == blank
-    assign desktop_tab_width = 120
-  endif
-
-  if desktop_tab_height == blank
-    assign desktop_tab_height = 90
-  endif
-
-  if desktop_tab_logo_size == blank
-    assign desktop_tab_logo_size = 70
-  endif
-
-  if desktop_tab_text_position == blank
-    assign desktop_tab_text_position = 'inside'
-  endif
-
-  if desktop_tab_text_size == blank
-    assign desktop_tab_text_size = 14
-  endif
-
-  if desktop_tab_gap == blank
-    assign desktop_tab_gap = 24
-  endif
-
-  if desktop_tab_border_radius == blank
-    assign desktop_tab_border_radius = 16
-  endif
-
-  # Desktop navigation bar container defaults
-  if desktop_nav_bar_padding_top == blank
-    assign desktop_nav_bar_padding_top = 10
-  endif
-
-  if desktop_nav_bar_padding_bottom == blank
-    assign desktop_nav_bar_padding_bottom = 12
-  endif
-
-  if desktop_nav_bar_padding_left == blank
-    assign desktop_nav_bar_padding_left = 0
-  endif
-
-  if desktop_nav_bar_padding_right == blank
-    assign desktop_nav_bar_padding_right = 12
-  endif
-
-  if desktop_nav_bar_margin_top == blank
-    assign desktop_nav_bar_margin_top = 10
-  endif
-
-  if desktop_nav_bar_margin_bottom == blank
-    assign desktop_nav_bar_margin_bottom = 20
-  endif
-
-  if desktop_nav_bar_margin_left == blank
-    assign desktop_nav_bar_margin_left = 24
-  endif
-
-  if desktop_nav_bar_margin_right == blank
-    assign desktop_nav_bar_margin_right = 24
-  endif
 
   assign right_column_width = 100 | minus: left_column_width
   
@@ -236,22 +153,7 @@
      data-mobile-nav-height="{{ mobile_nav_tab_height }}"
      data-mobile-nav-padding="{{ mobile_nav_tab_padding }}"
      data-mobile-nav-spacing="{{ mobile_nav_tab_spacing }}"
-     data-mobile-icon-size="{{ mobile_nav_icon_size }}"
-     data-desktop-tab-width="{{ desktop_tab_width }}"
-     data-desktop-tab-height="{{ desktop_tab_height }}"
-     data-desktop-tab-logo-size="{{ desktop_tab_logo_size }}"
-     data-desktop-tab-text-position="{{ desktop_tab_text_position }}"
-     data-desktop-tab-text-size="{{ desktop_tab_text_size }}"
-     data-desktop-tab-gap="{{ desktop_tab_gap }}"
-     data-desktop-tab-border-radius="{{ desktop_tab_border_radius }}"
-     data-desktop-nav-bar-padding-top="{{ desktop_nav_bar_padding_top }}"
-     data-desktop-nav-bar-padding-bottom="{{ desktop_nav_bar_padding_bottom }}"
-     data-desktop-nav-bar-padding-left="{{ desktop_nav_bar_padding_left }}"
-     data-desktop-nav-bar-padding-right="{{ desktop_nav_bar_padding_right }}"
-     data-desktop-nav-bar-margin-top="{{ desktop_nav_bar_margin_top }}"
-     data-desktop-nav-bar-margin-bottom="{{ desktop_nav_bar_margin_bottom }}"
-     data-desktop-nav-bar-margin-left="{{ desktop_nav_bar_margin_left }}"
-     data-desktop-nav-bar-margin-right="{{ desktop_nav_bar_margin_right }}">
+     data-mobile-icon-size="{{ mobile_nav_icon_size }}">
 
   {%- # section heading above the carousel -%}
   {%- if section_heading != blank -%}
@@ -274,63 +176,60 @@
             <div class="brand-navigation-bar" role="tablist" aria-label="Product collections">
               
               {%- # default "show all" tab -%}
-              <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
-                <button
-                  class="brand-tab-button active" 
-                  data-filter="all" 
-                  data-collection="{{ featured_collection }}"
-                  role="tab"
-                  aria-selected="true"
-                  aria-controls="carousel-{{ section.id }}"
-                >
-                  <div class="brand-icon-container">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                      <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                      <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                      <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                  </div>
-                  <span class="brand-label-text">All Products</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                class="brand-tab-pill active" 
+                data-filter="all" 
+                data-collection="{{ featured_collection }}"
+                role="tab"
+                aria-selected="true"
+                aria-controls="carousel-{{ section.id }}"
+              >
+                <span class="brand-tab-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </span>
+                <span class="brand-tab-label">All Products</span>
+              </button>
 
               {%- # loop through brand blocks from theme editor -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'brand_tab' and block.settings.collection != blank -%}
-                  <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
-                    <button
-                      class="brand-tab-button" 
-                      data-filter="{{ block.settings.collection }}"
-                      data-collection="{{ block.settings.collection }}"
-                      role="tab"
-                      aria-selected="false"
-                      aria-controls="carousel-{{ section.id }}"
-                      {{ block.shopify_attributes }}
-                    >
-                      <div class="brand-icon-container">
-                        {%- if block.settings.brand_logo != blank -%}
-                          {%- assign brand_logo_alt = block.settings.brand_name | escape -%}
-                          {{
-                            block.settings.brand_logo |
-                            image_url: width: 120 |
-                            image_tag:
-                              loading: 'lazy',
-                              widths: '60, 120',
-                              alt: brand_logo_alt,
-                              class: 'brand-logo-img'
-                          }}
-                        {%- else -%}
-                          {%- # backup icon when no logo is uploaded -%}
-                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <circle cx="12" cy="12" r="4" fill="currentColor"/>
-                          </svg>
-                        {%- endif -%}
-                      </div>
-                      <span class="brand-label-text">{{ block.settings.brand_name | escape }}</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    class="brand-tab-pill" 
+                    data-filter="{{ block.settings.collection }}"
+                    data-collection="{{ block.settings.collection }}"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="carousel-{{ section.id }}"
+                    {{ block.shopify_attributes }}
+                  >
+                    <span class="brand-tab-icon">
+                      {%- if block.settings.brand_logo != blank -%}
+                        {%- assign brand_logo_alt = block.settings.brand_name | escape -%}
+                        {{
+                          block.settings.brand_logo |
+                          image_url: width: 60 |
+                          image_tag:
+                            loading: 'lazy',
+                            widths: '30, 60',
+                            alt: brand_logo_alt,
+                            class: 'brand-tab-logo'
+                        }}
+                      {%- else -%}
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                          <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                        </svg>
+                      {%- endif -%}
+                    </span>
+                    <span class="brand-tab-label">{{ block.settings.brand_name | escape }}</span>
+                  </button>
                 {%- endif -%}
               {%- endfor -%}
 
@@ -475,63 +374,60 @@
             <div class="brand-navigation-bar" role="tablist" aria-label="Product collections">
               
               {%- # default "show all" tab -%}
-              <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
-                <button
-                  class="brand-tab-button active" 
-                  data-filter="all" 
-                  data-collection="{{ featured_collection }}"
-                  role="tab"
-                  aria-selected="true"
-                  aria-controls="carousel-{{ section.id }}"
-                >
-                  <div class="brand-icon-container">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                      <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                      <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                      <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                  </div>
-                  <span class="brand-label-text">All Products</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                class="brand-tab-pill active" 
+                data-filter="all" 
+                data-collection="{{ featured_collection }}"
+                role="tab"
+                aria-selected="true"
+                aria-controls="carousel-{{ section.id }}"
+              >
+                <span class="brand-tab-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </span>
+                <span class="brand-tab-label">All Products</span>
+              </button>
 
               {%- # loop through brand blocks from theme editor -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'brand_tab' and block.settings.collection != blank -%}
-                  <div class="brand-tab-wrapper" data-text-position="{{ desktop_tab_text_position }}">
-                    <button
-                      class="brand-tab-button" 
-                      data-filter="{{ block.settings.collection }}"
-                      data-collection="{{ block.settings.collection }}"
-                      role="tab"
-                      aria-selected="false"
-                      aria-controls="carousel-{{ section.id }}"
-                      {{ block.shopify_attributes }}
-                    >
-                      <div class="brand-icon-container">
-                        {%- if block.settings.brand_logo != blank -%}
-                          {%- assign brand_logo_alt = block.settings.brand_name | escape -%}
-                          {{
-                            block.settings.brand_logo |
-                            image_url: width: 120 |
-                            image_tag:
-                              loading: 'lazy',
-                              widths: '60, 120',
-                              alt: brand_logo_alt,
-                              class: 'brand-logo-img'
-                          }}
-                        {%- else -%}
-                          {%- # backup icon when no logo is uploaded -%}
-                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <circle cx="12" cy="12" r="4" fill="currentColor"/>
-                          </svg>
-                        {%- endif -%}
-                      </div>
-                      <span class="brand-label-text">{{ block.settings.brand_name | escape }}</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    class="brand-tab-pill" 
+                    data-filter="{{ block.settings.collection }}"
+                    data-collection="{{ block.settings.collection }}"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="carousel-{{ section.id }}"
+                    {{ block.shopify_attributes }}
+                  >
+                    <span class="brand-tab-icon">
+                      {%- if block.settings.brand_logo != blank -%}
+                        {%- assign brand_logo_alt = block.settings.brand_name | escape -%}
+                        {{
+                          block.settings.brand_logo |
+                          image_url: width: 60 |
+                          image_tag:
+                            loading: 'lazy',
+                            widths: '30, 60',
+                            alt: brand_logo_alt,
+                            class: 'brand-tab-logo'
+                        }}
+                      {%- else -%}
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                          <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                        </svg>
+                      {%- endif -%}
+                    </span>
+                    <span class="brand-tab-label">{{ block.settings.brand_name | escape }}</span>
+                  </button>
                 {%- endif -%}
               {%- endfor -%}
 
@@ -766,117 +662,105 @@
 }
 
 /* ============================================
-   brand tabs navigation bar
-   with logos in rectangular containers
+   Brand Tab Pills - Clean, Content-Hugging Design
+   Horizontal scrolling pills with icon + label
    ============================================ */
 
 #shopify-section-{{ section.id }} .brand-navigation-bar {
   display: flex;
-  gap: 24px;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
   overflow-x: auto;
-  overflow-y: visible;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
-  padding: 10px 12px 12px 0;
-  margin: 10px 24px 20px 24px;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 16px 24px;
+  margin: 0;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 #shopify-section-{{ section.id }} .brand-navigation-bar::-webkit-scrollbar {
-  height: 4px;
+  display: none;
 }
 
-#shopify-section-{{ section.id }} .brand-navigation-bar::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 0 20px;
-}
-
-#shopify-section-{{ section.id }} .brand-navigation-bar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 2px;
-}
-
-/* wrapper holds button + text label below it */
-#shopify-section-{{ section.id }} .brand-tab-wrapper {
-  display: flex;
-  flex-direction: column;
+/* Brand Tab Pill - The main button element */
+#shopify-section-{{ section.id }} .brand-tab-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
   flex-shrink: 0;
+  white-space: nowrap;
+  font-family: inherit;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-/* the actual button with rounded rectangle */
-#shopify-section-{{ section.id }} .brand-tab-button {
+#shopify-section-{{ section.id }} .brand-tab-pill:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+}
+
+#shopify-section-{{ section.id }} .brand-tab-pill:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+#shopify-section-{{ section.id }} .brand-tab-pill.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+/* Icon container - fixed size, centered */
+#shopify-section-{{ section.id }} .brand-tab-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 120px;
-  height: 30px;
-  background: #ffffff;
-  border: 2px solid #e5e7eb;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
 }
 
-#shopify-section-{{ section.id }} .brand-tab-button:hover {
-  border-color: #3b82f6;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
-}
-
-#shopify-section-{{ section.id }} .brand-tab-button.active {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-}
-
-/* holds the logo inside the button */
-#shopify-section-{{ section.id }} .brand-icon-container {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: left;
-  justify-content: left;
-  padding: 0px, 0px, 0px, 0px;
-}
-
-/* actual logo image */
-#shopify-section-{{ section.id }} .brand-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: left;
-}
-
-/* fallback svg icons when no logo */
-#shopify-section-{{ section.id }} .brand-icon-container svg {
-  width: 30px;
-  height: 30px;
+/* SVG icons */
+#shopify-section-{{ section.id }} .brand-tab-icon svg {
+  width: 22px;
+  height: 22px;
   color: #6b7280;
   transition: color 0.2s ease;
 }
 
-#shopify-section-{{ section.id }} .brand-tab-button.active .brand-icon-container svg {
+#shopify-section-{{ section.id }} .brand-tab-pill.active .brand-tab-icon svg {
   color: #3b82f6;
 }
 
-/* text label sits below the button */
-#shopify-section-{{ section.id }} .brand-label-text {
+/* Brand logo images */
+#shopify-section-{{ section.id }} .brand-tab-logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Label text */
+#shopify-section-{{ section.id }} .brand-tab-label {
   font-size: 14px;
   font-weight: 600;
   color: #1f2937;
-  text-align: left;
-  white-space: nowrap;
-  line-height: 1.2;
+  line-height: 1;
   letter-spacing: -0.01em;
 }
 
-#shopify-section-{{ section.id }} .brand-tab-wrapper:has(.brand-tab-button.active) .brand-label-text {
+#shopify-section-{{ section.id }} .brand-tab-pill.active .brand-tab-label {
   color: #3b82f6;
 }
 
@@ -1289,18 +1173,8 @@
   }
 
   #shopify-section-{{ section.id }} .brand-navigation-bar {
-    gap: 20px;
-    margin-bottom: 18px;
-  }
-  
-  #shopify-section-{{ section.id }} .brand-tab-button {
-    width: 110px;
-    height: 85px;
-  }
-  
-  #shopify-section-{{ section.id }} .brand-icon-container {
-    width: 65px;
-    height: 65px;
+    gap: 12px;
+    padding: 16px 20px;
   }
 
   #shopify-section-{{ section.id }} .carousel-track {
@@ -1313,72 +1187,39 @@
 }
 
 /* ============================================
-   DESKTOP CUSTOMIZATION - Brand Navigation Tabs
-   This media query comes AFTER base styles to properly override them
-   All settings controlled via CSS custom properties set by JavaScript
+   DESKTOP - Brand Tab Pills
+   Clean pill layout, centered with horizontal scroll
    ============================================ */
 @media (min-width: 768px) {
-  /* Navigation Bar Container - padding and margin customization */
   #shopify-section-{{ section.id }} .brand-navigation-bar {
-    gap: var(--desktop-tab-gap, 24px) !important;
-    padding-top: var(--desktop-nav-bar-padding-top, 10px) !important;
-    padding-bottom: var(--desktop-nav-bar-padding-bottom, 12px) !important;
-    padding-left: var(--desktop-nav-bar-padding-left, 0px) !important;
-    padding-right: var(--desktop-nav-bar-padding-right, 12px) !important;
-    margin-top: var(--desktop-nav-bar-margin-top, 10px) !important;
-    margin-bottom: var(--desktop-nav-bar-margin-bottom, 20px) !important;
-    margin-left: var(--desktop-nav-bar-margin-left, 24px) !important;
-    margin-right: var(--desktop-nav-bar-margin-right, 24px) !important;
+    justify-content: center;
+    padding: 20px 32px;
+    gap: 16px;
   }
 
-  /* Tab Wrapper - controls layout based on text position */
-  #shopify-section-{{ section.id }} .brand-tab-wrapper {
-    display: flex !important;
-    align-items: center !important;
-    flex-shrink: 0 !important;
+  #shopify-section-{{ section.id }} .brand-tab-pill {
+    min-height: 48px;
+    padding: 12px 24px;
   }
 
-  /* Text position: inside (text below logo within button) */
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] {
-    flex-direction: row !important;
+  #shopify-section-{{ section.id }} .brand-tab-icon {
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
   }
 
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="inside"] .brand-tab-button {
-    flex-direction: column !important;
-    gap: 8px !important;
+  #shopify-section-{{ section.id }} .brand-tab-icon svg {
+    width: 24px;
+    height: 24px;
   }
 
-  /* Text position: below (text outside button) */
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] {
-    flex-direction: column !important;
-    gap: 12px !important;
+  #shopify-section-{{ section.id }} .brand-tab-logo {
+    width: 24px;
+    height: 24px;
   }
 
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-tab-button {
-    flex-direction: row !important;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-wrapper[data-text-position="below"] .brand-label-text {
-    position: static !important;
-  }
-
-  /* Tab Button - size and style customization */
-  #shopify-section-{{ section.id }} .brand-tab-button {
-    width: var(--desktop-tab-width, 120px) !important;
-    height: var(--desktop-tab-height, 90px) !important;
-    border-radius: var(--desktop-tab-border-radius, 16px) !important;
-    padding: 8px !important;
-  }
-
-  /* Logo/Icon Container - size customization */
-  #shopify-section-{{ section.id }} .brand-icon-container {
-    width: var(--desktop-tab-logo-size, 70px) !important;
-    height: var(--desktop-tab-logo-size, 70px) !important;
-  }
-
-  /* Brand Label Text - font size customization */
-  #shopify-section-{{ section.id }} .brand-label-text {
-    font-size: var(--desktop-tab-text-size, 14px) !important;
+  #shopify-section-{{ section.id }} .brand-tab-label {
+    font-size: 14px;
   }
 }
 
@@ -1436,95 +1277,53 @@
   }
 
   /* ============================================
-     MOBILE OVERRIDE: Brand navigation as horizontal filter chips
-     Desktop uses vertical layout with logos (defined above 768px)
-     Mobile uses compact horizontal pills with inline icon+text
+     MOBILE - Brand Tab Pills
+     Compact horizontal pills with swipe scroll
      ============================================ */
-  /* Mobile: Navigation bar with customizable spacing */
   #shopify-section-{{ section.id }} .brand-navigation-bar {
-    gap: var(--mobile-nav-spacing, 8px);
-    margin: 0 16px 20px 16px;
-    padding: 0;
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  #shopify-section-{{ section.id }} .brand-navigation-bar::-webkit-scrollbar {
-    display: none;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-wrapper {
-    gap: 0;
-    flex-direction: row;
-    flex-shrink: 0;
-  }
-
-  /* Mobile: Horizontal pill-shaped buttons with customizable dimensions */
-  #shopify-section-{{ section.id }} .brand-tab-button {
-    width: auto;
-    min-width: 120px;
-    padding-left: var(--mobile-nav-padding, 16px);
-    padding-right: var(--mobile-nav-padding, 16px);
-    height: var(--mobile-nav-height, 36px);
-    border-radius: calc(var(--mobile-nav-height, 36px) / 2);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     gap: 8px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-    border: 1.5px solid #e5e7eb;
+    padding: 12px 16px;
+    justify-content: flex-start;
   }
 
-  #shopify-section-{{ section.id }} .brand-tab-button:hover {
-    transform: none;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  #shopify-section-{{ section.id }} .brand-tab-pill {
+    min-height: 38px;
+    padding: 8px 16px;
+    gap: 6px;
   }
 
-  #shopify-section-{{ section.id }} .brand-tab-button.active {
-    background: #007aff;
-    border-color: #007aff;
-    box-shadow: 0 2px 4px rgba(0, 122, 255, 0.25);
+  #shopify-section-{{ section.id }} .brand-tab-pill.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
   }
 
-  /* Mobile: Icon with customizable size */
-  #shopify-section-{{ section.id }} .brand-icon-container {
-    width: var(--mobile-icon-size, 18px);
-    height: var(--mobile-icon-size, 18px);
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #shopify-section-{{ section.id }} .brand-icon-container svg {
-    width: var(--mobile-icon-size, 18px);
-    height: var(--mobile-icon-size, 18px);
-    color: #6b7280;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-button.active .brand-icon-container svg {
+  #shopify-section-{{ section.id }} .brand-tab-pill.active .brand-tab-icon svg {
     color: #ffffff;
   }
 
-  /* Mobile: Text sizing */
-  #shopify-section-{{ section.id }} .brand-label-text {
-    font-size: calc(var(--mobile-nav-height, 36px) * 0.39);
+  #shopify-section-{{ section.id }} .brand-tab-pill.active .brand-tab-label {
+    color: #ffffff;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-icon {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-logo {
+    width: 18px;
+    height: 18px;
+  }
+
+  #shopify-section-{{ section.id }} .brand-tab-label {
+    font-size: 13px;
     font-weight: 500;
-    color: #1f2937;
-    white-space: nowrap;
-  }
-
-  #shopify-section-{{ section.id }} .brand-tab-wrapper:has(.brand-tab-button.active) .brand-label-text {
-    color: #ffffff;
-  }
-
-  /* Mobile: Logo images */
-  #shopify-section-{{ section.id }} .brand-logo-img {
-    max-width: var(--mobile-icon-size, 18px);
-    max-height: var(--mobile-icon-size, 18px);
   }
 
   /* Full-width carousel container */
@@ -1668,7 +1467,7 @@
   const prevBtn = section.querySelector('.carousel-arrow--prev');
   const nextBtn = section.querySelector('.carousel-arrow--next');
   const dotsContainer = section.querySelector('.carousel-dots');
-  const brandTabButtons = section.querySelectorAll('.brand-tab-button');
+  const brandTabButtons = section.querySelectorAll('.brand-tab-pill');
 
   let currentPage = 0;
   let itemsPerPage = 3;
@@ -1735,67 +1534,6 @@
         sectionElement.style.setProperty('--mobile-card-spacing', `${mobileCardSpacing}px`);
       }
 
-      // Desktop brand tab customization (only applies on desktop devices)
-      const desktopTabWidth = sectionElement.getAttribute('data-desktop-tab-width');
-      const desktopTabHeight = sectionElement.getAttribute('data-desktop-tab-height');
-      const desktopTabLogoSize = sectionElement.getAttribute('data-desktop-tab-logo-size');
-      const desktopTabTextSize = sectionElement.getAttribute('data-desktop-tab-text-size');
-      const desktopTabGap = sectionElement.getAttribute('data-desktop-tab-gap');
-      const desktopTabBorderRadius = sectionElement.getAttribute('data-desktop-tab-border-radius');
-
-      if (desktopTabWidth) {
-        sectionElement.style.setProperty('--desktop-tab-width', `${desktopTabWidth}px`);
-      }
-      if (desktopTabHeight) {
-        sectionElement.style.setProperty('--desktop-tab-height', `${desktopTabHeight}px`);
-      }
-      if (desktopTabLogoSize) {
-        sectionElement.style.setProperty('--desktop-tab-logo-size', `${desktopTabLogoSize}px`);
-      }
-      if (desktopTabTextSize) {
-        sectionElement.style.setProperty('--desktop-tab-text-size', `${desktopTabTextSize}px`);
-      }
-      if (desktopTabGap) {
-        sectionElement.style.setProperty('--desktop-tab-gap', `${desktopTabGap}px`);
-      }
-      if (desktopTabBorderRadius) {
-        sectionElement.style.setProperty('--desktop-tab-border-radius', `${desktopTabBorderRadius}px`);
-      }
-
-      // Desktop navigation bar container customization
-      const desktopNavBarPaddingTop = sectionElement.getAttribute('data-desktop-nav-bar-padding-top');
-      const desktopNavBarPaddingBottom = sectionElement.getAttribute('data-desktop-nav-bar-padding-bottom');
-      const desktopNavBarPaddingLeft = sectionElement.getAttribute('data-desktop-nav-bar-padding-left');
-      const desktopNavBarPaddingRight = sectionElement.getAttribute('data-desktop-nav-bar-padding-right');
-      const desktopNavBarMarginTop = sectionElement.getAttribute('data-desktop-nav-bar-margin-top');
-      const desktopNavBarMarginBottom = sectionElement.getAttribute('data-desktop-nav-bar-margin-bottom');
-      const desktopNavBarMarginLeft = sectionElement.getAttribute('data-desktop-nav-bar-margin-left');
-      const desktopNavBarMarginRight = sectionElement.getAttribute('data-desktop-nav-bar-margin-right');
-
-      if (desktopNavBarPaddingTop) {
-        sectionElement.style.setProperty('--desktop-nav-bar-padding-top', `${desktopNavBarPaddingTop}px`);
-      }
-      if (desktopNavBarPaddingBottom) {
-        sectionElement.style.setProperty('--desktop-nav-bar-padding-bottom', `${desktopNavBarPaddingBottom}px`);
-      }
-      if (desktopNavBarPaddingLeft) {
-        sectionElement.style.setProperty('--desktop-nav-bar-padding-left', `${desktopNavBarPaddingLeft}px`);
-      }
-      if (desktopNavBarPaddingRight) {
-        sectionElement.style.setProperty('--desktop-nav-bar-padding-right', `${desktopNavBarPaddingRight}px`);
-      }
-      if (desktopNavBarMarginTop) {
-        sectionElement.style.setProperty('--desktop-nav-bar-margin-top', `${desktopNavBarMarginTop}px`);
-      }
-      if (desktopNavBarMarginBottom) {
-        sectionElement.style.setProperty('--desktop-nav-bar-margin-bottom', `${desktopNavBarMarginBottom}px`);
-      }
-      if (desktopNavBarMarginLeft) {
-        sectionElement.style.setProperty('--desktop-nav-bar-margin-left', `${desktopNavBarMarginLeft}px`);
-      }
-      if (desktopNavBarMarginRight) {
-        sectionElement.style.setProperty('--desktop-nav-bar-margin-right', `${desktopNavBarMarginRight}px`);
-      }
     }
 
     calculateItemsPerPage();
@@ -2543,193 +2281,6 @@
       "info": "Size of icons within navigation tabs"
     },
     {
-      "type": "header",
-      "content": "Desktop Brand Tab Customization (Desktop Only)"
-    },
-    {
-      "type": "paragraph",
-      "content": "Full control over brand navigation tabs on desktop. These settings only affect desktop view and have no impact on mobile."
-    },
-    {
-      "type": "range",
-      "id": "desktop_tab_width",
-      "min": 80,
-      "max": 200,
-      "step": 5,
-      "unit": "px",
-      "label": "Desktop Tab Width",
-      "default": 120,
-      "info": "Width of each brand tab button on desktop (80-200px)"
-    },
-    {
-      "type": "range",
-      "id": "desktop_tab_height",
-      "min": 60,
-      "max": 150,
-      "step": 5,
-      "unit": "px",
-      "label": "Desktop Tab Height",
-      "default": 90,
-      "info": "Height of each brand tab button on desktop (60-150px)"
-    },
-    {
-      "type": "range",
-      "id": "desktop_tab_logo_size",
-      "min": 30,
-      "max": 120,
-      "step": 5,
-      "unit": "px",
-      "label": "Desktop Logo Size",
-      "default": 70,
-      "info": "Size of the logo/icon container within the tab (30-120px)"
-    },
-    {
-      "type": "select",
-      "id": "desktop_tab_text_position",
-      "label": "Desktop Tab Text Position",
-      "options": [
-        {
-          "value": "inside",
-          "label": "Inside Tab (Below Logo)"
-        },
-        {
-          "value": "below",
-          "label": "Below Tab (Outside Button)"
-        }
-      ],
-      "default": "inside",
-      "info": "Choose whether the brand name text appears inside the tab button or below it"
-    },
-    {
-      "type": "range",
-      "id": "desktop_tab_text_size",
-      "min": 10,
-      "max": 20,
-      "step": 1,
-      "unit": "px",
-      "label": "Desktop Tab Text Size",
-      "default": 14,
-      "info": "Font size of the brand name text (10-20px)"
-    },
-    {
-      "type": "range",
-      "id": "desktop_tab_gap",
-      "min": 8,
-      "max": 48,
-      "step": 4,
-      "unit": "px",
-      "label": "Desktop Tab Spacing",
-      "default": 24,
-      "info": "Gap between brand tabs on desktop (8-48px)"
-    },
-    {
-      "type": "range",
-      "id": "desktop_tab_border_radius",
-      "min": 0,
-      "max": 32,
-      "step": 2,
-      "unit": "px",
-      "label": "Desktop Tab Border Radius",
-      "default": 16,
-      "info": "Corner roundness of tab buttons (0=square, 32=very rounded)"
-    },
-    {
-      "type": "header",
-      "content": "Desktop Navigation Bar Container (Desktop Only)"
-    },
-    {
-      "type": "paragraph",
-      "content": "Control the padding and margin of the brand navigation bar container that holds all tabs. Desktop only."
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_padding_top",
-      "min": 0,
-      "max": 60,
-      "step": 2,
-      "unit": "px",
-      "label": "Navigation Bar Padding Top",
-      "default": 10,
-      "info": "Top padding inside the navigation bar container"
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_padding_bottom",
-      "min": 0,
-      "max": 60,
-      "step": 2,
-      "unit": "px",
-      "label": "Navigation Bar Padding Bottom",
-      "default": 12,
-      "info": "Bottom padding inside the navigation bar container"
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_padding_left",
-      "min": 0,
-      "max": 60,
-      "step": 2,
-      "unit": "px",
-      "label": "Navigation Bar Padding Left",
-      "default": 0,
-      "info": "Left padding inside the navigation bar container"
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_padding_right",
-      "min": 0,
-      "max": 60,
-      "step": 2,
-      "unit": "px",
-      "label": "Navigation Bar Padding Right",
-      "default": 12,
-      "info": "Right padding inside the navigation bar container"
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_margin_top",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Navigation Bar Margin Top",
-      "default": 10,
-      "info": "Top margin outside the navigation bar container"
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_margin_bottom",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Navigation Bar Margin Bottom",
-      "default": 20,
-      "info": "Bottom margin outside the navigation bar container"
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_margin_left",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Navigation Bar Margin Left",
-      "default": 24,
-      "info": "Left margin outside the navigation bar container"
-    },
-    {
-      "type": "range",
-      "id": "desktop_nav_bar_margin_right",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Navigation Bar Margin Right",
-      "default": 24,
-      "info": "Right margin outside the navigation bar container"
-    },
-    {
       "type": "range",
       "id": "products_limit",
       "min": 4,
@@ -2774,17 +2325,6 @@
       "label": "Carousel Background Color",
       "default": "#ffffff",
       "info": "Background color behind product cards"
-    },
-    {
-      "type": "range",
-      "id": "brand_logo_size",
-      "min": 40,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Brand Logo Size",
-      "default": 64,
-      "info": "Size of brand logo icons in navigation bar"
     }
   ],
   "blocks": [
