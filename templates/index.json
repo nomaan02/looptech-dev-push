@@ -472,15 +472,23 @@
             "collection": ""
           }
         },
+        "brand_tab_H8RfCB": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Brand",
+            "collection": "ignore-dev-purpose-tester"
+          }
+        },
         "brand_tab_JRYtcX": {
           "type": "brand_tab",
           "settings": {
             "brand_name": "Microsoft",
-            "collection": ""
+            "collection": "ignore-dev-purpose-tester"
           }
         },
         "brand_tab_XK8gn9": {
           "type": "brand_tab",
+          "disabled": true,
           "settings": {
             "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
             "brand_name": "Razer",
@@ -492,7 +500,7 @@
           "settings": {
             "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
             "brand_name": "Dell",
-            "collection": "dell-hp-megasale"
+            "collection": "ignore-dev-purpose-tester"
           }
         },
         "brand_tab_NEBKaB": {
@@ -500,13 +508,14 @@
           "settings": {
             "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
             "brand_name": "HP",
-            "collection": "dell-hp-megasale"
+            "collection": "ignore-dev-purpose-tester"
           }
         }
       },
       "block_order": [
         "brand_tab_KJ8iWf",
         "brand_tab_NJGH7w",
+        "brand_tab_H8RfCB",
         "brand_tab_JRYtcX",
         "brand_tab_XK8gn9",
         "brand_tab_bwW4kh",
