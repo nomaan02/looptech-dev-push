@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(claude --dangerously-skip-permissions:*)"
+      "Bash(claude --dangerously-skip-permissions:*)",
+      "Bash(tree:*)",
+      "Bash(nul)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
