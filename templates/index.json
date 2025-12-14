@@ -321,6 +321,101 @@
         "padding_bottom": 0
       }
     },
+    "product_spotlight_carousel_9XXKjm": {
+      "type": "product-spotlight-carousel",
+      "blocks": {
+        "brand_tab_A66HqC": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Brand",
+            "collection": ""
+          }
+        },
+        "brand_tab_NJGH7w": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Samsung",
+            "collection": ""
+          }
+        },
+        "brand_tab_H8RfCB": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Brand",
+            "collection": "ignore-dev-purpose-tester"
+          }
+        },
+        "brand_tab_JRYtcX": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Microsoft",
+            "collection": "ignore-dev-purpose-tester"
+          }
+        },
+        "brand_tab_XK8gn9": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
+            "brand_name": "Razer",
+            "collection": "business-laptops"
+          }
+        },
+        "brand_tab_bwW4kh": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
+            "brand_name": "Dell",
+            "collection": "ignore-dev-purpose-tester"
+          }
+        },
+        "brand_tab_NEBKaB": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
+            "brand_name": "HP",
+            "collection": "ignore-dev-purpose-tester"
+          }
+        }
+      },
+      "block_order": [
+        "brand_tab_A66HqC",
+        "brand_tab_NJGH7w",
+        "brand_tab_H8RfCB",
+        "brand_tab_JRYtcX",
+        "brand_tab_XK8gn9",
+        "brand_tab_bwW4kh",
+        "brand_tab_NEBKaB"
+      ],
+      "name": "Product Spotlight Carousel",
+      "settings": {
+        "left_column_width": 30,
+        "hero_position": "left",
+        "section_heading": "Top brands. Renewed.",
+        "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
+        "featured_collection": "ignore-dev-purpose-tester-copy",
+        "featured_collection_refurbished": "ignore-dev-purpose-tester-copy-1",
+        "section_height": 650,
+        "desktop_column_layout": "two-column",
+        "desktop_show_hero": true,
+        "desktop_products_per_view": 4,
+        "mobile_column_layout": "single-column",
+        "mobile_show_hero": false,
+        "mobile_card_width_percent": 27,
+        "mobile_card_height": 200,
+        "mobile_product_image_height": 250,
+        "mobile_card_spacing": 32,
+        "mobile_card_padding": 14,
+        "mobile_nav_tab_height": 32,
+        "mobile_nav_tab_padding": 8,
+        "mobile_nav_tab_spacing": 4,
+        "mobile_nav_icon_size": 16,
+        "products_limit": 7,
+        "show_ratings": true,
+        "show_starting_at_text": false,
+        "show_new_price_comparison": false,
+        "carousel_background_color": "#f2f2f2"
+      }
+    },
     "featured_collection_D8P9jY": {
       "type": "featured-collection",
       "custom_css": [],
@@ -452,103 +547,6 @@
         "color_scheme": "",
         "padding_top": 60,
         "padding_bottom": 60
-      }
-    },
-    "product_spotlight_carousel_9XXKjm": {
-      "type": "product-spotlight-carousel",
-      "blocks": {
-        "brand_tab_KJ8iWf": {
-          "type": "brand_tab",
-          "settings": {
-            "brand_logo": "shopify://shop_images/10_d31b0d7a-def0-4e80-9878-224dd1851c83.png",
-            "brand_name": "Apple",
-            "collection": "home-office-pcs"
-          }
-        },
-        "brand_tab_NJGH7w": {
-          "type": "brand_tab",
-          "settings": {
-            "brand_name": "Samsung",
-            "collection": ""
-          }
-        },
-        "brand_tab_H8RfCB": {
-          "type": "brand_tab",
-          "settings": {
-            "brand_name": "Brand",
-            "collection": "ignore-dev-purpose-tester"
-          }
-        },
-        "brand_tab_JRYtcX": {
-          "type": "brand_tab",
-          "settings": {
-            "brand_name": "Microsoft",
-            "collection": "ignore-dev-purpose-tester"
-          }
-        },
-        "brand_tab_XK8gn9": {
-          "type": "brand_tab",
-          "disabled": true,
-          "settings": {
-            "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
-            "brand_name": "Razer",
-            "collection": "business-laptops"
-          }
-        },
-        "brand_tab_bwW4kh": {
-          "type": "brand_tab",
-          "settings": {
-            "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
-            "brand_name": "Dell",
-            "collection": "ignore-dev-purpose-tester"
-          }
-        },
-        "brand_tab_NEBKaB": {
-          "type": "brand_tab",
-          "settings": {
-            "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
-            "brand_name": "HP",
-            "collection": "ignore-dev-purpose-tester"
-          }
-        }
-      },
-      "block_order": [
-        "brand_tab_KJ8iWf",
-        "brand_tab_NJGH7w",
-        "brand_tab_H8RfCB",
-        "brand_tab_JRYtcX",
-        "brand_tab_XK8gn9",
-        "brand_tab_bwW4kh",
-        "brand_tab_NEBKaB"
-      ],
-      "name": "Product Spotlight Carousel",
-      "settings": {
-        "left_column_width": 30,
-        "hero_position": "left",
-        "section_heading": "Top brands. Renewed.",
-        "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
-        "featured_collection": "ignore-dev-purpose-tester",
-        "featured_collection_refurbished": "ignore-dev-purpose-tester",
-        "section_height": 650,
-        "desktop_column_layout": "two-column",
-        "desktop_show_hero": true,
-        "desktop_products_per_view": 4,
-        "mobile_column_layout": "single-column",
-        "mobile_show_hero": false,
-        "mobile_card_width_percent": 27,
-        "mobile_card_height": 200,
-        "mobile_product_image_height": 250,
-        "mobile_card_spacing": 32,
-        "mobile_card_padding": 14,
-        "mobile_nav_tab_height": 32,
-        "mobile_nav_tab_padding": 8,
-        "mobile_nav_tab_spacing": 4,
-        "mobile_nav_icon_size": 16,
-        "products_limit": 7,
-        "show_ratings": true,
-        "show_starting_at_text": false,
-        "show_new_price_comparison": false,
-        "carousel_background_color": "#f2f2f2"
       }
     },
     "product_with_offer_banner_DMRJ84": {
@@ -1768,9 +1766,9 @@
     "1762641466a6753d23",
     "rich_text_B7E8LA",
     "f4fc861e-a8e9-4733-8984-e73213d48588",
+    "product_spotlight_carousel_9XXKjm",
     "featured_collection_D8P9jY",
     "product_with_offer_banner_WDEC3w",
-    "product_spotlight_carousel_9XXKjm",
     "product_with_offer_banner_DMRJ84",
     "slideshow_8MBqYK",
     "slideshow_7Dwehj",
