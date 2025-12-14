@@ -342,14 +342,14 @@
           "type": "brand_tab",
           "settings": {
             "brand_name": "Brand",
-            "collection": "ignore-dev-purpose-tester"
+            "collection": "ignore-dev-purpose-tester-copy"
           }
         },
         "brand_tab_JRYtcX": {
           "type": "brand_tab",
           "settings": {
             "brand_name": "Microsoft",
-            "collection": "ignore-dev-purpose-tester"
+            "collection": "ignore-dev-purpose-tester-copy-1"
           }
         },
         "brand_tab_XK8gn9": {
@@ -357,7 +357,7 @@
           "settings": {
             "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
             "brand_name": "Razer",
-            "collection": "business-laptops"
+            "collection": "ignore-dev-purpose-tester-copy"
           }
         },
         "brand_tab_bwW4kh": {
@@ -365,7 +365,7 @@
           "settings": {
             "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
             "brand_name": "Dell",
-            "collection": "ignore-dev-purpose-tester"
+            "collection": "ignore-dev-purpose-tester-copy-1"
           }
         },
         "brand_tab_NEBKaB": {
@@ -373,7 +373,7 @@
           "settings": {
             "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
             "brand_name": "HP",
-            "collection": "ignore-dev-purpose-tester"
+            "collection": "ignore-dev-purpose-tester-copy"
           }
         }
       },
