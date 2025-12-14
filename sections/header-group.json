@@ -377,7 +377,6 @@
             "show_button": true,
             "button_text": "Shop Now",
             "button_link": "",
-            "background_image": "shopify://shop_images/Untitled_design_26_1cc3d228-12af-440d-84b5-64bb5b530b85.png",
             "tile_style": "looptech-tile-shark",
             "gradient_start": "#1f2937",
             "gradient_end": "#111827"
@@ -421,7 +420,7 @@
       ],
       "name": "Looptech Hero Section",
       "settings": {
-        "container_max_width": 1400,
+        "container_max_width": 1300,
         "padding_top": 32,
         "padding_bottom": 32,
         "padding_horizontal": 16,
