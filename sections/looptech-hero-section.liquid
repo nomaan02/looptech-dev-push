@@ -335,16 +335,28 @@
   .looptech-shop-btn {
     position: relative;
     z-index: 10;
-    display: inline-block;
+
+    display: inline-flex;          /* was inline-block */
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    
     padding: 0.625rem 1.25rem;
+    min-height: 40px;
+
+
     background: #ffffff;
     color: hsl(240, 10%, 10%);
     font-weight: 600;
     border-radius: 9999px;
     font-size: 0.875rem;
+    line-height: 1;
+    white-space: nowrap;
+   
     text-decoration: none;
-    border: none;
+    border: 1px solid rgba(0,0,0,0.08);
     cursor: pointer;
+    
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     transition: background 0.2s ease;
     margin-top: 1rem;
