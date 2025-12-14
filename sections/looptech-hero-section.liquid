@@ -1,18 +1,18 @@
 {% comment %}
-  Looptech Hero Section
-  ====================
+  Looptech Hero Section - Block-Based Architecture
+  =================================================
   A hero banner grid with full-width welcome banner and promotional tiles.
-  
+  Each tile is a separate block with its own editable settings.
+
   INSTALLATION:
   1. Copy this entire file to your theme's 'sections' folder
   2. In Shopify Admin, go to Online Store > Themes > Customize
   3. Click "Add section" and select "Looptech Hero Section"
-  4. Configure the settings in the customizer sidebar
-  
+  4. Add blocks for each tile you want to display
+  5. Configure each block's settings independently
+
   File: sections/looptech-hero-section.liquid
 {% endcomment %}
-
-{{ 'looptech-hero.css' | asset_url | stylesheet_tag }}
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Caveat:wght@500;600&display=swap');
@@ -29,9 +29,9 @@
   }
 
   .looptech-hero-container {
-    max-width: 1400px;
+    max-width: {{ section.settings.container_max_width }}px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_horizontal }}px {{ section.settings.padding_bottom }}px;
   }
 
   /* Full Width Welcome Banner */
@@ -190,10 +190,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
 
   .looptech-device-content {
     text-align: center;
+  }
+
+  .looptech-device-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .looptech-device-logo {
@@ -223,8 +230,8 @@
   .looptech-promo-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: {{ section.settings.tile_gap }}px;
+    margin-top: {{ section.settings.tile_gap }}px;
   }
 
   @media (min-width: 768px) {
@@ -236,7 +243,7 @@
   .looptech-promo-left {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: {{ section.settings.tile_gap }}px;
   }
 
   .looptech-promo-right {
@@ -348,6 +355,14 @@
   }
 
   /* Decorative Elements */
+  .looptech-decorative-image {
+    position: absolute;
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: contain;
+    opacity: 0.6;
+  }
+
   .looptech-shark-fin {
     position: absolute;
     right: 1rem;
@@ -404,227 +419,587 @@
   .looptech-apple-item:nth-child(4) { width: 3rem; height: 3rem; border-radius: 50%; background: rgba(255, 255, 255, 0.15); }
   .looptech-apple-item:nth-child(5) { width: 3rem; height: 3.5rem; }
   .looptech-apple-item:nth-child(6) { width: 3rem; height: 2rem; background: rgba(255, 255, 255, 0.15); }
+
+  /* Background image support for tiles */
+  .looptech-promo-tile-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+    z-index: 1;
+  }
+
+  .looptech-promo-tile > * {
+    position: relative;
+    z-index: 2;
+  }
 </style>
 
 <div class="looptech-hero">
   <div class="looptech-hero-container">
-    
-    {%- comment -%} Full Width Welcome Banner {%- endcomment -%}
-    <div class="looptech-welcome-banner">
-      <div class="looptech-banner-content">
-        
-        {%- comment -%} Left Content {%- endcomment -%}
-        <div class="looptech-banner-text">
-          <h1 class="looptech-banner-title">{{ section.settings.banner_title }}</h1>
-          <h2 class="looptech-banner-subtitle">{{ section.settings.banner_subtitle }}</h2>
-          <p class="looptech-banner-description">{{ section.settings.banner_description }}</p>
-        </div>
 
-        {%- comment -%} Curved Arrow {%- endcomment -%}
-        <div class="looptech-arrow">
-          <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
-            <path d="M10 60 Q 60 10 110 40" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
-            <path d="M100 30 L 110 40 L 98 48" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          </svg>
-        </div>
+    {% for block in section.blocks %}
 
-        {%- comment -%} Device Preview {%- endcomment -%}
-        <div class="looptech-device-preview">
-          <div class="looptech-device-frame">
-            <div class="looptech-device-screen">
-              <div class="looptech-device-content">
-                <div class="looptech-device-logo">
-                  <span>{{ section.settings.device_logo_letter }}</span>
-                </div>
-                <p class="looptech-device-label">{{ section.settings.device_label }}</p>
+      {%- comment -%} Block 1: Welcome Banner (Full Width) {%- endcomment -%}
+      {% if block.type == 'welcome_banner' %}
+        <div class="looptech-welcome-banner" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);">
+          <div class="looptech-banner-content">
+
+            {%- comment -%} Left Content {%- endcomment -%}
+            <div class="looptech-banner-text">
+              {% if block.settings.title != blank %}
+                <h1 class="looptech-banner-title">{{ block.settings.title }}</h1>
+              {% endif %}
+
+              {% if block.settings.show_subtitle and block.settings.subtitle != blank %}
+                <h2 class="looptech-banner-subtitle">{{ block.settings.subtitle }}</h2>
+              {% endif %}
+
+              {% if block.settings.show_description and block.settings.description != blank %}
+                <p class="looptech-banner-description">{{ block.settings.description }}</p>
+              {% endif %}
+            </div>
+
+            {%- comment -%} Curved Arrow {%- endcomment -%}
+            {% if block.settings.show_arrow %}
+              <div class="looptech-arrow">
+                <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
+                  <path d="M10 60 Q 60 10 110 40" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+                  <path d="M100 30 L 110 40 L 98 48" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
               </div>
+            {% endif %}
+
+            {%- comment -%} Device Preview {%- endcomment -%}
+            {% if block.settings.show_device %}
+              <div class="looptech-device-preview">
+                <div class="looptech-device-frame">
+                  <div class="looptech-device-screen">
+                    {% if block.settings.device_image != blank %}
+                      {{ block.settings.device_image | image_url: width: 256 | image_tag: class: 'looptech-device-image', loading: 'lazy' }}
+                    {% else %}
+                      <div class="looptech-device-content">
+                        <div class="looptech-device-logo">
+                          <span>{{ block.settings.device_logo_letter }}</span>
+                        </div>
+                        <p class="looptech-device-label">{{ block.settings.device_label }}</p>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+      {% endif %}
+
+      {%- comment -%} Store promo tiles for grid rendering {%- endcomment -%}
+      {% if block.type == 'promo_tile_horizontal' or block.type == 'promo_tile_vertical' %}
+        {% unless forloop.first %}
+          {% if forloop.index == 2 %}
+            {%- comment -%} Start promo grid after welcome banner {%- endcomment -%}
+            <div class="looptech-promo-grid">
+              <div class="looptech-promo-left">
+          {% endif %}
+        {% endunless %}
+
+        {%- comment -%} Horizontal Promo Tiles (Shark & Black Friday) {%- endcomment -%}
+        {% if block.type == 'promo_tile_horizontal' %}
+          <div class="looptech-promo-tile {{ block.settings.tile_style }}" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);">
+
+            {% if block.settings.background_image != blank %}
+              {{ block.settings.background_image | image_url: width: 800 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
+            {% endif %}
+
+            <div class="looptech-tile-title">
+              {% if block.settings.line_1 != blank %}
+                <span class="looptech-tile-title-line">{{ block.settings.line_1 }}</span>
+              {% endif %}
+
+              {% if block.settings.line_2 != blank %}
+                <span class="looptech-tile-title-line">{{ block.settings.line_2 }}</span>
+              {% endif %}
+
+              {% if block.settings.show_subtitle and block.settings.subtitle != blank %}
+                <span class="looptech-tile-title-sub">{{ block.settings.subtitle }}</span>
+              {% endif %}
+            </div>
+
+            {%- comment -%} Decorative Elements {%- endcomment -%}
+            {% if block.settings.decorative_image != blank %}
+              {{ block.settings.decorative_image | image_url: width: 200 | image_tag: class: 'looptech-decorative-image', loading: 'lazy', style: 'right: 1rem; bottom: 1rem;' }}
+            {% elsif block.settings.tile_style == 'looptech-tile-shark' %}
+              <div class="looptech-shark-fin">
+                <svg width="100" height="80" viewBox="0 0 100 80" fill="white">
+                  <path d="M50 0 L80 80 L20 80 Z"/>
+                </svg>
+              </div>
+            {% elsif block.settings.tile_style == 'looptech-tile-friday' %}
+              <div class="looptech-phones">
+                <div class="looptech-phone"></div>
+                <div class="looptech-phone"></div>
+              </div>
+            {% endif %}
+
+            {% if block.settings.show_button and block.settings.button_text != blank %}
+              <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {%- comment -%} Close left column and start right column for vertical tile {%- endcomment -%}
+        {% if block.type == 'promo_tile_vertical' %}
+          {%- comment -%} Close left column if it was opened {%- endcomment -%}
+          {% assign has_left_tiles = false %}
+          {% for b in section.blocks %}
+            {% if b.type == 'promo_tile_horizontal' %}
+              {% assign has_left_tiles = true %}
+            {% endif %}
+          {% endfor %}
+
+          {% if has_left_tiles %}
+            </div> {%- comment -%} Close looptech-promo-left {%- endcomment -%}
+          {% endif %}
+
+          {%- comment -%} Vertical Promo Tile (Apple) {%- endcomment -%}
+          <div class="looptech-promo-right">
+            <div class="looptech-promo-tile {{ block.settings.tile_style }} full-height" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);">
+
+              {% if block.settings.background_image != blank %}
+                {{ block.settings.background_image | image_url: width: 600 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
+              {% endif %}
+
+              <div class="looptech-tile-title">
+                {% if block.settings.line_1 != blank %}
+                  <span class="looptech-tile-title-line looptech-tile-title-muted">{{ block.settings.line_1 }}</span>
+                {% endif %}
+
+                {% if block.settings.line_2 != blank %}
+                  <span class="looptech-tile-title-line looptech-handwritten">{{ block.settings.line_2 }}</span>
+                {% endif %}
+
+                {% if block.settings.line_3 != blank %}
+                  <span class="looptech-tile-title-line looptech-tile-title-muted">{{ block.settings.line_3 }}</span>
+                {% endif %}
+              </div>
+
+              {%- comment -%} Decorative Grid or Custom Image {%- endcomment -%}
+              {% if block.settings.product_grid_image != blank %}
+                {{ block.settings.product_grid_image | image_url: width: 200 | image_tag: class: 'looptech-decorative-image', loading: 'lazy', style: 'right: 1rem; top: 50%; transform: translateY(-50%);' }}
+              {% else %}
+                <div class="looptech-apple-grid">
+                  <div class="looptech-apple-item"></div>
+                  <div class="looptech-apple-item"></div>
+                  <div class="looptech-apple-item"></div>
+                  <div class="looptech-apple-item"></div>
+                  <div class="looptech-apple-item"></div>
+                  <div class="looptech-apple-item"></div>
+                </div>
+              {% endif %}
+
+              {% if block.settings.show_button and block.settings.button_text != blank %}
+                <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
+              {% endif %}
             </div>
           </div>
-        </div>
-        
-      </div>
-    </div>
 
-    {%- comment -%} Promo Tiles Grid {%- endcomment -%}
-    <div class="looptech-promo-grid">
-      
-      {%- comment -%} Left Column - Stacked Tiles {%- endcomment -%}
-      <div class="looptech-promo-left">
-        
-        {%- comment -%} Shark Tile {%- endcomment -%}
-        <div class="looptech-promo-tile looptech-tile-shark">
-          <div class="looptech-tile-title">
-            <span class="looptech-tile-title-line">{{ section.settings.tile1_line1 }}</span>
-            <span class="looptech-tile-title-line">{{ section.settings.tile1_line2 }}</span>
-            <span class="looptech-tile-title-sub">{{ section.settings.tile1_subtitle }}</span>
-          </div>
-          <div class="looptech-shark-fin">
-            <svg width="100" height="80" viewBox="0 0 100 80" fill="white">
-              <path d="M50 0 L80 80 L20 80 Z"/>
-            </svg>
-          </div>
-          <a href="{{ section.settings.tile1_link }}" class="looptech-shop-btn">Shop Now</a>
-        </div>
+          </div> {%- comment -%} Close looptech-promo-grid {%- endcomment -%}
+        {% endif %}
 
-        {%- comment -%} Black Friday Tile {%- endcomment -%}
-        <div class="looptech-promo-tile looptech-tile-friday">
-          <div class="looptech-tile-title">
-            <span class="looptech-tile-title-line">{{ section.settings.tile2_line1 }}</span>
-            <span class="looptech-tile-title-line">{{ section.settings.tile2_line2 }}</span>
-          </div>
-          <div class="looptech-phones">
-            <div class="looptech-phone"></div>
-            <div class="looptech-phone"></div>
-          </div>
-          <a href="{{ section.settings.tile2_link }}" class="looptech-shop-btn">Shop Now</a>
-        </div>
-        
-      </div>
+      {% endif %}
 
-      {%- comment -%} Right Column - Tall Apple Tile {%- endcomment -%}
-      <div class="looptech-promo-right">
-        <div class="looptech-promo-tile looptech-tile-apple full-height">
-          <div class="looptech-tile-title">
-            <span class="looptech-tile-title-line looptech-tile-title-muted">{{ section.settings.tile3_line1 }}</span>
-            <span class="looptech-tile-title-line looptech-handwritten">{{ section.settings.tile3_line2 }}</span>
-            <span class="looptech-tile-title-line looptech-tile-title-muted">{{ section.settings.tile3_line3 }}</span>
-          </div>
-          <div class="looptech-apple-grid">
-            <div class="looptech-apple-item"></div>
-            <div class="looptech-apple-item"></div>
-            <div class="looptech-apple-item"></div>
-            <div class="looptech-apple-item"></div>
-            <div class="looptech-apple-item"></div>
-            <div class="looptech-apple-item"></div>
-          </div>
-          <a href="{{ section.settings.tile3_link }}" class="looptech-shop-btn">Shop Now</a>
-        </div>
-      </div>
-      
-    </div>
-    
+    {% endfor %}
+
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "Looptech Hero",
+  "name": "Looptech Hero Section",
   "tag": "section",
-  "class": "looptech-hero-section",
+  "class": "looptech-hero-wrapper",
   "settings": [
     {
       "type": "header",
-      "content": "Welcome Banner"
+      "content": "Container Settings"
     },
     {
-      "type": "text",
-      "id": "banner_title",
-      "label": "Title",
-      "default": "Welcome Back,"
+      "type": "range",
+      "id": "container_max_width",
+      "label": "Maximum Container Width",
+      "min": 1000,
+      "max": 1600,
+      "step": 50,
+      "default": 1400,
+      "unit": "px"
     },
     {
-      "type": "text",
-      "id": "banner_subtitle",
-      "label": "Subtitle",
-      "default": "Wow! That's New."
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
     },
     {
-      "type": "textarea",
-      "id": "banner_description",
-      "label": "Description",
-      "default": "Discover our new toggle feature! Switch between brand new and renewed products with a single click. Same quality, smarter choices."
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
     },
     {
-      "type": "text",
-      "id": "device_logo_letter",
-      "label": "Device Logo Letter",
-      "default": "L"
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Horizontal Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
     },
     {
-      "type": "text",
-      "id": "device_label",
-      "label": "Device Label",
-      "default": "Looptech Store"
+      "type": "range",
+      "id": "tile_gap",
+      "label": "Gap Between Tiles",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "welcome_banner",
+      "name": "Welcome Banner",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Text Content"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Welcome Back,"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_subtitle",
+          "label": "Show Subtitle",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Wow! That's New."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_description",
+          "label": "Show Description",
+          "default": true
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Discover our new toggle feature! Switch between brand new and renewed products with a single click. Same quality, smarter choices."
+        },
+        {
+          "type": "header",
+          "content": "Device Preview"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_device",
+          "label": "Show Device Preview",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "device_image",
+          "label": "Device Screen Image",
+          "info": "Recommended: 256px × 320px (portrait orientation). Leave empty to show logo placeholder."
+        },
+        {
+          "type": "text",
+          "id": "device_logo_letter",
+          "label": "Logo Letter (if no image)",
+          "default": "L"
+        },
+        {
+          "type": "text",
+          "id": "device_label",
+          "label": "Device Label (if no image)",
+          "default": "Looptech Store"
+        },
+        {
+          "type": "header",
+          "content": "Decorative Elements"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_arrow",
+          "label": "Show Curved Arrow",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Colors"
+        },
+        {
+          "type": "color",
+          "id": "gradient_start",
+          "label": "Gradient Start Color",
+          "default": "#0f172a"
+        },
+        {
+          "type": "color",
+          "id": "gradient_end",
+          "label": "Gradient End Color",
+          "default": "#1a1035"
+        }
+      ]
     },
     {
-      "type": "header",
-      "content": "Tile 1 - Shark Sale"
+      "type": "promo_tile_horizontal",
+      "name": "Horizontal Promo Tile",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Text Content"
+        },
+        {
+          "type": "text",
+          "id": "line_1",
+          "label": "Line 1 Text",
+          "default": "Gawk Gawk"
+        },
+        {
+          "type": "text",
+          "id": "line_2",
+          "label": "Line 2 Text",
+          "default": "9000."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_subtitle",
+          "label": "Show Subtitle",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Shark Megasale"
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button",
+          "label": "Show Button",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "header",
+          "content": "Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image (Optional)",
+          "info": "Recommended: 800px × 320px (landscape). Will be overlaid with gradient at 30% opacity."
+        },
+        {
+          "type": "image_picker",
+          "id": "decorative_image",
+          "label": "Decorative Image (Optional)",
+          "info": "Recommended: 200px × 200px (square or portrait). Replaces default SVG decoration."
+        },
+        {
+          "type": "header",
+          "content": "Style"
+        },
+        {
+          "type": "select",
+          "id": "tile_style",
+          "label": "Tile Style Preset",
+          "options": [
+            { "value": "looptech-tile-shark", "label": "Shark (Gray gradient with shark fin SVG)" },
+            { "value": "looptech-tile-friday", "label": "Friday (Purple gradient with phone silhouettes)" }
+          ],
+          "default": "looptech-tile-shark",
+          "info": "Choose preset or customize with gradient colors below"
+        },
+        {
+          "type": "color",
+          "id": "gradient_start",
+          "label": "Custom Gradient Start",
+          "default": "#1f2937"
+        },
+        {
+          "type": "color",
+          "id": "gradient_end",
+          "label": "Custom Gradient End",
+          "default": "#111827"
+        }
+      ]
     },
     {
-      "type": "text",
-      "id": "tile1_line1",
-      "label": "Line 1",
-      "default": "Gawk Gawk"
-    },
-    {
-      "type": "text",
-      "id": "tile1_line2",
-      "label": "Line 2",
-      "default": "9000."
-    },
-    {
-      "type": "text",
-      "id": "tile1_subtitle",
-      "label": "Subtitle",
-      "default": "Shark Megasale"
-    },
-    {
-      "type": "url",
-      "id": "tile1_link",
-      "label": "Link"
-    },
-    {
-      "type": "header",
-      "content": "Tile 2 - Black Friday"
-    },
-    {
-      "type": "text",
-      "id": "tile2_line1",
-      "label": "Line 1",
-      "default": "Black Friday,"
-    },
-    {
-      "type": "text",
-      "id": "tile2_line2",
-      "label": "Line 2",
-      "default": "Every Friday"
-    },
-    {
-      "type": "url",
-      "id": "tile2_link",
-      "label": "Link"
-    },
-    {
-      "type": "header",
-      "content": "Tile 3 - Apple"
-    },
-    {
-      "type": "text",
-      "id": "tile3_line1",
-      "label": "Line 1",
-      "default": "Go"
-    },
-    {
-      "type": "text",
-      "id": "tile3_line2",
-      "label": "Line 2 (Handwritten)",
-      "default": "Apple"
-    },
-    {
-      "type": "text",
-      "id": "tile3_line3",
-      "label": "Line 3",
-      "default": "Picking"
-    },
-    {
-      "type": "url",
-      "id": "tile3_link",
-      "label": "Link"
+      "type": "promo_tile_vertical",
+      "name": "Vertical Promo Tile",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Text Content"
+        },
+        {
+          "type": "text",
+          "id": "line_1",
+          "label": "Line 1 Text",
+          "default": "Go"
+        },
+        {
+          "type": "text",
+          "id": "line_2",
+          "label": "Line 2 Text (Handwritten Style)",
+          "default": "Apple"
+        },
+        {
+          "type": "text",
+          "id": "line_3",
+          "label": "Line 3 Text",
+          "default": "Picking"
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_button",
+          "label": "Show Button",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "header",
+          "content": "Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image (Optional)",
+          "info": "Recommended: 600px × 672px (portrait). Will be overlaid with gradient at 30% opacity."
+        },
+        {
+          "type": "image_picker",
+          "id": "product_grid_image",
+          "label": "Product Grid Image (Optional)",
+          "info": "Recommended: 200px × 200px (square). Replaces default Apple product grid."
+        },
+        {
+          "type": "header",
+          "content": "Style"
+        },
+        {
+          "type": "select",
+          "id": "tile_style",
+          "label": "Tile Style Preset",
+          "options": [
+            { "value": "looptech-tile-apple", "label": "Apple (Navy gradient with product grid)" }
+          ],
+          "default": "looptech-tile-apple"
+        },
+        {
+          "type": "color",
+          "id": "gradient_start",
+          "label": "Custom Gradient Start",
+          "default": "#1e3a5f"
+        },
+        {
+          "type": "color",
+          "id": "gradient_end",
+          "label": "Custom Gradient End",
+          "default": "#0c1929"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Looptech Hero"
+      "name": "Looptech Hero Section",
+      "blocks": [
+        {
+          "type": "welcome_banner"
+        },
+        {
+          "type": "promo_tile_horizontal",
+          "settings": {
+            "line_1": "Gawk Gawk",
+            "line_2": "9000.",
+            "subtitle": "Shark Megasale",
+            "tile_style": "looptech-tile-shark"
+          }
+        },
+        {
+          "type": "promo_tile_horizontal",
+          "settings": {
+            "line_1": "Black Friday,",
+            "line_2": "Every Friday",
+            "tile_style": "looptech-tile-friday",
+            "gradient_start": "#7c3aed",
+            "gradient_end": "#5b21b6",
+            "show_subtitle": false
+          }
+        },
+        {
+          "type": "promo_tile_vertical",
+          "settings": {
+            "line_1": "Go",
+            "line_2": "Apple",
+            "line_3": "Picking"
+          }
+        }
+      ]
     }
   ]
 }
