@@ -358,7 +358,7 @@
           "settings": {
             "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
             "brand_name": "Razer",
-            "collection": "ignore-dev-purpose-tester-copy"
+            "collection": "bn-ignore-dev-purpose-tester-copy"
           }
         },
         "brand_tab_bwW4kh": {
@@ -374,7 +374,7 @@
           "settings": {
             "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
             "brand_name": "HP",
-            "collection": "ignore-dev-purpose-tester-copy"
+            "collection": "bn-ignore-dev-purpose-tester-copy"
           }
         }
       },
@@ -393,7 +393,7 @@
         "hero_position": "left",
         "section_heading": "Top brands. Renewed.",
         "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
-        "featured_collection": "ignore-dev-purpose-tester-copy",
+        "featured_collection": "bn-ignore-dev-purpose-tester-copy",
         "featured_collection_refurbished": "rn-ignore-dev-purpose-tester-copy-1",
         "section_height": 650,
         "desktop_column_layout": "two-column",
