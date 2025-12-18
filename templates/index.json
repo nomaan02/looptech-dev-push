@@ -350,7 +350,7 @@
           "type": "brand_tab",
           "settings": {
             "brand_name": "Microsoft",
-            "collection": "ignore-dev-purpose-tester-copy-1"
+            "collection": "rn-ignore-dev-purpose-tester-copy-1"
           }
         },
         "brand_tab_XK8gn9": {
@@ -366,7 +366,7 @@
           "settings": {
             "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
             "brand_name": "Dell",
-            "collection": "ignore-dev-purpose-tester-copy-1"
+            "collection": "rn-ignore-dev-purpose-tester-copy-1"
           }
         },
         "brand_tab_NEBKaB": {
@@ -394,7 +394,7 @@
         "section_heading": "Top brands. Renewed.",
         "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
         "featured_collection": "ignore-dev-purpose-tester-copy",
-        "featured_collection_refurbished": "ignore-dev-purpose-tester-copy-1",
+        "featured_collection_refurbished": "rn-ignore-dev-purpose-tester-copy-1",
         "section_height": 650,
         "desktop_column_layout": "two-column",
         "desktop_show_hero": true,
