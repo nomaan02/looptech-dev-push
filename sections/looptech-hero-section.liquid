@@ -39,191 +39,111 @@
     position: relative;
     overflow: hidden;
     border-radius: 1rem;
-    background: linear-gradient(135deg, hsl(var(--lt-navy)) 0%, hsl(var(--lt-purple)) 100%);
-    padding: 3rem;
+    padding: 0;
+    min-height: 160px;              /* Reduced by 50% from 320px */
+    height: 160px;                  /* Fixed height to match other tiles */
     display: flex;
     align-items: center;
   }
 
-  .looptech-welcome-banner::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 25%;
-    width: 24rem;
-    height: 24rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-    filter: blur(48px);
+  @media (min-width: 768px) {
+    .looptech-welcome-banner {
+      height: 180px;                /* Match other tiles on larger screens */
+    }
   }
 
-  .looptech-welcome-banner::after {
-    content: '';
+  /* Background image for welcome banner */
+  .looptech-welcome-banner-bg {
     position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
-    left: 33%;
-    width: 16rem;
-    height: 16rem;
-    background: rgba(167, 139, 250, 0.1);
-    border-radius: 50%;
-    filter: blur(32px);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 1;
+    z-index: 1;
+    border-radius: 1rem;
+  }
+
+  /* Gradient overlay for welcome banner */
+  .looptech-welcome-gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    border-radius: 1rem;
+    pointer-events: none;
+  }
+
+  .looptech-welcome-gradient-overlay.with-image {
+    opacity: 0.85;
+  }
+
+  .looptech-welcome-gradient-overlay.no-image {
+    opacity: 1;
   }
 
   .looptech-banner-content {
     position: relative;
     z-index: 10;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    padding: 1.5rem 2rem;
     width: 100%;
-  }
-
-  @media (min-width: 768px) {
-    .looptech-banner-content {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
+    height: 100%;
+    display: flex;
+    align-items: center;
   }
 
   .looptech-banner-text {
     flex: 1;
-    max-width: 32rem;
+    max-width: 100%;
   }
 
   .looptech-banner-title {
-    font-size: 2.5rem;
+    font-size: 1.5rem;              /* Reduced for smaller container */
     font-weight: 700;
     color: #ffffff;
-    margin: 0 0 0.5rem 0;
-    line-height: 1.1;
+    margin: 0 0 0.25rem 0;
+    line-height: 1.2;
   }
 
   @media (min-width: 768px) {
     .looptech-banner-title {
-      font-size: 3rem;
+      font-size: 1.875rem;           /* Match other tile titles */
     }
   }
 
   .looptech-banner-subtitle {
-    font-size: 1.875rem;
-    font-weight: 700;
+    font-size: 1.25rem;              /* Reduced for smaller container */
+    font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0;
     line-height: 1.2;
   }
 
   @media (min-width: 768px) {
     .looptech-banner-subtitle {
-      font-size: 2.25rem;
+      font-size: 1.5rem;
     }
   }
 
   .looptech-banner-description {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1rem;
-    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;             /* Reduced for smaller container */
+    line-height: 1.4;
     margin: 0;
   }
 
   @media (min-width: 768px) {
     .looptech-banner-description {
-      font-size: 1.125rem;
+      font-size: 1rem;
     }
   }
 
-  /* Curved Arrow */
-  .looptech-arrow {
-    display: none;
-  }
-
-  @media (min-width: 768px) {
-    .looptech-arrow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-
-  .looptech-arrow svg {
-    color: rgba(255, 255, 255, 0.6);
-  }
-
-  /* iPad Placeholder */
-  .looptech-device-preview {
-    flex: 1;
-    max-width: 16rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  @media (min-width: 768px) {
-    .looptech-device-preview {
-      justify-content: flex-end;
-    }
-  }
-
-  .looptech-device-frame {
-    position: relative;
-    width: 16rem;
-    height: 20rem;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    border-radius: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 0.75rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    transform: rotate(3deg);
-    transition: transform 0.5s ease;
-  }
-
-  .looptech-device-frame:hover {
-    transform: rotate(0deg);
-  }
-
-  .looptech-device-screen {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
-    border-radius: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .looptech-device-content {
-    text-align: center;
-  }
-
-  .looptech-device-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .looptech-device-logo {
-    width: 4rem;
-    height: 4rem;
-    margin: 0 auto 0.75rem;
-    border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .looptech-device-logo span {
-    color: #ffffff;
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-
-  .looptech-device-label {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.875rem;
-    margin: 0;
-  }
 
   /* Promo Tiles Grid */
   .looptech-promo-grid {
@@ -254,37 +174,51 @@
     position: relative;
     overflow: hidden;
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 0;                      /* Remove padding to allow image to fill entire tile */
+    height: 160px;                  /* Fixed height instead of min-height */
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     cursor: pointer;
     transition: transform 0.3s ease;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-promo-tile {
+      height: 180px;                /* Slightly taller on larger screens */
+    }
   }
 
   .looptech-promo-tile:hover {
     transform: scale(1.02);
   }
 
-  /* Shark Tile */
-  .looptech-tile-shark {
-    background: linear-gradient(135deg, hsl(240, 20%, 12%) 0%, hsl(240, 30%, 20%) 100%);
+  .looptech-promo-tile.full-height {
+    height: 100%;
+    min-height: 336px;              /* Keeps min-height for full-height variant */
   }
 
-  /* Black Friday Tile */
-  .looptech-tile-friday {
-    background: linear-gradient(135deg, hsl(280, 50%, 30%) 0%, hsl(270, 60%, 45%) 100%);
+  /* Content wrapper for maintaining padding */
+  .looptech-tile-content {
+    position: relative;
+    z-index: 10;
+    padding: 1.5rem;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
   }
 
-  /* Apple Tile */
+  /* Tile style classes - no background since it's handled by gradient overlay */
+  .looptech-tile-shark,
+  .looptech-tile-friday,
   .looptech-tile-apple {
-    background: linear-gradient(135deg, hsl(220, 50%, 15%) 0%, hsl(240, 40%, 25%) 100%);
+    /* Styles are now applied via the gradient overlay */
   }
 
   .looptech-tile-title {
     position: relative;
     z-index: 10;
-    flex: 1;
+    flex: 0 0 auto;                 /* Don't grow, maintain natural size */
   }
 
   .looptech-tile-title-line {
@@ -325,22 +259,20 @@
   }
 
   /* Shop Now Button */
-  .looptech-btn-wrapper {
+  .looptech-shop-btn {
     position: relative;
     z-index: 10;
-    display: flex;
-    align-items: flex-start;
-    margin-top: auto;
-  }
 
-  .looptech-shop-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    align-self: flex-start;        /* Prevents stretching in flex container */
 
-    padding: 0.625rem 1.25rem;
-    min-height: 40px;
+    padding: 0.5rem 1.5rem;        /* Reduced from 0.625rem for 20% height reduction */
+    min-height: 32px;              /* Reduced from 40px (20% reduction) */
+    width: fit-content;            /* Ensures consistent width based on content */
+
 
     background: #ffffff;
     color: hsl(240, 10%, 10%);
@@ -356,6 +288,7 @@
 
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     transition: background 0.2s ease;
+    margin-top: auto;              /* Push button to bottom with consistent spacing */
   }
 
   .looptech-shop-btn:hover {
@@ -367,7 +300,8 @@
     position: absolute;
     max-width: 200px;
     max-height: 200px;
-    object-fit: contain;
+    object-fit: contain;            /* Maintain aspect ratio, fit within bounds */
+    object-position: center;        /* Center the image */
     opacity: 0.6;
   }
 
@@ -433,16 +367,37 @@
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    opacity: 0.3;
+    object-fit: cover;              /* Crop image to fill container */
+    object-position: center;        /* Center the image when cropping */
+    opacity: 1;                     /* Full opacity - let gradient handle darkening */
     z-index: 1;
+    border-radius: 1rem;            /* Match container border radius */
   }
 
-  .looptech-promo-tile > * {
-    position: relative;
+  /* Gradient overlay for better text visibility */
+  .looptech-tile-gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 2;
+    border-radius: 1rem;
+    opacity: 0.85;                  /* Semi-transparent to show image underneath */
+    pointer-events: none;           /* Allow clicks to pass through */
+  }
+
+  /* Different opacity classes for gradient overlay */
+  .looptech-tile-gradient-overlay.with-image {
+    opacity: 0.85;
+  }
+
+  .looptech-tile-gradient-overlay.no-image {
+    opacity: 1;
   }
 </style>
 
@@ -453,10 +408,15 @@
 
       {%- comment -%} Block 1: Welcome Banner (Full Width) {%- endcomment -%}
       {% if block.type == 'welcome_banner' %}
-        <div class="looptech-welcome-banner" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); height: {{ block.settings.banner_height }}px;">
-          <div class="looptech-banner-content">
+        <div class="looptech-welcome-banner" {{ block.shopify_attributes }}>
 
-            {%- comment -%} Left Content {%- endcomment -%}
+          {% if block.settings.background_image != blank %}
+            {{ block.settings.background_image | image_url: width: 1400 | image_tag: class: 'looptech-welcome-banner-bg', loading: 'lazy' }}
+          {% endif %}
+
+          <div class="looptech-welcome-gradient-overlay {% if block.settings.background_image != blank %}with-image{% else %}no-image{% endif %}" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);"></div>
+
+          <div class="looptech-banner-content">
             <div class="looptech-banner-text">
               {% if block.settings.title != blank %}
                 <h1 class="looptech-banner-title">{{ block.settings.title }}</h1>
@@ -470,37 +430,6 @@
                 <p class="looptech-banner-description">{{ block.settings.description }}</p>
               {% endif %}
             </div>
-
-            {%- comment -%} Curved Arrow {%- endcomment -%}
-            {% if block.settings.show_arrow %}
-              <div class="looptech-arrow">
-                <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
-                  <path d="M10 60 Q 60 10 110 40" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
-                  <path d="M100 30 L 110 40 L 98 48" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                </svg>
-              </div>
-            {% endif %}
-
-            {%- comment -%} Device Preview {%- endcomment -%}
-            {% if block.settings.show_device %}
-              <div class="looptech-device-preview">
-                <div class="looptech-device-frame">
-                  <div class="looptech-device-screen">
-                    {% if block.settings.device_image != blank %}
-                      {{ block.settings.device_image | image_url: width: 256 | image_tag: class: 'looptech-device-image', loading: 'lazy' }}
-                    {% else %}
-                      <div class="looptech-device-content">
-                        <div class="looptech-device-logo">
-                          <span>{{ block.settings.device_logo_letter }}</span>
-                        </div>
-                        <p class="looptech-device-label">{{ block.settings.device_label }}</p>
-                      </div>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-
           </div>
         </div>
       {% endif %}
@@ -517,47 +446,49 @@
 
         {%- comment -%} Horizontal Promo Tiles (Shark & Black Friday) {%- endcomment -%}
         {% if block.type == 'promo_tile_horizontal' %}
-          <div class="looptech-promo-tile {{ block.settings.tile_style }}" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); height: {{ block.settings.tile_height }}px;">
+          <div class="looptech-promo-tile {{ block.settings.tile_style }}" {{ block.shopify_attributes }}>
 
             {% if block.settings.background_image != blank %}
               {{ block.settings.background_image | image_url: width: 800 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
             {% endif %}
 
-            <div class="looptech-tile-title">
-              {% if block.settings.line_1 != blank %}
-                <span class="looptech-tile-title-line">{{ block.settings.line_1 }}</span>
+            <div class="looptech-tile-gradient-overlay {% if block.settings.background_image != blank %}with-image{% else %}no-image{% endif %}" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);"></div>
+
+            <div class="looptech-tile-content">
+              <div class="looptech-tile-title">
+                {% if block.settings.line_1 != blank %}
+                  <span class="looptech-tile-title-line">{{ block.settings.line_1 }}</span>
+                {% endif %}
+
+                {% if block.settings.line_2 != blank %}
+                  <span class="looptech-tile-title-line">{{ block.settings.line_2 }}</span>
+                {% endif %}
+
+                {% if block.settings.show_subtitle and block.settings.subtitle != blank %}
+                  <span class="looptech-tile-title-sub">{{ block.settings.subtitle }}</span>
+                {% endif %}
+              </div>
+
+              {%- comment -%} Decorative Elements {%- endcomment -%}
+              {% if block.settings.decorative_image != blank %}
+                {{ block.settings.decorative_image | image_url: width: 200 | image_tag: class: 'looptech-decorative-image', loading: 'lazy', style: 'right: 1rem; bottom: 1rem;' }}
+              {% elsif block.settings.tile_style == 'looptech-tile-shark' %}
+                <div class="looptech-shark-fin">
+                  <svg width="100" height="80" viewBox="0 0 100 80" fill="white">
+                    <path d="M50 0 L80 80 L20 80 Z"/>
+                  </svg>
+                </div>
+              {% elsif block.settings.tile_style == 'looptech-tile-friday' %}
+                <div class="looptech-phones">
+                  <div class="looptech-phone"></div>
+                  <div class="looptech-phone"></div>
+                </div>
               {% endif %}
 
-              {% if block.settings.line_2 != blank %}
-                <span class="looptech-tile-title-line">{{ block.settings.line_2 }}</span>
-              {% endif %}
-
-              {% if block.settings.show_subtitle and block.settings.subtitle != blank %}
-                <span class="looptech-tile-title-sub">{{ block.settings.subtitle }}</span>
+              {% if block.settings.show_button and block.settings.button_text != blank %}
+                <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
               {% endif %}
             </div>
-
-            {%- comment -%} Decorative Elements {%- endcomment -%}
-            {% if block.settings.decorative_image != blank %}
-              {{ block.settings.decorative_image | image_url: width: 200 | image_tag: class: 'looptech-decorative-image', loading: 'lazy', style: 'right: 1rem; bottom: 1rem;' }}
-            {% elsif block.settings.tile_style == 'looptech-tile-shark' %}
-              <div class="looptech-shark-fin">
-                <svg width="100" height="80" viewBox="0 0 100 80" fill="white">
-                  <path d="M50 0 L80 80 L20 80 Z"/>
-                </svg>
-              </div>
-            {% elsif block.settings.tile_style == 'looptech-tile-friday' %}
-              <div class="looptech-phones">
-                <div class="looptech-phone"></div>
-                <div class="looptech-phone"></div>
-              </div>
-            {% endif %}
-
-            {% if block.settings.show_button and block.settings.button_text != blank %}
-              <div class="looptech-btn-wrapper">
-                <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
-              </div>
-            {% endif %}
           </div>
         {% endif %}
 
@@ -577,45 +508,47 @@
 
           {%- comment -%} Vertical Promo Tile (Apple) {%- endcomment -%}
           <div class="looptech-promo-right">
-            <div class="looptech-promo-tile {{ block.settings.tile_style }} full-height" {{ block.shopify_attributes }} style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); height: {{ block.settings.tile_height }}px;">
+            <div class="looptech-promo-tile {{ block.settings.tile_style }} full-height" {{ block.shopify_attributes }}>
 
               {% if block.settings.background_image != blank %}
                 {{ block.settings.background_image | image_url: width: 600 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
               {% endif %}
 
-              <div class="looptech-tile-title">
-                {% if block.settings.line_1 != blank %}
-                  <span class="looptech-tile-title-line looptech-tile-title-muted">{{ block.settings.line_1 }}</span>
+              <div class="looptech-tile-gradient-overlay {% if block.settings.background_image != blank %}with-image{% else %}no-image{% endif %}" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);"></div>
+
+              <div class="looptech-tile-content">
+                <div class="looptech-tile-title">
+                  {% if block.settings.line_1 != blank %}
+                    <span class="looptech-tile-title-line looptech-tile-title-muted">{{ block.settings.line_1 }}</span>
+                  {% endif %}
+
+                  {% if block.settings.line_2 != blank %}
+                    <span class="looptech-tile-title-line looptech-handwritten">{{ block.settings.line_2 }}</span>
+                  {% endif %}
+
+                  {% if block.settings.line_3 != blank %}
+                    <span class="looptech-tile-title-line looptech-tile-title-muted">{{ block.settings.line_3 }}</span>
+                  {% endif %}
+                </div>
+
+                {%- comment -%} Decorative Grid or Custom Image {%- endcomment -%}
+                {% if block.settings.product_grid_image != blank %}
+                  {{ block.settings.product_grid_image | image_url: width: 200 | image_tag: class: 'looptech-decorative-image', loading: 'lazy', style: 'right: 1rem; top: 50%; transform: translateY(-50%);' }}
+                {% else %}
+                  <div class="looptech-apple-grid">
+                    <div class="looptech-apple-item"></div>
+                    <div class="looptech-apple-item"></div>
+                    <div class="looptech-apple-item"></div>
+                    <div class="looptech-apple-item"></div>
+                    <div class="looptech-apple-item"></div>
+                    <div class="looptech-apple-item"></div>
+                  </div>
                 {% endif %}
 
-                {% if block.settings.line_2 != blank %}
-                  <span class="looptech-tile-title-line looptech-handwritten">{{ block.settings.line_2 }}</span>
-                {% endif %}
-
-                {% if block.settings.line_3 != blank %}
-                  <span class="looptech-tile-title-line looptech-tile-title-muted">{{ block.settings.line_3 }}</span>
+                {% if block.settings.show_button and block.settings.button_text != blank %}
+                  <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
                 {% endif %}
               </div>
-
-              {%- comment -%} Decorative Grid or Custom Image {%- endcomment -%}
-              {% if block.settings.product_grid_image != blank %}
-                {{ block.settings.product_grid_image | image_url: width: 200 | image_tag: class: 'looptech-decorative-image', loading: 'lazy', style: 'right: 1rem; top: 50%; transform: translateY(-50%);' }}
-              {% else %}
-                <div class="looptech-apple-grid">
-                  <div class="looptech-apple-item"></div>
-                  <div class="looptech-apple-item"></div>
-                  <div class="looptech-apple-item"></div>
-                  <div class="looptech-apple-item"></div>
-                  <div class="looptech-apple-item"></div>
-                  <div class="looptech-apple-item"></div>
-                </div>
-              {% endif %}
-
-              {% if block.settings.show_button and block.settings.button_text != blank %}
-                <div class="looptech-btn-wrapper">
-                  <a href="{{ block.settings.button_link }}" class="looptech-shop-btn">{{ block.settings.button_text }}</a>
-                </div>
-              {% endif %}
             </div>
           </div>
 
@@ -728,60 +661,17 @@
           "type": "textarea",
           "id": "description",
           "label": "Description",
-          "default": "Discover our new toggle feature! Switch between brand new and renewed products with a single click. Same quality, smarter choices."
+          "default": "Discover our new toggle feature! Switch between brand new and renewed products with a single click."
         },
         {
           "type": "header",
-          "content": "Device Preview"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_device",
-          "label": "Show Device Preview",
-          "default": true
+          "content": "Background"
         },
         {
           "type": "image_picker",
-          "id": "device_image",
-          "label": "Device Screen Image",
-          "info": "Recommended: 256px × 320px (portrait orientation). Leave empty to show logo placeholder."
-        },
-        {
-          "type": "text",
-          "id": "device_logo_letter",
-          "label": "Logo Letter (if no image)",
-          "default": "L"
-        },
-        {
-          "type": "text",
-          "id": "device_label",
-          "label": "Device Label (if no image)",
-          "default": "Looptech Store"
-        },
-        {
-          "type": "header",
-          "content": "Decorative Elements"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_arrow",
-          "label": "Show Curved Arrow",
-          "default": true
-        },
-        {
-          "type": "header",
-          "content": "Dimensions"
-        },
-        {
-          "type": "range",
-          "id": "banner_height",
-          "label": "Banner Height",
-          "min": 200,
-          "max": 600,
-          "step": 20,
-          "default": 320,
-          "unit": "px",
-          "info": "Control the height of the banner. Images will be clipped if they exceed this height."
+          "id": "background_image",
+          "label": "Background Image (Optional)",
+          "info": "Recommended: 1400px × 180px (landscape). Will be overlaid with gradient for text visibility."
         },
         {
           "type": "header",
@@ -828,12 +718,6 @@
           "default": true
         },
         {
-          "type": "text",
-          "id": "subtitle",
-          "label": "Subtitle",
-          "default": "Shark Megasale"
-        },
-        {
           "type": "header",
           "content": "Button"
         },
@@ -869,21 +753,6 @@
           "id": "decorative_image",
           "label": "Decorative Image (Optional)",
           "info": "Recommended: 200px × 200px (square or portrait). Replaces default SVG decoration."
-        },
-        {
-          "type": "header",
-          "content": "Dimensions"
-        },
-        {
-          "type": "range",
-          "id": "tile_height",
-          "label": "Tile Height",
-          "min": 120,
-          "max": 400,
-          "step": 10,
-          "default": 160,
-          "unit": "px",
-          "info": "Control the height of the tile. Images will be clipped if they exceed this height."
         },
         {
           "type": "header",
@@ -980,21 +849,6 @@
         },
         {
           "type": "header",
-          "content": "Dimensions"
-        },
-        {
-          "type": "range",
-          "id": "tile_height",
-          "label": "Tile Height",
-          "min": 250,
-          "max": 600,
-          "step": 10,
-          "default": 336,
-          "unit": "px",
-          "info": "Control the height of the tile. Should match the combined height of horizontal tiles. Images will be clipped if they exceed this height."
-        },
-        {
-          "type": "header",
           "content": "Style"
         },
         {
@@ -1033,7 +887,6 @@
           "settings": {
             "line_1": "Gawk Gawk",
             "line_2": "9000.",
-            "subtitle": "Shark Megasale",
             "tile_style": "looptech-tile-shark"
           }
         },
