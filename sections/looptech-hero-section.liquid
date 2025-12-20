@@ -80,14 +80,6 @@
     pointer-events: none;
   }
 
-  .looptech-welcome-gradient-overlay.with-image {
-    opacity: 0.85;
-  }
-
-  .looptech-welcome-gradient-overlay.no-image {
-    opacity: 1;
-  }
-
   .looptech-banner-content {
     position: relative;
     z-index: 10;
@@ -387,17 +379,7 @@
     bottom: 0;
     z-index: 2;
     border-radius: 1rem;
-    opacity: 0.85;                  /* Semi-transparent to show image underneath */
     pointer-events: none;           /* Allow clicks to pass through */
-  }
-
-  /* Different opacity classes for gradient overlay */
-  .looptech-tile-gradient-overlay.with-image {
-    opacity: 0.85;
-  }
-
-  .looptech-tile-gradient-overlay.no-image {
-    opacity: 1;
   }
 </style>
 
@@ -414,7 +396,11 @@
             {{ block.settings.background_image | image_url: width: 1400 | image_tag: class: 'looptech-welcome-banner-bg', loading: 'lazy' }}
           {% endif %}
 
-          <div class="looptech-welcome-gradient-overlay {% if block.settings.background_image != blank %}with-image{% else %}no-image{% endif %}" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);"></div>
+          {% assign overlay_opacity = block.settings.overlay_opacity | default: 85 %}
+          {% if block.settings.background_image == blank %}
+            {% assign overlay_opacity = 100 %}
+          {% endif %}
+          <div class="looptech-welcome-gradient-overlay" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); opacity: {{ overlay_opacity | divided_by: 100.0 }};"></div>
 
           <div class="looptech-banner-content">
             <div class="looptech-banner-text">
@@ -452,7 +438,11 @@
               {{ block.settings.background_image | image_url: width: 800 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
             {% endif %}
 
-            <div class="looptech-tile-gradient-overlay {% if block.settings.background_image != blank %}with-image{% else %}no-image{% endif %}" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);"></div>
+            {% assign overlay_opacity = block.settings.overlay_opacity | default: 85 %}
+            {% if block.settings.background_image == blank %}
+              {% assign overlay_opacity = 100 %}
+            {% endif %}
+            <div class="looptech-tile-gradient-overlay" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); opacity: {{ overlay_opacity | divided_by: 100.0 }};"></div>
 
             <div class="looptech-tile-content">
               <div class="looptech-tile-title">
@@ -514,7 +504,11 @@
                 {{ block.settings.background_image | image_url: width: 600 | image_tag: class: 'looptech-promo-tile-bg', loading: 'lazy' }}
               {% endif %}
 
-              <div class="looptech-tile-gradient-overlay {% if block.settings.background_image != blank %}with-image{% else %}no-image{% endif %}" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%);"></div>
+              {% assign overlay_opacity = block.settings.overlay_opacity | default: 85 %}
+            {% if block.settings.background_image == blank %}
+              {% assign overlay_opacity = 100 %}
+            {% endif %}
+            <div class="looptech-tile-gradient-overlay" style="background: linear-gradient(135deg, {{ block.settings.gradient_start }} 0%, {{ block.settings.gradient_end }} 100%); opacity: {{ overlay_opacity | divided_by: 100.0 }};"></div>
 
               <div class="looptech-tile-content">
                 <div class="looptech-tile-title">
@@ -674,6 +668,17 @@
           "info": "Recommended: 1400px × 180px (landscape). Will be overlaid with gradient for text visibility."
         },
         {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay Opacity",
+          "info": "Adjust the opacity of the gradient overlay when an image is present. Lower values show more of the image.",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 85
+        },
+        {
           "type": "header",
           "content": "Colors"
         },
@@ -753,6 +758,17 @@
           "id": "decorative_image",
           "label": "Decorative Image (Optional)",
           "info": "Recommended: 200px × 200px (square or portrait). Replaces default SVG decoration."
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay Opacity",
+          "info": "Adjust the opacity of the gradient overlay when an image is present. Lower values show more of the image.",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 85
         },
         {
           "type": "header",
@@ -846,6 +862,17 @@
           "id": "product_grid_image",
           "label": "Product Grid Image (Optional)",
           "info": "Recommended: 200px × 200px (square). Replaces default Apple product grid."
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay Opacity",
+          "info": "Adjust the opacity of the gradient overlay when an image is present. Lower values show more of the image.",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 85
         },
         {
           "type": "header",
