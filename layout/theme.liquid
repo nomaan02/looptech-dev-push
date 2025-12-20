@@ -33,7 +33,6 @@
     <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'sku-parser.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'product-model.js' | asset_url }}" defer></script>
     {%- if settings.animations_reveal_on_scroll -%}
@@ -300,15 +299,7 @@
     } 
     </script>
   </head>
-  {%- liquid
-    # Global Mode Detection - makes current_mode available throughout theme
-    assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
-    assign current_mode = 'new'
-    if url_mode == 'refurbished'
-      assign current_mode = 'refurbished'
-    endif
-  -%}
-  <body class="gradient {% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %} page-{{ template.name }}" data-product-mode="{{ current_mode }}">
+  <body class="gradient {% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %} page-{{ template.name }}">
     <a class="skip-to-content-link button visually-hidden" href="#MainContent">
       <span>{{ "accessibility.skip_to_text" | t }}</span>
     </a>

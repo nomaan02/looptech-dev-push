@@ -17,6 +17,130 @@
     background-color: {{ section.settings.background_color }};
   }
 
+  /* Top Row Styles */
+  .mega-menu-top-row {
+    background-color: {{ section.settings.background_color }};
+    border-bottom: 1px solid {{ section.settings.border_color }};
+  }
+
+  .mega-menu-top-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    gap: 2rem;
+    height: 70px;
+  }
+
+  @media (min-width: 1024px) {
+    .mega-menu-top-container {
+      padding: 0.75rem 2rem;
+    }
+  }
+
+  /* Search Bar Styles */
+  .mega-menu-search-wrapper {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .mega-menu-search-form {
+    width: 100%;
+  }
+
+  .mega-menu-search-field {
+    display: flex;
+    align-items: center;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .mega-menu-search-input {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    border: none;
+    background: none;
+    font-size: 0.875rem;
+    outline: none;
+    color: {{ section.settings.text_color }};
+  }
+
+  .mega-menu-search-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .mega-menu-search-button {
+    padding: 0.625rem 1rem;
+    background-color: {{ section.settings.primary_color }};
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+  }
+
+  .mega-menu-search-button:hover {
+    opacity: 0.9;
+  }
+
+  /* Icons Section */
+  .mega-menu-icons-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .mega-menu-icon-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: {{ section.settings.text_color }};
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .mega-menu-icon-link:hover {
+    color: {{ section.settings.primary_color }};
+  }
+
+  .mega-menu-cart-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    position: relative;
+  }
+
+  .mega-menu-cart-count {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    background-color: {{ section.settings.primary_color }};
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .mega-menu-cart-total {
+    font-size: 0.875rem;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  /* Navigation Container Adjustments */
   .mega-menu-nav-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -26,6 +150,8 @@
     justify-content: space-between;
     padding: 0 1rem;
     gap: 2rem;
+    background-color: {{ section.settings.background_color }};
+    border-bottom: 1px solid {{ section.settings.border_color }};
   }
 
   @media (min-width: 1024px) {
@@ -419,19 +545,74 @@
   }
 </style>
 
+<!-- Remove page type check to show on all pages -->
 <header class="mega-menu-nav-header" data-mega-menu-nav>
-  <div class="mega-menu-nav-container">
-    <!-- Logo -->
-    <div class="mega-menu-nav-logo">
-      <a href="{{ section.settings.logo_link | default: '/' }}" class="mega-menu-nav-logo-link">
-        {% if section.settings.logo_image != blank %}
-          {{ section.settings.logo_image | image_url: height: section.settings.logo_height | image_tag: class: 'mega-menu-nav-logo-image', alt: section.settings.logo_text }}
-        {% else %}
-          {{ section.settings.logo_text }}<span class="mega-menu-nav-logo-accent">{{ section.settings.logo_accent_text }}</span>
-        {% endif %}
-      </a>
-    </div>
+  <!-- Top Row: Logo, Search, Icons -->
+  <div class="mega-menu-top-row">
+    <div class="mega-menu-top-container">
+      <!-- Logo -->
+      <div class="mega-menu-nav-logo">
+        <a href="{{ section.settings.logo_link | default: '/' }}" class="mega-menu-nav-logo-link">
+          {% if section.settings.logo_image != blank %}
+            {{ section.settings.logo_image | image_url: height: section.settings.logo_height | image_tag: class: 'mega-menu-nav-logo-image', alt: section.settings.logo_text }}
+          {% else %}
+            {{ section.settings.logo_text }}<span class="mega-menu-nav-logo-accent">{{ section.settings.logo_accent_text }}</span>
+          {% endif %}
+        </a>
+      </div>
 
+      <!-- Search Bar -->
+      <div class="mega-menu-search-wrapper">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="mega-menu-search-form">
+          <div class="mega-menu-search-field">
+            <input
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="Search For Products"
+              class="mega-menu-search-input"
+              aria-label="Search"
+            >
+            <button type="submit" class="mega-menu-search-button" aria-label="Search">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right Icons (Account & Cart) -->
+      <div class="mega-menu-icons-wrapper">
+        <!-- Account -->
+        <a href="{{ routes.account_url }}" class="mega-menu-icon-link" aria-label="Account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+
+        <!-- Cart -->
+        <a href="{{ routes.cart_url }}" class="mega-menu-icon-link mega-menu-cart-link" aria-label="Cart">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 2 3 9v13h18V9l-6-7z"/>
+            <path d="M3 9h18"/>
+            <path d="M9 22V9"/>
+            <path d="M15 22V9"/>
+          </svg>
+          <span class="mega-menu-cart-count">{{ cart.item_count }}</span>
+          <span class="mega-menu-cart-total">
+            Cart<br>
+            {{ cart.total_price | money }}
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Row -->
+  <div class="mega-menu-nav-container">
     <!-- Desktop Navigation -->
     <nav class="mega-menu-nav-main">
       <!-- Left Section: ALL CATEGORIES -->

@@ -293,6 +293,7 @@
         "slide_YtUnzz",
         "template--16209783881785__f4fc861e-a8e9-4733-8984-e73213d48588-slide-2"
       ],
+      "disabled": true,
       "settings": {
         "slide_heading_font": "poppins_n8",
         "default_font": false,
@@ -392,7 +393,7 @@
         "hero_position": "left",
         "section_heading": "Top brands. Renewed.",
         "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
-        "featured_collection": "ignore-dev-purpose-tester-copy",
+        "featured_collection": "iphone-renewed",
         "featured_collection_refurbished": "ignore-dev-purpose-tester-copy-1",
         "section_height": 650,
         "desktop_column_layout": "two-column",

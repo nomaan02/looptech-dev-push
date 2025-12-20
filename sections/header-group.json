@@ -344,96 +344,14 @@
         "new_label": "Brand New",
         "refurb_label": "Renewed",
         "color_scheme": "background-1",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "looptech_hero_section_VaFnXi": {
-      "type": "looptech-hero-section",
-      "blocks": {
-        "welcome_banner_WArpM9": {
-          "type": "welcome_banner",
-          "settings": {
-            "title": "Welcome Back,",
-            "show_subtitle": true,
-            "subtitle": "Wow! That's New.",
-            "show_description": true,
-            "description": "Discover our new toggle feature! Switch between brand new and renewed products with a single click. Same quality, smarter choices.",
-            "show_device": true,
-            "device_logo_letter": "L",
-            "device_label": "Looptech Store",
-            "show_arrow": true,
-            "gradient_start": "#0f172a",
-            "gradient_end": "#1a1035"
-          }
-        },
-        "promo_tile_horizontal_BBQnUD": {
-          "type": "promo_tile_horizontal",
-          "settings": {
-            "line_1": "Gawk Gawk",
-            "line_2": "9000.",
-            "show_subtitle": true,
-            "subtitle": "Shark Megasale",
-            "show_button": true,
-            "button_text": "Shop Now",
-            "button_link": "",
-            "background_image": "shopify://shop_images/Untitled_design_26_1cc3d228-12af-440d-84b5-64bb5b530b85.png",
-            "tile_style": "looptech-tile-shark",
-            "gradient_start": "#1f2937",
-            "gradient_end": "#111827"
-          }
-        },
-        "promo_tile_horizontal_hyiNaL": {
-          "type": "promo_tile_horizontal",
-          "settings": {
-            "line_1": "Black Friday,",
-            "line_2": "Every Friday",
-            "show_subtitle": false,
-            "subtitle": "Shark Megasale",
-            "show_button": true,
-            "button_text": "Shop Now",
-            "button_link": "",
-            "tile_style": "looptech-tile-friday",
-            "gradient_start": "#7c3aed",
-            "gradient_end": "#5b21b6"
-          }
-        },
-        "promo_tile_vertical_UkGXiY": {
-          "type": "promo_tile_vertical",
-          "settings": {
-            "line_1": "Go",
-            "line_2": "Apple",
-            "line_3": "Picking",
-            "show_button": true,
-            "button_text": "Shop Now",
-            "button_link": "",
-            "tile_style": "looptech-tile-apple",
-            "gradient_start": "#1e3a5f",
-            "gradient_end": "#0c1929"
-          }
-        }
-      },
-      "block_order": [
-        "welcome_banner_WArpM9",
-        "promo_tile_horizontal_BBQnUD",
-        "promo_tile_horizontal_hyiNaL",
-        "promo_tile_vertical_UkGXiY"
-      ],
-      "name": "Looptech Hero Section",
-      "settings": {
-        "container_max_width": 1400,
-        "padding_top": 32,
-        "padding_bottom": 32,
-        "padding_horizontal": 16,
-        "tile_gap": 16
+        "padding_top": 12,
+        "padding_bottom": 20
       }
     }
   },
   "order": [
     "cca77815-1089-4a83-a9c7-cb60f7be82d2",
-    "header",
     "mega_menu_NpKqKh",
-    "mode_toggle_T9kRtB",
-    "looptech_hero_section_VaFnXi"
+    "mode_toggle_T9kRtB"
   ]
 }
