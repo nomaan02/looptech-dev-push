@@ -74,6 +74,19 @@
     width: 100%;
   }
 
+  /* Ensure consistent max-width */
+  .mode-toggle-section .page-width {
+    max-width: 1270px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .mode-toggle-section .page-width {
+      padding: 0 2rem;
+    }
+  }
+
   /* Wrapper for inline layout */
   .mode-toggle-wrapper {
     display: flex;

@@ -29,7 +29,7 @@
   }
 
   .looptech-hero-container {
-    max-width: {{ section.settings.container_max_width }}px;
+    max-width: 1270px; /* Standardized max width */
     margin: 0 auto;
     padding: {{ section.settings.padding_top }}px {{ section.settings.padding_horizontal }}px {{ section.settings.padding_bottom }}px;
   }
@@ -573,8 +573,9 @@
       "min": 1000,
       "max": 1600,
       "step": 50,
-      "default": 1400,
-      "unit": "px"
+      "default": 1270,
+      "unit": "px",
+      "info": "Standard width is 1270px for consistency"
     },
     {
       "type": "range",

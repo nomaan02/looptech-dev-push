@@ -9,6 +9,87 @@
  */
 {
   "sections": {
+    "looptech_hero_section_N4eNhq": {
+      "type": "looptech-hero-section",
+      "blocks": {
+        "welcome_banner_C3b8yF": {
+          "type": "welcome_banner",
+          "settings": {
+            "title": "Welcome Back",
+            "show_subtitle": true,
+            "subtitle": "We've changed a few things around here...",
+            "show_description": true,
+            "description": "Discover our new toggle feature! Switch between brand new and renewed products with a single click.",
+            "background_image": "shopify://shop_images/PLAIN_FLIP.png",
+            "overlay_opacity": 35,
+            "gradient_start": "#0f172a",
+            "gradient_end": "#1a1035"
+          }
+        },
+        "promo_tile_horizontal_CWm86R": {
+          "type": "promo_tile_horizontal",
+          "settings": {
+            "line_1": "Gawk Gawk",
+            "line_2": "9000.",
+            "show_subtitle": true,
+            "show_button": true,
+            "button_text": "Shop Now",
+            "button_link": "",
+            "background_image": "shopify://shop_images/PPLAIN.png",
+            "overlay_opacity": 0,
+            "tile_style": "looptech-tile-shark",
+            "gradient_start": "#1f2937",
+            "gradient_end": "#111827"
+          }
+        },
+        "promo_tile_horizontal_KXMBXX": {
+          "type": "promo_tile_horizontal",
+          "settings": {
+            "line_1": "Black Friday,",
+            "line_2": "Every Friday",
+            "show_subtitle": false,
+            "show_button": true,
+            "button_text": "Shop Now",
+            "button_link": "",
+            "background_image": "shopify://shop_images/PLAIN_FLIP.png",
+            "overlay_opacity": 0,
+            "tile_style": "looptech-tile-friday",
+            "gradient_start": "#7c3aed",
+            "gradient_end": "#5b21b6"
+          }
+        },
+        "promo_tile_vertical_AdGxan": {
+          "type": "promo_tile_vertical",
+          "settings": {
+            "line_1": "Go",
+            "line_2": "Apple",
+            "line_3": "Picking",
+            "show_button": true,
+            "button_text": "Shop Now",
+            "button_link": "",
+            "background_image": "shopify://shop_images/SQ.png",
+            "overlay_opacity": 0,
+            "tile_style": "looptech-tile-apple",
+            "gradient_start": "#1e3a5f",
+            "gradient_end": "#0c1929"
+          }
+        }
+      },
+      "block_order": [
+        "welcome_banner_C3b8yF",
+        "promo_tile_horizontal_CWm86R",
+        "promo_tile_horizontal_KXMBXX",
+        "promo_tile_vertical_AdGxan"
+      ],
+      "name": "Looptech Hero Section",
+      "settings": {
+        "container_max_width": 1400,
+        "padding_top": 0,
+        "padding_bottom": 4,
+        "padding_horizontal": 16,
+        "tile_gap": 16
+      }
+    },
     "1762700052b2089e17": {
       "type": "_blocks",
       "blocks": {
@@ -342,15 +423,15 @@
         "brand_tab_H8RfCB": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "Brand",
-            "collection": "ignore-dev-purpose-tester-copy"
+            "brand_name": "iPhone test",
+            "collection": "iphone-renewed"
           }
         },
         "brand_tab_JRYtcX": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "Microsoft",
-            "collection": "ignore-dev-purpose-tester-copy-1"
+            "brand_name": "Gaming Laptops test",
+            "collection": "gaming-laptops-renewed"
           }
         },
         "brand_tab_XK8gn9": {
@@ -1761,6 +1842,7 @@
     }
   },
   "order": [
+    "looptech_hero_section_N4eNhq",
     "1762700052b2089e17",
     "1762699567a90a233e",
     "17626417209d8e018e",
