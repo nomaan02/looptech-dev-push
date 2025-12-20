@@ -22,45 +22,47 @@
   if current_mode == 'new'
     assign target_conditions = 'NEW'
   else
-    assign target_conditions = 'REFA,REFB,REFC'
+    assign target_conditions = ''
   endif
 -%}
 
 <div class="mode-toggle-section color-{{ section.settings.color_scheme }} gradient" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
   <div class="page-width">
-    {%- if section.settings.heading != blank -%}
-      <div class="mode-toggle-heading">
-        <h2 class="mode-toggle-title">{{ section.settings.heading }}</h2>
-      </div>
-    {%- endif -%}
+    <div class="mode-toggle-wrapper">
+      {%- if section.settings.heading != blank -%}
+        <div class="mode-toggle-heading">
+          <h2 class="mode-toggle-title">{{ section.settings.heading }}</h2>
+        </div>
+      {%- endif -%}
 
-    <div class="mode-toggle-container">
-      <div class="mode-toggle-track" data-current-mode="{{ current_mode }}">
-        <div class="mode-toggle-slider" data-position="{{ current_mode }}"></div>
-        <button
-          class="mode-toggle-option {% if current_mode == 'new' %}active{% endif %}"
-          data-mode="new"
-          aria-pressed="{% if current_mode == 'new' %}true{% else %}false{% endif %}"
-          type="button">
-          <span class="mode-toggle-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            </svg>
-          </span>
-          <span class="mode-toggle-label">{{ section.settings.new_label | default: "Brand New" }}</span>
-        </button>
-        <button
-          class="mode-toggle-option {% if current_mode == 'refurbished' %}active{% endif %}"
-          data-mode="refurbished"
-          aria-pressed="{% if current_mode == 'refurbished' %}true{% else %}false{% endif %}"
-          type="button">
-          <span class="mode-toggle-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21.5 2V8M21.5 8H15.5M21.5 8L18 4.5C16.5 3 14.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C16.5 22 20.5 19 21.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span class="mode-toggle-label">{{ section.settings.refurb_label | default: "Refurbished" }}</span>
-        </button>
+      <div class="mode-toggle-container">
+        <div class="mode-toggle-track" data-current-mode="{{ current_mode }}">
+          <div class="mode-toggle-slider" data-position="{{ current_mode }}"></div>
+          <button
+            class="mode-toggle-option {% if current_mode == 'new' %}active{% endif %}"
+            data-mode="new"
+            aria-pressed="{% if current_mode == 'new' %}true{% else %}false{% endif %}"
+            type="button">
+            <span class="mode-toggle-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </svg>
+            </span>
+            <span class="mode-toggle-label">{{ section.settings.new_label | default: "Brand New" }}</span>
+          </button>
+          <button
+            class="mode-toggle-option {% if current_mode == 'refurbished' %}active{% endif %}"
+            data-mode="refurbished"
+            aria-pressed="{% if current_mode == 'refurbished' %}true{% else %}false{% endif %}"
+            type="button">
+            <span class="mode-toggle-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.5 2V8M21.5 8H15.5M21.5 8L18 4.5C16.5 3 14.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C16.5 22 20.5 19 21.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="mode-toggle-label">{{ section.settings.refurb_label | default: "Renewed" }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -72,22 +74,33 @@
     width: 100%;
   }
 
+  /* Wrapper for inline layout */
+  .mode-toggle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
   .mode-toggle-heading {
-    text-align: center;
-    margin-bottom: 2.5rem;
+    text-align: left;
+    margin: 0;
+    flex: 1;
   }
 
   .mode-toggle-title {
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.125rem;  /* Reduced to better match toggle height */
     font-weight: 600;
     color: rgb(var(--color-foreground));
+    line-height: 1.2;
   }
 
   .mode-toggle-container {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    flex-shrink: 0;
   }
 
   /* Toggle Track - Rounded bevelled container */
@@ -96,40 +109,41 @@
     display: inline-flex;
     background: linear-gradient(145deg, #e8eef5, #f5f8fc);
     border-radius: 50px;
-    padding: 6px;
+    padding: 3px;  /* Reduced padding */
     box-shadow:
-      inset 0 2px 8px rgba(0, 0, 0, 0.08),
-      0 4px 16px rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.15);
+      inset 0 1px 3px rgba(0, 0, 0, 0.05),
+      0 1px 4px rgba(59, 130, 246, 0.06);
+    border: 1px solid rgba(59, 130, 246, 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 36px;  /* Fixed height to match text */
   }
 
   .mode-toggle-track:hover {
     box-shadow:
-      inset 0 2px 8px rgba(0, 0, 0, 0.1),
-      0 6px 20px rgba(59, 130, 246, 0.15);
+      inset 0 1px 3px rgba(0, 0, 0, 0.06),
+      0 2px 6px rgba(59, 130, 246, 0.1);
   }
 
   /* Sliding Indicator */
   .mode-toggle-slider {
     position: absolute;
-    top: 6px;
-    left: 6px;
-    height: calc(100% - 12px);
-    width: calc(50% - 6px);
+    top: 3px;
+    left: 3px;
+    height: calc(100% - 6px);
+    width: calc(50% - 3px);
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     border-radius: 50px;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow:
-      0 4px 12px rgba(59, 130, 246, 0.3),
-      0 2px 4px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      0 2px 4px rgba(59, 130, 246, 0.2),
+      0 1px 2px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
     z-index: 1;
   }
 
   /* Move slider to refurbished position */
   .mode-toggle-slider[data-position="refurbished"] {
-    transform: translateX(calc(100% + 6px));
+    transform: translateX(calc(100% + 3px));
   }
 
   /* Toggle Options */
@@ -138,10 +152,10 @@
     z-index: 2;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 14px 32px;
-    min-width: 180px;
-    font-size: 1rem;
+    gap: 4px;  /* Reduced gap */
+    padding: 6px 16px;  /* Reduced padding */
+    min-width: 120px;  /* Reduced width */
+    font-size: 0.8125rem;  /* Slightly smaller text */
     font-weight: 600;
     background: transparent;
     border: none;
@@ -150,6 +164,7 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     color: #64748b;
     justify-content: center;
+    height: 30px;  /* Fixed height for consistency */
   }
 
   .mode-toggle-option:hover {
@@ -171,17 +186,22 @@
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .mode-toggle-icon svg {
+    width: 14px;  /* Reduced icon size */
+    height: 14px;
+  }
+
   .mode-toggle-option:hover .mode-toggle-icon {
-    transform: scale(1.1) rotate(5deg);
+    transform: scale(1.05) rotate(3deg);
   }
 
   .mode-toggle-option.active .mode-toggle-icon {
-    transform: scale(1.15);
+    transform: scale(1.1);
   }
 
   /* Label text */
   .mode-toggle-label {
-    font-size: 1rem;
+    font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.01em;
     transition: all 0.3s ease;
@@ -211,54 +231,64 @@
 
   /* Mobile Responsive Design */
   @media screen and (max-width: 749px) {
+    .mode-toggle-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .mode-toggle-heading {
+      text-align: center;
+    }
+
+    .mode-toggle-container {
+      justify-content: center;
+    }
+
     .mode-toggle-title {
-      font-size: 1.5rem;
+      font-size: 1.125rem;
+    }
+
+    .mode-toggle-track {
+      height: 34px;
     }
 
     .mode-toggle-option {
-      padding: 12px 24px;
-      min-width: 150px;
-      font-size: 0.9375rem;
+      padding: 5px 14px;
+      min-width: 110px;
+      font-size: 0.75rem;
+      height: 28px;
     }
 
     .mode-toggle-label {
-      font-size: 0.9375rem;
+      font-size: 0.75rem;
     }
 
     .mode-toggle-icon svg {
-      width: 18px;
-      height: 18px;
+      width: 13px;
+      height: 13px;
     }
   }
 
   @media screen and (max-width: 480px) {
-    .mode-toggle-track {
-      width: 100%;
-      max-width: 380px;
-    }
-
     .mode-toggle-option {
-      padding: 12px 20px;
-      min-width: 140px;
-      font-size: 0.875rem;
-      gap: 6px;
+      padding: 5px 12px;
+      min-width: 100px;
+      font-size: 0.75rem;
+      gap: 3px;
     }
 
     .mode-toggle-label {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
     }
 
     .mode-toggle-icon svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .mode-toggle-heading {
-      margin-bottom: 2rem;
+      width: 12px;
+      height: 12px;
     }
 
     .mode-toggle-title {
-      font-size: 1.25rem;
+      font-size: 1rem;
     }
   }
 
@@ -419,7 +449,7 @@
       "type": "text",
       "id": "heading",
       "label": "Section Heading",
-      "default": "Shop Our Products",
+      "default": "Browse Between Brand New & Renewed Devices With Ease!",
       "info": "Leave blank to hide heading"
     },
     {
@@ -432,8 +462,8 @@
     {
       "type": "text",
       "id": "refurb_label",
-      "label": "Refurbished Button Label",
-      "default": "Refurbished",
+      "label": "Renewed Button Label",
+      "default": "Renewed",
       "info": "Shows products with SKU condition codes: REFA, REFB, REFC"
     },
     {
@@ -470,7 +500,7 @@
       "step": 4,
       "unit": "px",
       "label": "Padding top",
-      "default": 36
+      "default": 20
     },
     {
       "type": "range",
@@ -480,7 +510,7 @@
       "step": 4,
       "unit": "px",
       "label": "Padding bottom",
-      "default": 36
+      "default": 20
     }
   ],
   "presets": [
