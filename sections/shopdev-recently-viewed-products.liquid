@@ -1,0 +1,394 @@
+{{ 'shopdev-recently-viewed-products.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .shopdev-recently-viewed-products .text-heading {
+    color: #0A0A0A;
+  }
+  
+  .shopdev-recently-viewed-products .text-variant {
+    color: #4A5565;
+  }
+  
+  .shopdev-recently-viewed-products .text-price {
+    color: #585858;
+  }
+  
+  .shopdev-recently-viewed-products .text-original-price {
+    color: #6A7282;
+  }
+  
+  .shopdev-recently-viewed-products .text-additional-colors {
+    color: #858585;
+  }
+  
+  
+  .shopdev-recently-viewed-products .swatch-black {
+    background-color: #000000;
+  }
+  
+  .shopdev-recently-viewed-products .swatch-silver {
+    background-color: #C0C0C0;
+  }
+  
+  .shopdev-recently-viewed-products .swatch-purple {
+    background-color: #9D98FF;
+  }
+  
+  .shopdev-recently-viewed-products .swatch-red {
+    background-color: #FF0C14;
+  }
+  
+  .shopdev-recently-viewed-products .border-swatch-active {
+    border-color: #99A1AF;
+  }
+  
+  .shopdev-recently-viewed-products .border-swatch {
+    border-color: #E5E7EB;
+  }
+  
+  .shopdev-recently-viewed-products .product-card {
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .shopdev-recently-viewed-products .product-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .shopdev-recently-viewed-products .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .shopdev-recently-viewed-products .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  @media (max-width: 768px) {
+    .shopdev-recently-viewed-products .product-grid {
+      gap: 12px;
+    }
+    
+    .shopdev-recently-viewed-products .product-card {
+      min-width: 180px;
+    }
+  }
+</style>
+
+<div class="w-full py-[24px] px-[16px] md:px-[46px]">
+  <h2 class="text-heading font-bold text-[20px] leading-[30px] mb-[24px]">
+    {{ section.settings.heading }}
+  </h2>
+  
+  <div class="overflow-x-auto scrollbar-hide">
+    <div class="flex gap-[24px] md:gap-[52px] pb-[24px]">
+      {% if section.settings.collection != blank %}
+        {% assign collection = section.settings.collection %}
+        {% for product in collection.products %}
+          <a href="{{ product.url }}" class="product-card flex-shrink-0 w-[222px] bg-white rounded-[14px] p-[20px] block">
+            <div class="mb-[16px] flex items-center justify-center">
+              {% if product.featured_image %}
+                {{ product.featured_image | image_url: width: 111 | image_tag: 
+                  class: 'w-[111px] h-[133px] object-contain',
+                  loading: 'lazy'
+                }}
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'w-[111px] h-[133px] bg-gray-100' }}
+              {% endif %}
+            </div>
+            
+            <div class="flex justify-center gap-[6px] mb-[16px]">
+              {% assign color_option = null %}
+              {% for option in product.options_with_values %}
+                {% assign option_name_downcase = option.name | downcase %}
+                {% if option_name_downcase == 'color' or option_name_downcase == 'colour' %}
+                  {% assign color_option = option %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              
+              {% if color_option != null %}
+                {% assign max_swatches = 4 %}
+                {% assign color_count = 0 %}
+                {% for value in color_option.values limit: max_swatches %}
+                  {% assign color_count = color_count | plus: 1 %}
+                  {% assign color_downcase = value | downcase %}
+                  {% assign swatch_color = '#CCCCCC' %}
+                  
+                  {% if color_downcase contains 'black' %}
+                    {% assign swatch_color = '#000000' %}
+                  {% elsif color_downcase contains 'white' %}
+                    {% assign swatch_color = '#FFFFFF' %}
+                  {% elsif color_downcase contains 'silver' or color_downcase contains 'grey' or color_downcase contains 'gray' %}
+                    {% assign swatch_color = '#C0C0C0' %}
+                  {% elsif color_downcase contains 'purple' %}
+                    {% assign swatch_color = '#9D98FF' %}
+                  {% elsif color_downcase contains 'red' %}
+                    {% assign swatch_color = '#FF0C14' %}
+                  {% elsif color_downcase contains 'blue' %}
+                    {% assign swatch_color = '#0000FF' %}
+                  {% elsif color_downcase contains 'green' %}
+                    {% assign swatch_color = '#00FF00' %}
+                  {% elsif color_downcase contains 'yellow' or color_downcase contains 'gold' %}
+                    {% assign swatch_color = '#FFD700' %}
+                  {% elsif color_downcase contains 'pink' or color_downcase contains 'rose' %}
+                    {% assign swatch_color = '#FFC0CB' %}
+                  {% endif %}
+                  
+                  <div class="w-[12px] h-[12px] rounded-full border {% if forloop.first %}border-swatch-active{% else %}border-swatch{% endif %}" 
+                       style="background-color: {{ swatch_color }}"></div>
+                {% endfor %}
+                
+                {% assign total_colors = color_option.values.size %}
+                {% if total_colors > max_swatches %}
+                  {% assign additional = total_colors | minus: max_swatches %}
+                  <span class="text-additional-colors font-bold text-[10px] leading-[12px]">
+                    +{{ additional }}
+                  </span>
+                {% endif %}
+              {% endif %}
+            </div>
+            
+            <h3 class="text-heading font-bold text-[13px] leading-[20px] mb-[2px]">
+              {{ product.title }}
+            </h3>
+            
+            {% if product.selected_or_first_available_variant.title != 'Default Title' %}
+              <p class="text-variant text-[11px] leading-[19px] mb-[10px]">
+                {{ product.selected_or_first_available_variant.title }}
+              </p>
+            {% endif %}
+            
+            <div class="flex items-baseline gap-[8px]">
+              <span class="text-price font-bold text-[14px] leading-[24px]">
+                {{ product.price | money }}
+              </span>
+              
+              {% if product.compare_at_price > product.price %}
+                <span class="text-original-price text-[13px] leading-[24px] line-through">
+                  {{ product.compare_at_price | money }}
+                </span>
+                <span class="text-original-price text-[13px] leading-[24px]">
+                  new
+                </span>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks %}
+          {% assign product = block.settings.product %}
+          {% if product != blank %}
+            <a href="{{ product.url }}" class="product-card flex-shrink-0 w-[222px] bg-white rounded-[14px] p-[20px] block" {{ block.shopify_attributes }}>
+              <div class="mb-[16px] flex items-center justify-center">
+                {% if product.featured_image %}
+                  {{ product.featured_image | image_url: width: 111 | image_tag: 
+                    class: 'w-[111px] h-[133px] object-contain',
+                    loading: 'lazy'
+                  }}
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'w-[111px] h-[133px] bg-gray-100' }}
+                {% endif %}
+              </div>
+              
+              <div class="flex justify-center gap-[6px] mb-[16px]">
+                {% if block.settings.show_color_swatches %}
+                  {% assign color_count = 0 %}
+                  {% for i in (1..4) %}
+                    {% assign color_setting = 'color_' | append: i %}
+                    {% if block.settings[color_setting] != blank %}
+                      {% assign color_count = color_count | plus: 1 %}
+                      <div class="w-[12px] h-[12px] rounded-full border {% if i == 1 %}border-swatch-active{% else %}border-swatch{% endif %}" 
+                           style="background-color: {{ block.settings[color_setting] }}"></div>
+                    {% endif %}
+                  {% endfor %}
+                  
+                  {% if block.settings.additional_colors > 0 %}
+                    <span class="text-additional-colors font-bold text-[10px] leading-[12px]">
+                      +{{ block.settings.additional_colors }}
+                    </span>
+                  {% endif %}
+                {% endif %}
+              </div>
+              
+              <h3 class="text-heading font-bold text-[13px] leading-[20px] mb-[2px]">
+                {{ product.title }}
+              </h3>
+              
+              {% if block.settings.variant_description != blank %}
+                <p class="text-variant text-[11px] leading-[19px] mb-[10px]">
+                  {{ block.settings.variant_description }}
+                </p>
+              {% endif %}
+              
+              <div class="flex items-baseline gap-[8px]">
+                <span class="text-price font-bold text-[14px] leading-[24px]">
+                  {{ product.price | money }}
+                </span>
+                
+                {% if product.compare_at_price > product.price %}
+                  <span class="text-original-price text-[13px] leading-[24px] line-through">
+                    {{ product.compare_at_price | money }}
+                  </span>
+                  <span class="text-original-price text-[13px] leading-[24px]">
+                    new
+                  </span>
+                {% endif %}
+              </div>
+            </a>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Recently Viewed Products",
+  "class": "shopdev shopdev-recently-viewed-products",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Pick up where you left off."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Product Collection"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "variant_description",
+          "label": "Variant Description"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_color_swatches",
+          "label": "Show Color Swatches",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "color_1",
+          "label": "Color Swatch 1"
+        },
+        {
+          "type": "color",
+          "id": "color_2",
+          "label": "Color Swatch 2"
+        },
+        {
+          "type": "color",
+          "id": "color_3",
+          "label": "Color Swatch 3"
+        },
+        {
+          "type": "color",
+          "id": "color_4",
+          "label": "Color Swatch 4"
+        },
+        {
+          "type": "range",
+          "id": "additional_colors",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "Additional Colors Count",
+          "default": 4
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recently Viewed Products",
+      "settings": {
+        "heading": "Pick up where you left off.",
+        "collection": "iphone"
+      },
+      "blocks": [
+        {
+          "type": "product",
+          "settings": {
+            "product": "iphone-16-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#C0C0C0",
+            "color_3": "#9D98FF",
+            "color_4": "#FF0C14",
+            "additional_colors": 4
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "product": "iphone-17-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#C0C0C0",
+            "color_3": "#9D98FF",
+            "color_4": "#FF0C14",
+            "additional_colors": 4
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "product": "galaxy-s25-ultra-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#C0C0C0",
+            "color_3": "#9D98FF",
+            "color_4": "#FF0C14",
+            "additional_colors": 4
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "product": "pixel-10-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#C0C0C0",
+            "color_3": "#9D98FF",
+            "color_4": "#FF0C14",
+            "additional_colors": 4
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "product": "nothing-phone-3a-pro-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#C0C0C0",
+            "color_3": "#9D98FF",
+            "color_4": "#FF0C14",
+            "additional_colors": 4
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
