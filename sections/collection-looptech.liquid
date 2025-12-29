@@ -1,0 +1,433 @@
+{% comment %}
+  LoopTech Collection Page
+
+  A custom collection section for LoopTech featuring:
+  - Toggle reminder bar (Brand New / Renewed)
+  - Offer banner
+  - View toggle (Long Tiles / Grid)
+  - Filter sidebar
+  - Product cards in tile or grid layout
+  - Promo card integration
+
+  TODO: Connect to global toggle state (localStorage)
+  TODO: Filter products by tag based on toggle state
+{% endcomment %}
+
+{{ 'collection-looptech.css' | asset_url | stylesheet_tag }}
+
+{% paginate collection.products by section.settings.products_per_page %}
+
+<div class="collection-looptech">
+
+  <!-- Toggle Reminder Bar (Full Width) -->
+  {% if section.settings.show_toggle_reminder %}
+    {% render 'looptech-toggle-reminder',
+      brand_new_text: section.settings.brand_new_reminder,
+      renewed_text: section.settings.renewed_reminder
+    %}
+  {% endif %}
+
+  <div class="collection-looptech__container">
+
+    <!-- Collection Header -->
+    <header class="collection-looptech__header">
+      <h1 class="collection-looptech__title">{{ collection.title }}</h1>
+    </header>
+
+    <!-- Offer Banner -->
+    {% if section.settings.show_offer_banner %}
+      {% render 'looptech-offer-banner',
+        offer_text: section.settings.offer_text,
+        offer_icon: section.settings.offer_icon
+      %}
+    {% endif %}
+
+    <!-- Main Content Area -->
+    <div class="collection-looptech__main">
+
+      <!-- Filter Sidebar -->
+      <aside class="collection-looptech__sidebar">
+        <div class="collection-looptech__filter-header">
+          <span class="collection-looptech__filter-title">Filter:</span>
+        </div>
+
+        <!-- Price Filter -->
+        <div class="collection-looptech__filter-group">
+          <button class="collection-looptech__filter-toggle" aria-expanded="true" data-filter="price">
+            <span>PRICE</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="collection-looptech__filter-content" data-filter-content="price">
+            <p class="collection-looptech__price-label">The highest price is {{ collection.products | map: 'price' | sort | last | money }}</p>
+            <div class="collection-looptech__price-inputs">
+              <div class="collection-looptech__price-field">
+                <label for="filter-price-from">From</label>
+                <input type="number" id="filter-price-from" name="filter.v.price.gte" min="0" placeholder="0">
+              </div>
+              <div class="collection-looptech__price-field">
+                <label for="filter-price-to">To</label>
+                <input type="number" id="filter-price-to" name="filter.v.price.lte" placeholder="{{ collection.products | map: 'price' | sort | last | money_without_currency }}">
+              </div>
+            </div>
+            <!-- TODO: Add price range slider component -->
+          </div>
+        </div>
+
+        <!-- Brand Filter -->
+        <div class="collection-looptech__filter-group">
+          <button class="collection-looptech__filter-toggle" aria-expanded="true" data-filter="brand">
+            <span>BRAND</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="collection-looptech__filter-content" data-filter-content="brand">
+            <!-- TODO: Dynamically populate from product vendors or tags -->
+            <label class="collection-looptech__checkbox">
+              <input type="checkbox" name="filter.p.vendor" value="Apple">
+              <span class="collection-looptech__checkbox-label">Apple</span>
+              <span class="collection-looptech__checkbox-count">({{ collection.products | where: 'vendor', 'Apple' | size }})</span>
+            </label>
+            <label class="collection-looptech__checkbox">
+              <input type="checkbox" name="filter.p.vendor" value="Samsung">
+              <span class="collection-looptech__checkbox-label">Samsung</span>
+              <span class="collection-looptech__checkbox-count">({{ collection.products | where: 'vendor', 'Samsung' | size }})</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TODO: Add more filter groups (Storage, Color, etc.) -->
+      </aside>
+
+      <!-- Products Area -->
+      <div class="collection-looptech__products">
+
+        <!-- Toolbar: View Toggle + Sort -->
+        <div class="collection-looptech__toolbar">
+          <div class="collection-looptech__toolbar-left">
+            {% render 'looptech-view-toggle', default_view: section.settings.default_view %}
+          </div>
+          <div class="collection-looptech__toolbar-right">
+            <div class="collection-looptech__sort">
+              <label for="sort-by">Sort by:</label>
+              <select id="sort-by" class="collection-looptech__sort-select">
+                <option value="best-selling" {% if collection.sort_by == 'best-selling' %}selected{% endif %}>Best selling</option>
+                <option value="title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>Alphabetically, A-Z</option>
+                <option value="title-descending" {% if collection.sort_by == 'title-descending' %}selected{% endif %}>Alphabetically, Z-A</option>
+                <option value="price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>Price, low to high</option>
+                <option value="price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>Price, high to low</option>
+                <option value="created-ascending" {% if collection.sort_by == 'created-ascending' %}selected{% endif %}>Date, old to new</option>
+                <option value="created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>Date, new to old</option>
+              </select>
+            </div>
+            <span class="collection-looptech__count">{{ collection.products_count }} product{% if collection.products_count != 1 %}s{% endif %}</span>
+          </div>
+        </div>
+
+        <!-- Products Container -->
+        <div class="collection-looptech__products-container" data-view="{{ section.settings.default_view }}">
+
+          <!-- Long Tile View (default) -->
+          <div class="collection-looptech__tiles" data-view-target="tiles" {% if section.settings.default_view != 'tiles' %}style="display: none;"{% endif %}>
+            {% assign promo_position = section.settings.promo_card_position | plus: 1 %}
+            {% for product in collection.products %}
+
+              {% comment %} Insert promo card at configured position {% endcomment %}
+              {% if section.settings.show_promo_card and forloop.index == promo_position %}
+                {% render 'looptech-promo-card', style: 'tile' %}
+              {% endif %}
+
+              {% render 'looptech-product-card-tile', product: product %}
+
+            {% else %}
+              <p class="collection-looptech__empty">No products found in this collection.</p>
+            {% endfor %}
+          </div>
+
+          <!-- Grid View -->
+          <div class="collection-looptech__grid" data-view-target="grid" {% if section.settings.default_view != 'grid' %}style="display: none;"{% endif %}>
+            {% for product in collection.products %}
+
+              {% comment %} Insert promo card at position 6 in grid {% endcomment %}
+              {% if section.settings.show_promo_card and forloop.index == 6 %}
+                {% render 'looptech-promo-card', style: 'grid' %}
+              {% endif %}
+
+              {% render 'looptech-product-card-grid', product: product %}
+
+            {% else %}
+              <p class="collection-looptech__empty">No products found in this collection.</p>
+            {% endfor %}
+          </div>
+
+        </div>
+
+        <!-- Pagination -->
+        {% if paginate.pages > 1 %}
+          <nav class="collection-looptech__pagination" aria-label="Pagination">
+            <ul class="collection-looptech__pagination-list">
+              {% if paginate.previous %}
+                <li>
+                  <a href="{{ paginate.previous.url }}" class="collection-looptech__pagination-link collection-looptech__pagination-link--prev" aria-label="Previous page">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </li>
+              {% endif %}
+
+              {% for part in paginate.parts %}
+                <li>
+                  {% if part.is_link %}
+                    <a href="{{ part.url }}" class="collection-looptech__pagination-link">{{ part.title }}</a>
+                  {% else %}
+                    {% if part.title == paginate.current_page %}
+                      <span class="collection-looptech__pagination-link collection-looptech__pagination-link--current" aria-current="page">{{ part.title }}</span>
+                    {% else %}
+                      <span class="collection-looptech__pagination-link">{{ part.title }}</span>
+                    {% endif %}
+                  {% endif %}
+                </li>
+              {% endfor %}
+
+              {% if paginate.next %}
+                <li>
+                  <a href="{{ paginate.next.url }}" class="collection-looptech__pagination-link collection-looptech__pagination-link--next" aria-label="Next page">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        {% endif %}
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // View Toggle Functionality
+    const viewButtons = document.querySelectorAll('[data-view-btn]');
+    const viewContainers = document.querySelectorAll('[data-view-target]');
+    const productsContainer = document.querySelector('[data-view]');
+
+    viewButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const view = this.dataset.viewBtn;
+
+        // Update button states
+        viewButtons.forEach(b => b.classList.remove('looptech-view-toggle__btn--active'));
+        this.classList.add('looptech-view-toggle__btn--active');
+
+        // Show/hide view containers
+        viewContainers.forEach(container => {
+          container.style.display = container.dataset.viewTarget === view ? '' : 'none';
+        });
+
+        // Update container data attribute
+        if (productsContainer) {
+          productsContainer.dataset.view = view;
+        }
+
+        // TODO: Save preference to localStorage
+        // localStorage.setItem('looptech_collection_view', view);
+      });
+    });
+
+    // Filter Toggle Functionality
+    const filterToggles = document.querySelectorAll('.collection-looptech__filter-toggle');
+
+    filterToggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const filterName = this.dataset.filter;
+        const content = document.querySelector(`[data-filter-content="${filterName}"]`);
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+        this.setAttribute('aria-expanded', !isExpanded);
+        content.style.display = isExpanded ? 'none' : 'block';
+      });
+    });
+
+    // Sort Functionality
+    const sortSelect = document.getElementById('sort-by');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort_by', this.value);
+        window.location.href = url.toString();
+      });
+    }
+
+    // TODO: Toggle reminder state management
+    // TODO: Filter form submission
+    // TODO: Price range slider initialization
+
+  });
+</script>
+
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "LoopTech Collection",
+  "tag": "section",
+  "class": "collection-looptech-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "label": "Products per page",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "default_view",
+      "label": "Default View",
+      "options": [
+        { "value": "tiles", "label": "Long Tiles" },
+        { "value": "grid", "label": "Grid" }
+      ],
+      "default": "tiles"
+    },
+    {
+      "type": "header",
+      "content": "Toggle Reminder"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_toggle_reminder",
+      "label": "Show toggle reminder bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "brand_new_reminder",
+      "label": "Brand New Reminder Text",
+      "default": "You are currently browsing Brand New. Switch to Renewed, using the toggle."
+    },
+    {
+      "type": "text",
+      "id": "renewed_reminder",
+      "label": "Renewed Reminder Text",
+      "default": "You are currently browsing Renewed. Switch to Brand New, using the toggle."
+    },
+    {
+      "type": "header",
+      "content": "Offer Banner"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_offer_banner",
+      "label": "Show offer banner",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "offer_text",
+      "label": "Offer Text",
+      "default": "10% Off Any Laptop or Tablet with Any Smartphone Purchase"
+    },
+    {
+      "type": "text",
+      "id": "offer_icon",
+      "label": "Offer Icon (emoji)"
+    },
+    {
+      "type": "image_picker",
+      "id": "offer_image",
+      "label": "Offer Banner Image"
+    },
+    {
+      "type": "header",
+      "content": "Promo Card"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo_card",
+      "label": "Show 'Check out Renewed' promo card",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "promo_card_position",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "label": "Promo card position (after X products)",
+      "default": 2
+    },
+    {
+      "type": "text",
+      "id": "promo_eyebrow",
+      "label": "Promo Card Eyebrow",
+      "default": "Fair? Good? Excellent?"
+    },
+    {
+      "type": "text",
+      "id": "promo_headline",
+      "label": "Promo Card Headline",
+      "default": "F THAT."
+    },
+    {
+      "type": "text",
+      "id": "promo_subtext",
+      "label": "Promo Card Subtext",
+      "default": "One condition to rule them all."
+    },
+    {
+      "type": "text",
+      "id": "promo_cta_text",
+      "label": "Promo Card CTA Text",
+      "default": "Check out Renewed"
+    },
+    {
+      "type": "url",
+      "id": "promo_cta_url",
+      "label": "Promo Card CTA URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "LoopTech Collection"
+    }
+  ],
+  "templates": ["collection"]
+}
+{% endschema %}

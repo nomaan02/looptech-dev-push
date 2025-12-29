@@ -1,0 +1,78 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "def_image": "shopify://shop_images/a-breathtaking-digital-artwork-showcasin_Hi2zmJRbTreTITVkdxGhaw_ei2soh7-SCiKDcy-kPROtQ.png",
+        "show_collection_image": false,
+        "show_collection_description": true,
+        "content_alignment": "center",
+        "hero_layout": "overlay",
+        "coll_bgcolor": "#000000",
+        "coll_color": "#ffffff",
+        "coll_overlay": 36,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "collection_looptech_zgmgEJ": {
+      "type": "collection-looptech",
+      "name": "LoopTech Collection",
+      "settings": {
+        "padding_top": 24,
+        "padding_bottom": 24,
+        "products_per_page": 12,
+        "default_view": "tiles",
+        "show_toggle_reminder": false,
+        "brand_new_reminder": "You are currently browsing Brand New. Switch to Renewed, using the toggle.",
+        "renewed_reminder": "You are currently browsing Renewed. Switch to Brand New, using the toggle.",
+        "show_offer_banner": true,
+        "offer_text": "10% Off Any Laptop or Tablet with Any Smartphone Purchase",
+        "offer_icon": "",
+        "show_promo_card": true,
+        "promo_card_position": 2,
+        "promo_eyebrow": "Fair? Good? Excellent?",
+        "promo_headline": "F THAT.",
+        "promo_subtext": "One condition to rule them all.",
+        "promo_cta_text": "Check out Renewed",
+        "promo_cta_url": ""
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "settings": {
+        "products_per_page": 12,
+        "default_grid": "list_view",
+        "card_style": "standard",
+        "show_count_timer": true,
+        "enable_listdesc": true,
+        "enable_filtering": true,
+        "default_open": false,
+        "single_column": false,
+        "filter_type": "vertical",
+        "enable_sticky": false,
+        "enable_sorting": true,
+        "enable_fill_category": true,
+        "menu": "",
+        "pagination_type": "paged",
+        "columns_mobile": "2",
+        "padding_top": 4,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "collection_looptech_zgmgEJ",
+    "product-grid"
+  ]
+}

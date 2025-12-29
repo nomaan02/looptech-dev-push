@@ -1,0 +1,150 @@
+{% comment %}
+  LoopTech Offer Banner
+
+  A promotional banner that displays time-sensitive offers.
+  Can include text, optional emoji icon, and optional image.
+
+  Parameters:
+    - offer_text: The main promotional text
+    - offer_icon: Optional emoji icon
+    - offer_image: Optional image to display on the right side
+
+  TODO: Automated logic - if renewed in stock, show Offer 1; if not, show Offer 2
+  TODO: Make offer content dynamic via metafields or section settings
+  TODO: Add dismiss functionality with localStorage persistence
+{% endcomment %}
+
+<div class="looptech-offer-banner" data-offer-banner>
+  <div class="looptech-offer-banner__content">
+    <span class="looptech-offer-banner__text">{{ offer_text | default: '10% Off Any Laptop or Tablet with Any Smartphone Purchase' }}</span>
+    {% if offer_icon != blank %}
+      <span class="looptech-offer-banner__icon">{{ offer_icon }}</span>
+    {% endif %}
+  </div>
+
+  {% if offer_image != blank %}
+    <div class="looptech-offer-banner__image">
+      <img
+        src="{{ offer_image | image_url: width: 200 }}"
+        alt=""
+        width="100"
+        height="auto"
+        loading="lazy"
+      >
+    </div>
+  {% endif %}
+
+  <button class="looptech-offer-banner__dismiss" aria-label="Dismiss offer" data-dismiss-banner type="button">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .looptech-offer-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: #fff;
+    padding: 12px 48px 12px 24px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .looptech-offer-banner__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .looptech-offer-banner__text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-offer-banner__text {
+      font-size: 16px;
+    }
+  }
+
+  .looptech-offer-banner__icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .looptech-offer-banner__image {
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-offer-banner__image {
+      display: block;
+    }
+  }
+
+  .looptech-offer-banner__image img {
+    display: block;
+    max-height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .looptech-offer-banner__dismiss {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .looptech-offer-banner__dismiss:hover {
+    color: #fff;
+  }
+
+  /* Hidden state */
+  .looptech-offer-banner[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  (function() {
+    const banner = document.querySelector('[data-offer-banner]');
+    const dismissBtn = document.querySelector('[data-dismiss-banner]');
+
+    if (!banner || !dismissBtn) return;
+
+    // TODO: Check localStorage for dismissed state
+    // const isDismissed = localStorage.getItem('looptech_offer_dismissed');
+    // if (isDismissed) banner.hidden = true;
+
+    dismissBtn.addEventListener('click', function() {
+      banner.hidden = true;
+
+      // TODO: Save dismissed state to localStorage
+      // localStorage.setItem('looptech_offer_dismissed', 'true');
+    });
+  })();
+</script>

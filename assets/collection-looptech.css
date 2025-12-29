@@ -1,0 +1,372 @@
+/* ==========================================================================
+   LoopTech Collection Page Styles
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Base Container
+   -------------------------------------------------------------------------- */
+.collection-looptech {
+  width: 100%;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .collection-looptech {
+    padding: 0 24px;
+  }
+}
+
+.collection-looptech__container {
+  max-width: 1270px;
+  margin: 0 auto;
+  padding-top: var(--padding-top, 24px);
+  padding-bottom: var(--padding-bottom, 24px);
+}
+
+/* --------------------------------------------------------------------------
+   Collection Header
+   -------------------------------------------------------------------------- */
+.collection-looptech__header {
+  margin-bottom: 24px;
+}
+
+.collection-looptech__title {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 700;
+  color: #0A0A0A;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .collection-looptech__title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Main Content Layout (Sidebar + Products)
+   -------------------------------------------------------------------------- */
+.collection-looptech__main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .collection-looptech__main {
+    flex-direction: row;
+    gap: 32px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Filter Sidebar
+   -------------------------------------------------------------------------- */
+.collection-looptech__sidebar {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .collection-looptech__sidebar {
+    width: 220px;
+  }
+}
+
+.collection-looptech__filter-header {
+  margin-bottom: 16px;
+}
+
+.collection-looptech__filter-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0A0A0A;
+}
+
+.collection-looptech__filter-group {
+  border-bottom: 1px solid #E5E7EB;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.collection-looptech__filter-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0A0A0A;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.collection-looptech__filter-toggle svg {
+  transition: transform 0.2s ease;
+}
+
+.collection-looptech__filter-toggle[aria-expanded="false"] svg {
+  transform: rotate(-90deg);
+}
+
+.collection-looptech__filter-content {
+  margin-top: 12px;
+}
+
+.collection-looptech__price-label {
+  font-size: 11px;
+  color: #6A7282;
+  margin: 0 0 12px;
+}
+
+.collection-looptech__price-inputs {
+  display: flex;
+  gap: 12px;
+}
+
+.collection-looptech__price-field {
+  flex: 1;
+}
+
+.collection-looptech__price-field label {
+  display: block;
+  font-size: 10px;
+  color: #6A7282;
+  margin-bottom: 4px;
+}
+
+.collection-looptech__price-field input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #0A0A0A;
+}
+
+.collection-looptech__price-field input:focus {
+  outline: none;
+  border-color: #4F46E5;
+}
+
+.collection-looptech__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.collection-looptech__checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.collection-looptech__checkbox-label {
+  font-size: 13px;
+  color: #0A0A0A;
+}
+
+.collection-looptech__checkbox-count {
+  font-size: 11px;
+  color: #6A7282;
+}
+
+/* --------------------------------------------------------------------------
+   Products Area
+   -------------------------------------------------------------------------- */
+.collection-looptech__products {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Toolbar (View Toggle + Sort)
+   -------------------------------------------------------------------------- */
+.collection-looptech__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 640px) {
+  .collection-looptech__toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.collection-looptech__toolbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.collection-looptech__toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.collection-looptech__sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collection-looptech__sort label {
+  font-size: 13px;
+  color: #6A7282;
+  white-space: nowrap;
+}
+
+.collection-looptech__sort-select {
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #0A0A0A;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 4L6 8L10 4' stroke='%236A7282' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.collection-looptech__sort-select:focus {
+  outline: none;
+  border-color: #4F46E5;
+}
+
+.collection-looptech__count {
+  font-size: 13px;
+  color: #6A7282;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Products Container (Tiles View)
+   -------------------------------------------------------------------------- */
+.collection-looptech__tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Products Container (Grid View)
+   -------------------------------------------------------------------------- */
+.collection-looptech__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .collection-looptech__grid {
+    gap: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .collection-looptech__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .collection-looptech__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Empty State
+   -------------------------------------------------------------------------- */
+.collection-looptech__empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: #6A7282;
+  font-size: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Pagination
+   -------------------------------------------------------------------------- */
+.collection-looptech__pagination {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.collection-looptech__pagination-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.collection-looptech__pagination-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0A0A0A;
+  text-decoration: none;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+.collection-looptech__pagination-link:hover {
+  border-color: #4F46E5;
+  color: #4F46E5;
+}
+
+.collection-looptech__pagination-link--current {
+  background-color: #4F46E5;
+  border-color: #4F46E5;
+  color: #fff;
+}
+
+.collection-looptech__pagination-link--current:hover {
+  background-color: #4338CA;
+  border-color: #4338CA;
+  color: #fff;
+}
+
+.collection-looptech__pagination-link--prev,
+.collection-looptech__pagination-link--next {
+  padding: 0;
+  min-width: 40px;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Filter (Responsive)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .collection-looptech__sidebar {
+    display: none; /* TODO: Convert to slide-out drawer on mobile */
+  }
+}

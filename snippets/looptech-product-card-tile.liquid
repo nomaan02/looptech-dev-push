@@ -1,0 +1,408 @@
+{% comment %}
+  LoopTech Product Card - Long Tile
+
+  Horizontal card layout for the Long Tiles view.
+  Displays product image, details, specs, colors, and pricing.
+
+  Parameters:
+    - product: The product object to display
+
+  TODO: Pull specs from metafield product.metafields.looptech.spec_summary
+  TODO: Pull rating from metafield or reviews app
+  TODO: Add quick-add functionality
+{% endcomment %}
+
+{% assign color_option_index = nil %}
+{% for option in product.options_with_values %}
+  {% assign option_name_lower = option.name | downcase %}
+  {% if option_name_lower == 'color' or option_name_lower == 'colour' %}
+    {% assign color_option_index = forloop.index0 %}
+    {% assign color_option_values = option.values %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+<article class="looptech-card-tile">
+  <a href="{{ product.url }}" class="looptech-card-tile__link">
+
+    <!-- Image Section -->
+    <div class="looptech-card-tile__image">
+      {% if product.featured_image %}
+        <img
+          src="{{ product.featured_image | image_url: width: 300 }}"
+          srcset="{{ product.featured_image | image_url: width: 150 }} 150w,
+                  {{ product.featured_image | image_url: width: 300 }} 300w"
+          sizes="(max-width: 768px) 100px, 150px"
+          alt="{{ product.featured_image.alt | escape | default: product.title }}"
+          width="150"
+          height="150"
+          loading="lazy"
+        >
+      {% else %}
+        <div class="looptech-card-tile__placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M21 15L16 10L11 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 18L11 15L3 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Content Section -->
+    <div class="looptech-card-tile__content">
+      <div class="looptech-card-tile__header">
+        <h3 class="looptech-card-tile__title">{{ product.title }}</h3>
+        <span class="looptech-card-tile__variant">
+          {% comment %} TODO: Dynamic variant subtitle from metafield {% endcomment %}
+          E-Sim + Physical Sim
+        </span>
+      </div>
+
+      <!-- Rating -->
+      <div class="looptech-card-tile__rating">
+        <span class="looptech-card-tile__stars" aria-label="4.7 out of 5 stars">
+          {% comment %} TODO: Dynamic rating from reviews app or metafield {% endcomment %}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#FFB800" xmlns="http://www.w3.org/2000/svg"><path d="M7 1l1.545 4.755h5.001l-4.046 2.94 1.545 4.755L7 10.51l-4.045 2.94 1.545-4.755L.454 5.755h5.001L7 1z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#FFB800" xmlns="http://www.w3.org/2000/svg"><path d="M7 1l1.545 4.755h5.001l-4.046 2.94 1.545 4.755L7 10.51l-4.045 2.94 1.545-4.755L.454 5.755h5.001L7 1z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#FFB800" xmlns="http://www.w3.org/2000/svg"><path d="M7 1l1.545 4.755h5.001l-4.046 2.94 1.545 4.755L7 10.51l-4.045 2.94 1.545-4.755L.454 5.755h5.001L7 1z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#FFB800" xmlns="http://www.w3.org/2000/svg"><path d="M7 1l1.545 4.755h5.001l-4.046 2.94 1.545 4.755L7 10.51l-4.045 2.94 1.545-4.755L.454 5.755h5.001L7 1z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#E5E7EB" xmlns="http://www.w3.org/2000/svg"><path d="M7 1l1.545 4.755h5.001l-4.046 2.94 1.545 4.755L7 10.51l-4.045 2.94 1.545-4.755L.454 5.755h5.001L7 1z"/></svg>
+        </span>
+        <span class="looptech-card-tile__rating-text">4.7/5 (4,967)</span>
+      </div>
+
+      <!-- Specs -->
+      <ul class="looptech-card-tile__specs">
+        {% comment %}
+          TODO: Pull from metafield product.metafields.looptech.spec_summary
+          Example metafield value: "iOS 26|Apple Intelligence|6.9\" Super Retina HDR Display|Triple 48 MP Main Cameras"
+        {% endcomment %}
+        {% assign specs = product.metafields.looptech.spec_summary | default: 'iOS 26|Apple Intelligence|6.9" Super Retina HDR Display|Triple 48 MP / 48 MP / 48 MP Main Cameras|18 MP Front Camera|Apple A19 Pro Chip' %}
+        {% assign spec_items = specs | split: '|' %}
+        {% for spec in spec_items limit: 6 %}
+          <li class="looptech-card-tile__spec-item">{{ spec }}</li>
+        {% endfor %}
+      </ul>
+
+      <!-- Colours -->
+      {% if color_option_values.size > 0 %}
+        <div class="looptech-card-tile__colours">
+          <span class="looptech-card-tile__colours-label">Colours</span>
+          <div class="looptech-card-tile__swatches">
+            {% for color in color_option_values limit: 4 %}
+              {% assign color_lower = color | downcase %}
+              {% case color_lower %}
+                {% when 'black' %}
+                  {% assign swatch_color = '#000000' %}
+                {% when 'white' %}
+                  {% assign swatch_color = '#FFFFFF' %}
+                {% when 'silver', 'grey', 'gray' %}
+                  {% assign swatch_color = '#C0C0C0' %}
+                {% when 'purple' %}
+                  {% assign swatch_color = '#9D98FF' %}
+                {% when 'red' %}
+                  {% assign swatch_color = '#FF0C14' %}
+                {% when 'blue' %}
+                  {% assign swatch_color = '#0000FF' %}
+                {% when 'green' %}
+                  {% assign swatch_color = '#00FF00' %}
+                {% when 'gold', 'yellow' %}
+                  {% assign swatch_color = '#FFD700' %}
+                {% when 'pink', 'rose', 'rose gold' %}
+                  {% assign swatch_color = '#FFC0CB' %}
+                {% when 'natural titanium', 'titanium' %}
+                  {% assign swatch_color = '#B8B8B8' %}
+                {% when 'desert titanium' %}
+                  {% assign swatch_color = '#C4A77D' %}
+                {% when 'space black' %}
+                  {% assign swatch_color = '#1C1C1E' %}
+                {% else %}
+                  {% assign swatch_color = '#CCCCCC' %}
+              {% endcase %}
+              <span
+                class="looptech-card-tile__swatch"
+                style="background-color: {{ swatch_color }};"
+                title="{{ color }}"
+              ></span>
+            {% endfor %}
+            {% if color_option_values.size > 4 %}
+              <span class="looptech-card-tile__swatch-more">+{{ color_option_values.size | minus: 4 }}</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Price & Action Section -->
+    <div class="looptech-card-tile__action">
+      <div class="looptech-card-tile__pricing">
+        <span class="looptech-card-tile__price-label">Starting at</span>
+        <span class="looptech-card-tile__price">{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span class="looptech-card-tile__compare-price">{{ product.compare_at_price | money }}</span>
+        {% endif %}
+      </div>
+
+      <button type="button" class="looptech-card-tile__button">
+        View Product
+      </button>
+    </div>
+
+  </a>
+</article>
+
+<style>
+  .looptech-card-tile {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    box-shadow: -1px 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  .looptech-card-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: -1px 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .looptech-card-tile__link {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    text-decoration: none;
+    color: inherit;
+    gap: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-card-tile__link {
+      flex-direction: row;
+      align-items: flex-start;
+      padding: 20px;
+      gap: 20px;
+    }
+  }
+
+  /* Image */
+  .looptech-card-tile__image {
+    width: 100%;
+    max-width: 150px;
+    aspect-ratio: 1;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-card-tile__image {
+      width: 120px;
+      margin: 0;
+    }
+  }
+
+  .looptech-card-tile__image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .looptech-card-tile__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F9FAFB;
+    border-radius: 8px;
+    color: #D1D5DB;
+  }
+
+  /* Content */
+  .looptech-card-tile__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .looptech-card-tile__header {
+    margin-bottom: 8px;
+  }
+
+  .looptech-card-tile__title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #0A0A0A;
+    margin: 0 0 4px;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-card-tile__title {
+      font-size: 18px;
+    }
+  }
+
+  .looptech-card-tile__variant {
+    font-size: 11px;
+    line-height: 19px;
+    color: #4A5565;
+  }
+
+  /* Rating */
+  .looptech-card-tile__rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .looptech-card-tile__stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .looptech-card-tile__rating-text {
+    font-size: 11px;
+    color: #6A7282;
+  }
+
+  /* Specs */
+  .looptech-card-tile__specs {
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #4A5565;
+  }
+
+  .looptech-card-tile__spec-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .looptech-card-tile__spec-item::before {
+    content: '•';
+    color: #4A5565;
+    flex-shrink: 0;
+  }
+
+  /* Colours */
+  .looptech-card-tile__colours {
+    margin-top: 12px;
+  }
+
+  .looptech-card-tile__colours-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #0A0A0A;
+    margin-bottom: 6px;
+  }
+
+  .looptech-card-tile__swatches {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .looptech-card-tile__swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #E5E7EB;
+  }
+
+  .looptech-card-tile__swatch-more {
+    font-size: 10px;
+    color: #6A7282;
+    font-weight: 500;
+  }
+
+  /* Action */
+  .looptech-card-tile__action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding-top: 16px;
+    border-top: 1px solid #E5E7EB;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-card-tile__action {
+      width: auto;
+      min-width: 140px;
+      align-items: flex-end;
+      text-align: right;
+      padding-top: 0;
+      border-top: none;
+      margin-left: auto;
+    }
+  }
+
+  .looptech-card-tile__pricing {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-card-tile__pricing {
+      align-items: flex-end;
+    }
+  }
+
+  .looptech-card-tile__price-label {
+    font-size: 10px;
+    font-weight: 400;
+    color: #858585;
+  }
+
+  .looptech-card-tile__price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0A0A0A;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-card-tile__price {
+      font-size: 24px;
+    }
+  }
+
+  .looptech-card-tile__compare-price {
+    font-size: 13px;
+    font-weight: 400;
+    color: #6A7282;
+    text-decoration: line-through;
+  }
+
+  .looptech-card-tile__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #4F46E5;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .looptech-card-tile__button:hover {
+    background-color: #4338CA;
+  }
+</style>

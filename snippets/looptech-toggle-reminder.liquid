@@ -1,0 +1,172 @@
+{% comment %}
+  LoopTech Toggle Reminder Bar
+
+  Displays a reminder bar showing which product mode (Brand New / Renewed) the user is currently browsing.
+  Allows switching between modes via toggle buttons.
+
+  Parameters:
+    - brand_new_text: Text to display when in Brand New mode
+    - renewed_text: Text to display when in Renewed mode
+
+  TODO: Connect to global toggle state (localStorage/cookie)
+  TODO: On click, update toggle state and filter/redirect collection
+{% endcomment %}
+
+<div class="looptech-toggle-reminder" data-toggle-reminder data-current-mode="brand-new">
+  <div class="looptech-toggle-reminder__container">
+    <p class="looptech-toggle-reminder__text" data-reminder-text>
+      <span data-text-brand-new>{{ brand_new_text | default: 'You are currently browsing Brand New. Switch to Renewed, using the toggle.' }}</span>
+      <span data-text-renewed style="display: none;">{{ renewed_text | default: 'You are currently browsing Renewed. Switch to Brand New, using the toggle.' }}</span>
+    </p>
+    <div class="looptech-toggle-reminder__buttons">
+      <button
+        class="looptech-toggle-reminder__btn looptech-toggle-reminder__btn--active"
+        data-toggle-mode="brand-new"
+        type="button"
+        aria-pressed="true"
+      >
+        Brand New
+      </button>
+      <button
+        class="looptech-toggle-reminder__btn"
+        data-toggle-mode="renewed"
+        type="button"
+        aria-pressed="false"
+      >
+        Renewed
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .looptech-toggle-reminder {
+    width: 100%;
+    background-color: #F9FAFB;
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  /* Background color variants based on mode */
+  .looptech-toggle-reminder[data-current-mode="brand-new"] {
+    background-color: #F0FDF4;
+  }
+
+  .looptech-toggle-reminder[data-current-mode="renewed"] {
+    background-color: #EFF6FF;
+  }
+
+  .looptech-toggle-reminder__container {
+    max-width: 1270px;
+    margin: 0 auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-toggle-reminder__container {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 12px 24px;
+    }
+  }
+
+  .looptech-toggle-reminder__text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #4A5565;
+    margin: 0;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-toggle-reminder__text {
+      text-align: left;
+    }
+  }
+
+  .looptech-toggle-reminder__text strong {
+    font-weight: 700;
+    color: #0A0A0A;
+  }
+
+  .looptech-toggle-reminder__buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .looptech-toggle-reminder__btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #E5E7EB;
+    color: #6A7282;
+  }
+
+  .looptech-toggle-reminder__btn:hover {
+    background-color: #D1D5DB;
+  }
+
+  .looptech-toggle-reminder__btn--active {
+    background-color: #4F46E5;
+    color: #fff;
+  }
+
+  .looptech-toggle-reminder__btn--active:hover {
+    background-color: #4338CA;
+  }
+</style>
+
+<script>
+  (function() {
+    const reminderBar = document.querySelector('[data-toggle-reminder]');
+    if (!reminderBar) return;
+
+    const toggleButtons = reminderBar.querySelectorAll('[data-toggle-mode]');
+    const textBrandNew = reminderBar.querySelector('[data-text-brand-new]');
+    const textRenewed = reminderBar.querySelector('[data-text-renewed]');
+
+    // TODO: Load initial state from localStorage
+    // const savedMode = localStorage.getItem('looptech_product_mode') || 'brand-new';
+    // updateMode(savedMode);
+
+    toggleButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const mode = this.dataset.toggleMode;
+        updateMode(mode);
+
+        // TODO: Save to localStorage
+        // localStorage.setItem('looptech_product_mode', mode);
+
+        // TODO: Trigger collection filtering or redirect
+        // Example: Redirect to filtered collection
+        // const currentUrl = new URL(window.location.href);
+        // currentUrl.searchParams.set('filter.p.tag', mode);
+        // window.location.href = currentUrl.toString();
+
+        console.log('Toggle mode changed to:', mode);
+      });
+    });
+
+    function updateMode(mode) {
+      reminderBar.dataset.currentMode = mode;
+
+      toggleButtons.forEach(btn => {
+        const isActive = btn.dataset.toggleMode === mode;
+        btn.classList.toggle('looptech-toggle-reminder__btn--active', isActive);
+        btn.setAttribute('aria-pressed', isActive);
+      });
+
+      if (textBrandNew && textRenewed) {
+        textBrandNew.style.display = mode === 'brand-new' ? '' : 'none';
+        textRenewed.style.display = mode === 'renewed' ? '' : 'none';
+      }
+    }
+  })();
+</script>

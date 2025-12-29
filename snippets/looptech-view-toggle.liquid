@@ -1,0 +1,103 @@
+{% comment %}
+  LoopTech View Toggle
+
+  Toggle buttons to switch between Long Tiles view and Grid view for product listings.
+
+  Parameters:
+    - default_view: 'tiles' or 'grid' - which view is active by default
+
+  TODO: Save preference to localStorage
+  TODO: Animate view transition
+{% endcomment %}
+
+{% assign current_view = default_view | default: 'tiles' %}
+
+<div class="looptech-view-toggle" role="group" aria-label="Product view toggle">
+  <button
+    class="looptech-view-toggle__btn {% if current_view == 'tiles' %}looptech-view-toggle__btn--active{% endif %}"
+    data-view-btn="tiles"
+    type="button"
+    aria-label="Long tiles view"
+    aria-pressed="{% if current_view == 'tiles' %}true{% else %}false{% endif %}"
+  >
+    <!-- List/Tiles Icon -->
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="3" width="16" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="2" y="12" width="16" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </button>
+
+  <button
+    class="looptech-view-toggle__btn {% if current_view == 'grid' %}looptech-view-toggle__btn--active{% endif %}"
+    data-view-btn="grid"
+    type="button"
+    aria-label="Grid view"
+    aria-pressed="{% if current_view == 'grid' %}true{% else %}false{% endif %}"
+  >
+    <!-- Grid Icon -->
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="2" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </button>
+
+  <button
+    class="looptech-view-toggle__btn"
+    data-view-btn="compact"
+    type="button"
+    aria-label="Compact list view"
+    aria-pressed="false"
+  >
+    <!-- Compact List Icon -->
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="2" y1="4" x2="18" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="2" y1="8" x2="18" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="2" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="2" y1="16" x2="18" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .looptech-view-toggle {
+    display: flex;
+    gap: 8px;
+  }
+
+  .looptech-view-toggle__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #6A7282;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .looptech-view-toggle__btn:hover {
+    border-color: #4F46E5;
+    color: #4F46E5;
+  }
+
+  .looptech-view-toggle__btn--active {
+    background-color: #4F46E5;
+    border-color: #4F46E5;
+    color: #fff;
+  }
+
+  .looptech-view-toggle__btn--active:hover {
+    background-color: #4338CA;
+    border-color: #4338CA;
+  }
+
+  .looptech-view-toggle__btn svg {
+    width: 20px;
+    height: 20px;
+  }
+</style>

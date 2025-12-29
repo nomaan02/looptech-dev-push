@@ -1,0 +1,186 @@
+{% comment %}
+  LoopTech Promo Card
+
+  A promotional card that appears within the product grid.
+  Used to promote "Renewed" products or other offerings.
+
+  Parameters:
+    - style: 'tile' for horizontal layout, 'grid' for square/vertical layout
+
+  TODO: Make content dynamic via section settings
+  TODO: Add analytics tracking for clicks
+{% endcomment %}
+
+{% assign card_style = style | default: 'tile' %}
+
+{% comment %} Get settings from parent section if available {% endcomment %}
+{% assign promo_eyebrow = section.settings.promo_eyebrow | default: 'Fair? Good? Excellent?' %}
+{% assign promo_headline = section.settings.promo_headline | default: 'F THAT.' %}
+{% assign promo_subtext = section.settings.promo_subtext | default: 'One condition to rule them all.' %}
+{% assign promo_cta_text = section.settings.promo_cta_text | default: 'Check out Renewed' %}
+{% assign promo_cta_url = section.settings.promo_cta_url | default: '/collections/renewed' %}
+
+<div class="looptech-promo-card looptech-promo-card--{{ card_style }}">
+  <a href="{{ promo_cta_url }}" class="looptech-promo-card__link">
+
+    <div class="looptech-promo-card__content">
+      <span class="looptech-promo-card__eyebrow">{{ promo_eyebrow }}</span>
+      <span class="looptech-promo-card__headline">{{ promo_headline }}</span>
+      <p class="looptech-promo-card__subtext">{{ promo_subtext }}</p>
+    </div>
+
+    <div class="looptech-promo-card__cta">
+      <span class="looptech-promo-card__cta-text">{{ promo_cta_text }}</span>
+      <svg class="looptech-promo-card__arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+  </a>
+</div>
+
+<style>
+  /* Base Promo Card */
+  .looptech-promo-card {
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .looptech-promo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: -1px 8px 24px rgba(99, 102, 241, 0.3);
+  }
+
+  .looptech-promo-card__link {
+    display: flex;
+    text-decoration: none;
+    color: #fff;
+    height: 100%;
+  }
+
+  .looptech-promo-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .looptech-promo-card__eyebrow {
+    font-size: 14px;
+    font-weight: 400;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  .looptech-promo-card__headline {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .looptech-promo-card__subtext {
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.9;
+    margin: 4px 0 0;
+  }
+
+  .looptech-promo-card__cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .looptech-promo-card__arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .looptech-promo-card:hover .looptech-promo-card__arrow {
+    transform: translateX(4px);
+  }
+
+  /* Tile Style (Horizontal - Full Width) */
+  .looptech-promo-card--tile {
+    width: 100%;
+  }
+
+  .looptech-promo-card--tile .looptech-promo-card__link {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    gap: 24px;
+  }
+
+  .looptech-promo-card--tile .looptech-promo-card__content {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .looptech-promo-card--tile .looptech-promo-card__eyebrow {
+    font-size: 16px;
+  }
+
+  .looptech-promo-card--tile .looptech-promo-card__headline {
+    font-size: 20px;
+  }
+
+  .looptech-promo-card--tile .looptech-promo-card__subtext {
+    margin: 0;
+  }
+
+  @media (max-width: 767px) {
+    .looptech-promo-card--tile .looptech-promo-card__link {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .looptech-promo-card--tile .looptech-promo-card__content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  }
+
+  /* Grid Style (Vertical - Same as product card) */
+  .looptech-promo-card--grid {
+    min-height: 280px;
+  }
+
+  .looptech-promo-card--grid .looptech-promo-card__link {
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 24px 20px;
+  }
+
+  .looptech-promo-card--grid .looptech-promo-card__content {
+    flex: 1;
+  }
+
+  .looptech-promo-card--grid .looptech-promo-card__eyebrow {
+    font-size: 13px;
+  }
+
+  .looptech-promo-card--grid .looptech-promo-card__headline {
+    font-size: 22px;
+    margin-top: 8px;
+  }
+
+  .looptech-promo-card--grid .looptech-promo-card__subtext {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .looptech-promo-card--grid .looptech-promo-card__cta {
+    margin-top: 16px;
+    font-size: 13px;
+  }
+</style>

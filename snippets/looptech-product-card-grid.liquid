@@ -1,0 +1,269 @@
+{% comment %}
+  LoopTech Product Card - Grid
+
+  Compact card layout for the Grid view.
+  Displays product image, title, variant, price, and color swatches.
+
+  Parameters:
+    - product: The product object to display
+
+  TODO: Add quick-add functionality
+  TODO: Add hover image swap
+{% endcomment %}
+
+{% assign color_option_index = nil %}
+{% for option in product.options_with_values %}
+  {% assign option_name_lower = option.name | downcase %}
+  {% if option_name_lower == 'color' or option_name_lower == 'colour' %}
+    {% assign color_option_index = forloop.index0 %}
+    {% assign color_option_values = option.values %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+<article class="looptech-card-grid">
+  <a href="{{ product.url }}" class="looptech-card-grid__link">
+
+    <!-- Image -->
+    <div class="looptech-card-grid__image">
+      {% if product.featured_image %}
+        <img
+          src="{{ product.featured_image | image_url: width: 300 }}"
+          srcset="{{ product.featured_image | image_url: width: 200 }} 200w,
+                  {{ product.featured_image | image_url: width: 300 }} 300w,
+                  {{ product.featured_image | image_url: width: 400 }} 400w"
+          sizes="(max-width: 640px) 150px, 200px"
+          alt="{{ product.featured_image.alt | escape | default: product.title }}"
+          width="200"
+          height="200"
+          loading="lazy"
+        >
+      {% else %}
+        <div class="looptech-card-grid__placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M21 15L16 10L11 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      {% endif %}
+
+      {% comment %} Sale badge {% endcomment %}
+      {% if product.compare_at_price > product.price %}
+        {% assign discount = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
+        <span class="looptech-card-grid__badge">-{{ discount }}%</span>
+      {% endif %}
+    </div>
+
+    <!-- Content -->
+    <div class="looptech-card-grid__content">
+      <h3 class="looptech-card-grid__title">{{ product.title }}</h3>
+
+      <p class="looptech-card-grid__variant">
+        {% comment %} TODO: Dynamic variant subtitle from metafield {% endcomment %}
+        E-Sim + Physical Sim
+      </p>
+
+      <!-- Price -->
+      <div class="looptech-card-grid__price">
+        <span class="looptech-card-grid__price-current">{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span class="looptech-card-grid__price-compare">{{ product.compare_at_price | money }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Color Swatches -->
+      {% if color_option_values.size > 0 %}
+        <div class="looptech-card-grid__swatches">
+          {% for color in color_option_values limit: 4 %}
+            {% assign color_lower = color | downcase %}
+            {% case color_lower %}
+              {% when 'black' %}
+                {% assign swatch_color = '#000000' %}
+              {% when 'white' %}
+                {% assign swatch_color = '#FFFFFF' %}
+              {% when 'silver', 'grey', 'gray' %}
+                {% assign swatch_color = '#C0C0C0' %}
+              {% when 'purple' %}
+                {% assign swatch_color = '#9D98FF' %}
+              {% when 'red' %}
+                {% assign swatch_color = '#FF0C14' %}
+              {% when 'blue' %}
+                {% assign swatch_color = '#0000FF' %}
+              {% when 'green' %}
+                {% assign swatch_color = '#00FF00' %}
+              {% when 'gold', 'yellow' %}
+                {% assign swatch_color = '#FFD700' %}
+              {% when 'pink', 'rose', 'rose gold' %}
+                {% assign swatch_color = '#FFC0CB' %}
+              {% when 'natural titanium', 'titanium' %}
+                {% assign swatch_color = '#B8B8B8' %}
+              {% when 'desert titanium' %}
+                {% assign swatch_color = '#C4A77D' %}
+              {% when 'space black' %}
+                {% assign swatch_color = '#1C1C1E' %}
+              {% else %}
+                {% assign swatch_color = '#CCCCCC' %}
+            {% endcase %}
+            <span
+              class="looptech-card-grid__swatch"
+              style="background-color: {{ swatch_color }};"
+              title="{{ color }}"
+            ></span>
+          {% endfor %}
+          {% if color_option_values.size > 4 %}
+            <span class="looptech-card-grid__swatch-more">+{{ color_option_values.size | minus: 4 }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+  </a>
+</article>
+
+<style>
+  .looptech-card-grid {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    box-shadow: -1px 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  .looptech-card-grid:hover {
+    transform: translateY(-4px);
+    box-shadow: -1px 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .looptech-card-grid__link {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .looptech-card-grid__link {
+      padding: 20px;
+    }
+  }
+
+  /* Image */
+  .looptech-card-grid__image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .looptech-card-grid__image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .looptech-card-grid__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F9FAFB;
+    border-radius: 8px;
+    color: #D1D5DB;
+  }
+
+  .looptech-card-grid__badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #EF4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  /* Content */
+  .looptech-card-grid__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .looptech-card-grid__title {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    color: #0A0A0A;
+    margin: 0 0 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 40px;
+  }
+
+  .looptech-card-grid__variant {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 19px;
+    color: #4A5565;
+    margin: 0 0 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Price */
+  .looptech-card-grid__price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .looptech-card-grid__price-current {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #585858;
+  }
+
+  .looptech-card-grid__price-compare {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #6A7282;
+    text-decoration: line-through;
+  }
+
+  /* Swatches */
+  .looptech-card-grid__swatches {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+  }
+
+  .looptech-card-grid__swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #E5E7EB;
+  }
+
+  .looptech-card-grid__swatch-more {
+    font-size: 10px;
+    color: #6A7282;
+    font-weight: 500;
+  }
+</style>
