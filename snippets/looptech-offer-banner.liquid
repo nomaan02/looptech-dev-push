@@ -8,13 +8,17 @@
     - offer_text: The main promotional text
     - offer_icon: Optional emoji icon
     - offer_image: Optional image to display on the right side
+    - banner_id: Optional unique ID for dismiss persistence (default: 'default')
 
-  TODO: Automated logic - if renewed in stock, show Offer 1; if not, show Offer 2
-  TODO: Make offer content dynamic via metafields or section settings
-  TODO: Add dismiss functionality with localStorage persistence
+  Features:
+    - Dismiss button with localStorage persistence
+    - Banner stays hidden until localStorage is cleared
+    - Unique banner_id allows multiple banners with separate dismiss states
 {% endcomment %}
 
-<div class="looptech-offer-banner" data-offer-banner>
+{% assign unique_banner_id = banner_id | default: 'default' %}
+
+<div class="looptech-offer-banner" data-offer-banner data-banner-id="{{ unique_banner_id }}">
   <div class="looptech-offer-banner__content">
     <span class="looptech-offer-banner__text">{{ offer_text | default: '10% Off Any Laptop or Tablet with Any Smartphone Purchase' }}</span>
     {% if offer_icon != blank %}
@@ -48,7 +52,7 @@
     justify-content: center;
     gap: 16px;
     position: relative;
-    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%);
     color: #fff;
     padding: 12px 48px 12px 24px;
     border-radius: 8px;
@@ -136,15 +140,25 @@
 
     if (!banner || !dismissBtn) return;
 
-    // TODO: Check localStorage for dismissed state
-    // const isDismissed = localStorage.getItem('looptech_offer_dismissed');
-    // if (isDismissed) banner.hidden = true;
+    const bannerId = banner.dataset.bannerId || 'default';
+    const storageKey = 'looptech_offer_dismissed_' + bannerId;
+
+    // Check localStorage for dismissed state
+    try {
+      const isDismissed = localStorage.getItem(storageKey);
+      if (isDismissed === 'true') {
+        banner.hidden = true;
+        return;
+      }
+    } catch(e) {}
 
     dismissBtn.addEventListener('click', function() {
       banner.hidden = true;
 
-      // TODO: Save dismissed state to localStorage
-      // localStorage.setItem('looptech_offer_dismissed', 'true');
+      // Save dismissed state to localStorage
+      try {
+        localStorage.setItem(storageKey, 'true');
+      } catch(e) {}
     });
   })();
 </script>

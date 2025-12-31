@@ -7,31 +7,40 @@
   Parameters:
     - brand_new_text: Text to display when in Brand New mode
     - renewed_text: Text to display when in Renewed mode
+    - current_mode: Current toggle mode from detect-current-mode ('brand-new' or 'renewed')
 
-  TODO: Connect to global toggle state (localStorage/cookie)
-  TODO: On click, update toggle state and filter/redirect collection
+  Toggle Integration:
+    - Reads initial state from current_mode parameter (server-rendered)
+    - Clicking toggle redirects to same page with ?mode= parameter
+    - localStorage sync handled by detect-current-mode snippet
 {% endcomment %}
 
-<div class="looptech-toggle-reminder" data-toggle-reminder data-current-mode="brand-new">
+{% assign mode = current_mode | default: 'brand-new' %}
+
+<div class="looptech-toggle-reminder" data-toggle-reminder data-current-mode="{{ mode }}">
   <div class="looptech-toggle-reminder__container">
     <p class="looptech-toggle-reminder__text" data-reminder-text>
-      <span data-text-brand-new>{{ brand_new_text | default: 'You are currently browsing Brand New. Switch to Renewed, using the toggle.' }}</span>
-      <span data-text-renewed style="display: none;">{{ renewed_text | default: 'You are currently browsing Renewed. Switch to Brand New, using the toggle.' }}</span>
+      <span data-text-brand-new {% if mode != 'brand-new' %}style="display: none;"{% endif %}>
+        {{ brand_new_text | default: 'You are currently browsing Brand New. Switch to Renewed, using the toggle.' }}
+      </span>
+      <span data-text-renewed {% if mode != 'renewed' %}style="display: none;"{% endif %}>
+        {{ renewed_text | default: 'You are currently browsing Renewed. Switch to Brand New, using the toggle.' }}
+      </span>
     </p>
     <div class="looptech-toggle-reminder__buttons">
       <button
-        class="looptech-toggle-reminder__btn looptech-toggle-reminder__btn--active"
+        class="looptech-toggle-reminder__btn {% if mode == 'brand-new' %}looptech-toggle-reminder__btn--active{% endif %}"
         data-toggle-mode="brand-new"
         type="button"
-        aria-pressed="true"
+        aria-pressed="{% if mode == 'brand-new' %}true{% else %}false{% endif %}"
       >
         Brand New
       </button>
       <button
-        class="looptech-toggle-reminder__btn"
+        class="looptech-toggle-reminder__btn {% if mode == 'renewed' %}looptech-toggle-reminder__btn--active{% endif %}"
         data-toggle-mode="renewed"
         type="button"
-        aria-pressed="false"
+        aria-pressed="{% if mode == 'renewed' %}true{% else %}false{% endif %}"
       >
         Renewed
       </button>
@@ -114,17 +123,18 @@
   }
 
   .looptech-toggle-reminder__btn--active {
-    background-color: #4F46E5;
+    background-color: #007BFF;
     color: #fff;
   }
 
   .looptech-toggle-reminder__btn--active:hover {
-    background-color: #4338CA;
+    background-color: #0056b3;
   }
 </style>
 
 <script>
   (function() {
+    const STORAGE_KEY = 'looptech_mode';
     const reminderBar = document.querySelector('[data-toggle-reminder]');
     if (!reminderBar) return;
 
@@ -132,29 +142,30 @@
     const textBrandNew = reminderBar.querySelector('[data-text-brand-new]');
     const textRenewed = reminderBar.querySelector('[data-text-renewed]');
 
-    // TODO: Load initial state from localStorage
-    // const savedMode = localStorage.getItem('looptech_product_mode') || 'brand-new';
-    // updateMode(savedMode);
+    // Get current mode from data attribute (server-rendered)
+    const currentMode = reminderBar.dataset.currentMode || 'brand-new';
 
     toggleButtons.forEach(btn => {
       btn.addEventListener('click', function() {
-        const mode = this.dataset.toggleMode;
-        updateMode(mode);
+        const newMode = this.dataset.toggleMode;
 
-        // TODO: Save to localStorage
-        // localStorage.setItem('looptech_product_mode', mode);
+        // Don't do anything if clicking the already active mode
+        if (newMode === currentMode) return;
 
-        // TODO: Trigger collection filtering or redirect
-        // Example: Redirect to filtered collection
-        // const currentUrl = new URL(window.location.href);
-        // currentUrl.searchParams.set('filter.p.tag', mode);
-        // window.location.href = currentUrl.toString();
+        // Save to localStorage
+        try {
+          localStorage.setItem(STORAGE_KEY, newMode);
+        } catch(e) {}
 
-        console.log('Toggle mode changed to:', mode);
+        // Redirect with new mode parameter
+        const url = new URL(window.location.href);
+        url.searchParams.set('mode', newMode);
+        window.location.href = url.toString();
       });
     });
 
-    function updateMode(mode) {
+    // Visual update function (used if needed for dynamic updates)
+    function updateModeVisual(mode) {
       reminderBar.dataset.currentMode = mode;
 
       toggleButtons.forEach(btn => {

@@ -187,7 +187,6 @@
         "show_menu_link": false,
         "shop_dropformat": false,
         "menu": "main-menu",
-        "menu_refurbished": "refurbished-menu",
         "main_drop_menu": "click",
         "color_schememenu": "",
         "color__dropmenu": "background-1",

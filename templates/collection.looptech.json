@@ -28,23 +28,18 @@
       "type": "collection-looptech",
       "name": "LoopTech Collection",
       "settings": {
-        "padding_top": 24,
-        "padding_bottom": 24,
-        "products_per_page": 12,
-        "default_view": "tiles",
         "show_toggle_reminder": false,
         "brand_new_reminder": "You are currently browsing Brand New. Switch to Renewed, using the toggle.",
         "renewed_reminder": "You are currently browsing Renewed. Switch to Brand New, using the toggle.",
+        "default_view": "tiles",
+        "products_per_page": 12,
         "show_offer_banner": true,
         "offer_text": "10% Off Any Laptop or Tablet with Any Smartphone Purchase",
         "offer_icon": "",
         "show_promo_card": true,
         "promo_card_position": 2,
-        "promo_eyebrow": "Fair? Good? Excellent?",
-        "promo_headline": "F THAT.",
-        "promo_subtext": "One condition to rule them all.",
-        "promo_cta_text": "Check out Renewed",
-        "promo_cta_url": ""
+        "padding_top": 24,
+        "padding_bottom": 24
       }
     },
     "product-grid": {

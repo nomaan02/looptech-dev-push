@@ -1,291 +1,632 @@
-{% comment %}
-  LoopTech Collection Page
+{%- comment -%}
+  LoopTech Collection Page - Rebuilt with Two-Tier Filtering
 
-  A custom collection section for LoopTech featuring:
-  - Toggle reminder bar (Brand New / Renewed)
-  - Offer banner
-  - View toggle (Long Tiles / Grid)
-  - Filter sidebar
-  - Product cards in tile or grid layout
-  - Promo card integration
+  Tier 1: Server-side Liquid filtering by product tags (brand-new/renewed)
+  Tier 2: Client-side JavaScript filtering by SKU attributes (Brand, Capacity, Color)
 
-  TODO: Connect to global toggle state (localStorage)
-  TODO: Filter products by tag based on toggle state
-{% endcomment %}
+  CRITICAL: All mode detection and filtering is INLINED because Liquid's
+  render tag creates isolated variable scopes.
+{%- endcomment -%}
 
 {{ 'collection-looptech.css' | asset_url | stylesheet_tag }}
+{{ 'looptech-collection-filter.js' | asset_url | script_tag }}
 
-{% paginate collection.products by section.settings.products_per_page %}
+{%- comment -%}
+  ============================================================================
+  TIER 1: INLINE MODE DETECTION
+  DO NOT use render 'detect-current-mode' - variables would be isolated
+  ============================================================================
+{%- endcomment -%}
+{%- liquid
+  assign current_mode = 'brand-new'
+  assign has_url_mode = false
+  assign url_string = request.url | downcase
 
-<div class="collection-looptech">
+  if url_string contains 'mode=renewed'
+    assign current_mode = 'renewed'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=brand-new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  endif
+-%}
 
-  <!-- Toggle Reminder Bar (Full Width) -->
-  {% if section.settings.show_toggle_reminder %}
-    {% render 'looptech-toggle-reminder',
-      brand_new_text: section.settings.brand_new_reminder,
-      renewed_text: section.settings.renewed_reminder
-    %}
-  {% endif %}
+{%- comment -%} Get collection from schema or use current collection {%- endcomment -%}
+{%- liquid
+  if section.settings.source_collection != blank
+    assign display_collection = section.settings.source_collection
+  else
+    assign display_collection = collection
+  endif
+-%}
+
+{%- paginate display_collection.products by section.settings.products_per_page -%}
+
+<div class="looptech-collection"
+     data-section-id="{{ section.id }}"
+     data-current-mode="{{ current_mode }}"
+     data-collection="{{ display_collection.handle }}"
+     style="--padding-top: {{ section.settings.padding_top }}px; --padding-bottom: {{ section.settings.padding_bottom }}px; --grid-columns: {{ section.settings.grid_columns_desktop }};">
+
+  {%- comment -%} Toggle Reminder Bar {%- endcomment -%}
+  {%- if section.settings.show_toggle_reminder -%}
+    <div class="looptech-reminder-bar looptech-reminder-bar--{{ current_mode }}">
+      {%- if current_mode == 'brand-new' -%}
+        {{ section.settings.brand_new_reminder }}
+      {%- else -%}
+        {{ section.settings.renewed_reminder }}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
 
   <div class="collection-looptech__container">
 
-    <!-- Collection Header -->
+    {%- comment -%} Collection Header {%- endcomment -%}
     <header class="collection-looptech__header">
-      <h1 class="collection-looptech__title">{{ collection.title }}</h1>
+      <h1 class="collection-looptech__title">{{ display_collection.title }}</h1>
+      {%- if display_collection.description != blank and section.settings.show_description -%}
+        <div class="collection-looptech__description">{{ display_collection.description }}</div>
+      {%- endif -%}
     </header>
 
-    <!-- Offer Banner -->
-    {% if section.settings.show_offer_banner %}
-      {% render 'looptech-offer-banner',
+    {%- comment -%} Offer Banner {%- endcomment -%}
+    {%- if section.settings.show_offer_banner -%}
+      {%- render 'looptech-offer-banner',
         offer_text: section.settings.offer_text,
         offer_icon: section.settings.offer_icon
-      %}
-    {% endif %}
+      -%}
+    {%- endif -%}
 
-    <!-- Main Content Area -->
-    <div class="collection-looptech__main">
+    {%- comment -%} Main Content: Sidebar + Products {%- endcomment -%}
+    <div class="collection-looptech__main{% if section.settings.show_sidebar %} collection-looptech__main--with-filters{% endif %}">
 
-      <!-- Filter Sidebar -->
-      <aside class="collection-looptech__sidebar">
-        <div class="collection-looptech__filter-header">
-          <span class="collection-looptech__filter-title">Filter:</span>
-        </div>
+      {%- comment -%}
+        ========================================================================
+        SIDEBAR: Tier 2 SKU-Based Filters (Populated by JavaScript)
+        ========================================================================
+      {%- endcomment -%}
+      {%- if section.settings.show_sidebar -%}
+        <aside class="looptech-sidebar" id="looptech-filters">
+          <div class="looptech-sidebar__header">
+            <h2 class="looptech-sidebar__title">Filters</h2>
+            <button type="button" class="looptech-sidebar__clear" data-clear-all>
+              Clear All
+            </button>
+          </div>
 
-        <!-- Price Filter -->
-        <div class="collection-looptech__filter-group">
-          <button class="collection-looptech__filter-toggle" aria-expanded="true" data-filter="price">
-            <span>PRICE</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="collection-looptech__filter-content" data-filter-content="price">
-            <p class="collection-looptech__price-label">The highest price is {{ collection.products | map: 'price' | sort | last | money }}</p>
-            <div class="collection-looptech__price-inputs">
-              <div class="collection-looptech__price-field">
-                <label for="filter-price-from">From</label>
-                <input type="number" id="filter-price-from" name="filter.v.price.gte" min="0" placeholder="0">
-              </div>
-              <div class="collection-looptech__price-field">
-                <label for="filter-price-to">To</label>
-                <input type="number" id="filter-price-to" name="filter.v.price.lte" placeholder="{{ collection.products | map: 'price' | sort | last | money_without_currency }}">
+          {%- comment -%} Active Filters Display {%- endcomment -%}
+          <div class="looptech-sidebar__active-filters" id="active-filters"></div>
+
+          {%- comment -%} Price Range Filter {%- endcomment -%}
+          {%- if section.settings.show_price_filter -%}
+            <div class="looptech-filter-group" data-filter-group="price">
+              <button class="looptech-filter-toggle" type="button" aria-expanded="true">
+                <span>Price</span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="looptech-filter-content">
+                <div class="looptech-price-range">
+                  <input type="number" id="price-min" placeholder="Min" min="0" data-filter-price-min>
+                  <span>-</span>
+                  <input type="number" id="price-max" placeholder="Max" min="0" data-filter-price-max>
+                </div>
               </div>
             </div>
-            <!-- TODO: Add price range slider component -->
-          </div>
-        </div>
+          {%- endif -%}
 
-        <!-- Brand Filter -->
-        <div class="collection-looptech__filter-group">
-          <button class="collection-looptech__filter-toggle" aria-expanded="true" data-filter="brand">
-            <span>BRAND</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="collection-looptech__filter-content" data-filter-content="brand">
-            <!-- TODO: Dynamically populate from product vendors or tags -->
-            <label class="collection-looptech__checkbox">
-              <input type="checkbox" name="filter.p.vendor" value="Apple">
-              <span class="collection-looptech__checkbox-label">Apple</span>
-              <span class="collection-looptech__checkbox-count">({{ collection.products | where: 'vendor', 'Apple' | size }})</span>
-            </label>
-            <label class="collection-looptech__checkbox">
-              <input type="checkbox" name="filter.p.vendor" value="Samsung">
-              <span class="collection-looptech__checkbox-label">Samsung</span>
-              <span class="collection-looptech__checkbox-count">({{ collection.products | where: 'vendor', 'Samsung' | size }})</span>
-            </label>
-          </div>
-        </div>
+          {%- comment -%} Brand Filter - Populated by JavaScript from SKU data {%- endcomment -%}
+          {%- if section.settings.show_brand_filter -%}
+            <div class="looptech-filter-group" data-filter-group="brand">
+              <button class="looptech-filter-toggle" type="button" aria-expanded="true">
+                <span>Brand</span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="looptech-filter-content" id="filter-brands">
+                <p class="looptech-filter-loading">Loading brands...</p>
+              </div>
+            </div>
+          {%- endif -%}
 
-        <!-- TODO: Add more filter groups (Storage, Color, etc.) -->
-      </aside>
+          {%- comment -%} Storage/Capacity Filter - Populated by JavaScript {%- endcomment -%}
+          {%- if section.settings.show_capacity_filter -%}
+            <div class="looptech-filter-group" data-filter-group="capacity">
+              <button class="looptech-filter-toggle" type="button" aria-expanded="true">
+                <span>Storage</span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="looptech-filter-content" id="filter-capacities">
+                <p class="looptech-filter-loading">Loading options...</p>
+              </div>
+            </div>
+          {%- endif -%}
 
-      <!-- Products Area -->
+          {%- comment -%} Color Filter - Populated by JavaScript {%- endcomment -%}
+          {%- if section.settings.show_color_filter -%}
+            <div class="looptech-filter-group" data-filter-group="color">
+              <button class="looptech-filter-toggle" type="button" aria-expanded="true">
+                <span>Color</span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="looptech-filter-content" id="filter-colors">
+                <p class="looptech-filter-loading">Loading colors...</p>
+              </div>
+            </div>
+          {%- endif -%}
+        </aside>
+      {%- endif -%}
+
+      {%- comment -%}
+        ========================================================================
+        PRODUCTS AREA
+        ========================================================================
+      {%- endcomment -%}
       <div class="collection-looptech__products">
 
-        <!-- Toolbar: View Toggle + Sort -->
-        <div class="collection-looptech__toolbar">
-          <div class="collection-looptech__toolbar-left">
-            {% render 'looptech-view-toggle', default_view: section.settings.default_view %}
+        {%- comment -%} Toolbar {%- endcomment -%}
+        <div class="looptech-toolbar">
+          <div class="looptech-toolbar__left">
+            {%- if section.settings.show_sidebar -%}
+              <button class="looptech-mobile-filter-btn" type="button" data-open-mobile-filters>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M3 4.5H15M5.25 9H12.75M7.5 13.5H10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Filters</span>
+                <span class="looptech-filter-count" id="active-filter-count"></span>
+              </button>
+            {%- endif -%}
+            {%- render 'looptech-view-toggle', default_view: section.settings.default_view -%}
           </div>
-          <div class="collection-looptech__toolbar-right">
-            <div class="collection-looptech__sort">
-              <label for="sort-by">Sort by:</label>
-              <select id="sort-by" class="collection-looptech__sort-select">
-                <option value="best-selling" {% if collection.sort_by == 'best-selling' %}selected{% endif %}>Best selling</option>
-                <option value="title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>Alphabetically, A-Z</option>
-                <option value="title-descending" {% if collection.sort_by == 'title-descending' %}selected{% endif %}>Alphabetically, Z-A</option>
-                <option value="price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>Price, low to high</option>
-                <option value="price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>Price, high to low</option>
-                <option value="created-ascending" {% if collection.sort_by == 'created-ascending' %}selected{% endif %}>Date, old to new</option>
-                <option value="created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>Date, new to old</option>
+          <div class="looptech-toolbar__right">
+            <div class="looptech-sort">
+              <label for="looptech-sort-select">Sort by:</label>
+              <select id="looptech-sort-select" data-sort-select>
+                <option value="best-selling">Best Selling</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="title-asc">A-Z</option>
+                <option value="title-desc">Z-A</option>
+                <option value="created-desc">Newest</option>
               </select>
             </div>
-            <span class="collection-looptech__count">{{ collection.products_count }} product{% if collection.products_count != 1 %}s{% endif %}</span>
+            <span class="looptech-product-count" id="visible-count">
+              {%- comment -%} Updated by JavaScript {%- endcomment -%}
+            </span>
           </div>
         </div>
 
-        <!-- Products Container -->
-        <div class="collection-looptech__products-container" data-view="{{ section.settings.default_view }}">
+        {%- comment -%}
+          ======================================================================
+          TIER 1: INLINE PRODUCT FILTERING (Tag + SKU based)
+          Products without valid classification are HIDDEN (strict mode)
+          ======================================================================
+        {%- endcomment -%}
+        <div class="looptech-products-grid"
+             data-view="{{ section.settings.default_view }}"
+             id="products-grid">
 
-          <!-- Long Tile View (default) -->
-          <div class="collection-looptech__tiles" data-view-target="tiles" {% if section.settings.default_view != 'tiles' %}style="display: none;"{% endif %}>
-            {% assign promo_position = section.settings.promo_card_position | plus: 1 %}
-            {% for product in collection.products %}
+          {%- assign visible_count = 0 -%}
+          {%- assign promo_position = section.settings.promo_card_position -%}
 
-              {% comment %} Insert promo card at configured position {% endcomment %}
-              {% if section.settings.show_promo_card and forloop.index == promo_position %}
-                {% render 'looptech-promo-card', style: 'tile' %}
-              {% endif %}
+          {%- for product in display_collection.products -%}
 
-              {% render 'looptech-product-card-tile', product: product %}
+            {%- comment -%}
+              INLINE TIER 1 FILTERING - DO NOT use render 'product-mode-filter'
+              Strict mode: Only show products that match current mode
+            {%- endcomment -%}
+            {%- liquid
+              assign show_product = false
+              assign product_mode = 'unknown'
 
-            {% else %}
-              <p class="collection-looptech__empty">No products found in this collection.</p>
-            {% endfor %}
-          </div>
+              # Primary check: Product tags
+              if product.tags contains 'brand-new'
+                assign product_mode = 'brand-new'
+              elsif product.tags contains 'renewed'
+                assign product_mode = 'renewed'
+              endif
 
-          <!-- Grid View -->
-          <div class="collection-looptech__grid" data-view-target="grid" {% if section.settings.default_view != 'grid' %}style="display: none;"{% endif %}>
-            {% for product in collection.products %}
+              # Fallback: Parse SKU for condition code
+              if product_mode == 'unknown'
+                assign sku = product.selected_or_first_available_variant.sku | default: ''
+                assign sku_parts = sku | split: '-'
+                assign parts_count = sku_parts | size
 
-              {% comment %} Insert promo card at position 6 in grid {% endcomment %}
-              {% if section.settings.show_promo_card and forloop.index == 6 %}
-                {% render 'looptech-promo-card', style: 'grid' %}
-              {% endif %}
+                if parts_count >= 6
+                  assign sku_condition = sku_parts[3] | upcase
+                  if sku_condition == 'NEW'
+                    assign product_mode = 'brand-new'
+                  elsif sku_condition == 'REN' or sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
+                    assign product_mode = 'renewed'
+                  endif
+                endif
+              endif
 
-              {% render 'looptech-product-card-grid', product: product %}
+              # STRICT MODE: Only show if mode matches (hide unknown)
+              if section.settings.enable_toggle_filtering
+                if product_mode == current_mode
+                  assign show_product = true
+                endif
+              else
+                # Toggle filtering disabled - show all products
+                assign show_product = true
+              endif
+            -%}
 
-            {% else %}
-              <p class="collection-looptech__empty">No products found in this collection.</p>
-            {% endfor %}
-          </div>
+            {%- if show_product -%}
+              {%- assign visible_count = visible_count | plus: 1 -%}
 
+              {%- comment -%} Parse SKU for Tier 2 data attributes {%- endcomment -%}
+              {%- liquid
+                assign sku = product.selected_or_first_available_variant.sku | default: ''
+                assign sku_parts = sku | split: '-'
+                assign parts_count = sku_parts | size
+
+                if parts_count >= 6
+                  assign sku_brand = sku_parts[0]
+                  assign sku_model = sku_parts[1]
+                  assign sku_capacity = sku_parts[2]
+                  assign sku_condition = sku_parts[3]
+                  assign sku_color = sku_parts[4]
+                else
+                  assign sku_brand = ''
+                  assign sku_model = ''
+                  assign sku_capacity = ''
+                  assign sku_condition = ''
+                  assign sku_color = ''
+                endif
+              -%}
+
+              {%- comment -%} Insert promo card at configured position {%- endcomment -%}
+              {%- if section.settings.show_promo_card and visible_count == promo_position -%}
+                {%- if section.settings.default_view == 'tiles' -%}
+                  {%- render 'looptech-promo-card', style: 'tile', current_mode: current_mode -%}
+                {%- else -%}
+                  {%- render 'looptech-promo-card', style: 'grid', current_mode: current_mode -%}
+                {%- endif -%}
+              {%- endif -%}
+
+              {%- comment -%} Product Card with Data Attributes for Tier 2 JS filtering {%- endcomment -%}
+              <article class="looptech-product-item"
+                       data-product-id="{{ product.id }}"
+                       data-sku="{{ sku }}"
+                       data-brand="{{ sku_brand }}"
+                       data-model="{{ sku_model }}"
+                       data-capacity="{{ sku_capacity }}"
+                       data-color="{{ sku_color }}"
+                       data-condition="{{ sku_condition }}"
+                       data-price="{{ product.price }}"
+                       data-mode="{{ product_mode }}"
+                       data-title="{{ product.title | escape }}"
+                       data-created="{{ product.created_at | date: '%s' }}">
+
+                {%- if section.settings.default_view == 'tiles' -%}
+                  {%- render 'looptech-product-card-tile', product: product -%}
+                {%- else -%}
+                  {%- render 'looptech-product-card-grid', product: product -%}
+                {%- endif -%}
+              </article>
+            {%- endif -%}
+
+          {%- endfor -%}
         </div>
 
-        <!-- Pagination -->
-        {% if paginate.pages > 1 %}
+        {%- comment -%} Empty State {%- endcomment -%}
+        <div class="looptech-empty-state" id="empty-state" {% if visible_count > 0 %}style="display: none;"{% endif %}>
+          <div class="looptech-empty-state__content">
+            <h3>No {{ current_mode | replace: '-', ' ' }} products found</h3>
+            <p>Try adjusting your filters or browse our other collection.</p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+              <button type="button" class="looptech-btn" data-clear-all>Clear All Filters</button>
+              <a href="{{ display_collection.url }}?mode={% if current_mode == 'brand-new' %}renewed{% else %}brand-new{% endif %}" class="looptech-btn" style="background: #6B7280;">
+                View {% if current_mode == 'brand-new' %}Renewed{% else %}Brand New{% endif %}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} Pagination {%- endcomment -%}
+        {%- if paginate.pages > 1 -%}
           <nav class="collection-looptech__pagination" aria-label="Pagination">
             <ul class="collection-looptech__pagination-list">
-              {% if paginate.previous %}
+              {%- if paginate.previous -%}
                 <li>
                   <a href="{{ paginate.previous.url }}" class="collection-looptech__pagination-link collection-looptech__pagination-link--prev" aria-label="Previous page">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </a>
                 </li>
-              {% endif %}
+              {%- endif -%}
 
-              {% for part in paginate.parts %}
+              {%- for part in paginate.parts -%}
                 <li>
-                  {% if part.is_link %}
+                  {%- if part.is_link -%}
                     <a href="{{ part.url }}" class="collection-looptech__pagination-link">{{ part.title }}</a>
-                  {% else %}
-                    {% if part.title == paginate.current_page %}
+                  {%- else -%}
+                    {%- if part.title == paginate.current_page -%}
                       <span class="collection-looptech__pagination-link collection-looptech__pagination-link--current" aria-current="page">{{ part.title }}</span>
-                    {% else %}
+                    {%- else -%}
                       <span class="collection-looptech__pagination-link">{{ part.title }}</span>
-                    {% endif %}
-                  {% endif %}
+                    {%- endif -%}
+                  {%- endif -%}
                 </li>
-              {% endfor %}
+              {%- endfor -%}
 
-              {% if paginate.next %}
+              {%- if paginate.next -%}
                 <li>
                   <a href="{{ paginate.next.url }}" class="collection-looptech__pagination-link collection-looptech__pagination-link--next" aria-label="Next page">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </a>
                 </li>
-              {% endif %}
+              {%- endif -%}
             </ul>
           </nav>
-        {% endif %}
+        {%- endif -%}
 
       </div>
-
     </div>
-
   </div>
+
+  {%- comment -%} Mobile Filter Drawer {%- endcomment -%}
+  {%- if section.settings.show_sidebar -%}
+    <div class="looptech-filter-drawer-overlay" data-filter-overlay></div>
+    <div class="looptech-filter-drawer" data-filter-drawer>
+      <div class="looptech-filter-drawer__header">
+        <h2 class="looptech-filter-drawer__title">Filters</h2>
+        <button class="looptech-filter-drawer__close" type="button" data-close-mobile-filters aria-label="Close filters">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="looptech-filter-drawer__content">
+        {%- comment -%} Mobile filters - clone of sidebar content via JavaScript {%- endcomment -%}
+        <div id="mobile-filters-content"></div>
+      </div>
+      <div class="looptech-filter-drawer__footer">
+        <button type="button" class="looptech-filter-drawer__clear" data-clear-all>Clear</button>
+        <button type="button" class="looptech-filter-drawer__apply" data-close-mobile-filters>Apply</button>
+      </div>
+    </div>
+  {%- endif -%}
 
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const VIEW_STORAGE_KEY = 'looptech_collection_view';
+    const VALID_VIEWS = ['tiles', 'grid'];
 
     // View Toggle Functionality
     const viewButtons = document.querySelectorAll('[data-view-btn]');
-    const viewContainers = document.querySelectorAll('[data-view-target]');
-    const productsContainer = document.querySelector('[data-view]');
+    const productsGrid = document.getElementById('products-grid');
 
+    function applyView(view) {
+      viewButtons.forEach(b => {
+        const isActive = b.dataset.viewBtn === view;
+        b.classList.toggle('looptech-view-toggle__btn--active', isActive);
+      });
+
+      if (productsGrid) {
+        productsGrid.dataset.view = view;
+
+        // Update product cards based on view
+        const items = productsGrid.querySelectorAll('.looptech-product-item');
+        items.forEach(item => {
+          // View-specific styling is handled by CSS via [data-view] selector
+        });
+      }
+    }
+
+    // Load saved view preference
+    try {
+      const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+      if (savedView && VALID_VIEWS.includes(savedView)) {
+        applyView(savedView);
+      }
+    } catch(e) {}
+
+    // Handle view toggle clicks
     viewButtons.forEach(btn => {
       btn.addEventListener('click', function() {
         const view = this.dataset.viewBtn;
-
-        // Update button states
-        viewButtons.forEach(b => b.classList.remove('looptech-view-toggle__btn--active'));
-        this.classList.add('looptech-view-toggle__btn--active');
-
-        // Show/hide view containers
-        viewContainers.forEach(container => {
-          container.style.display = container.dataset.viewTarget === view ? '' : 'none';
-        });
-
-        // Update container data attribute
-        if (productsContainer) {
-          productsContainer.dataset.view = view;
-        }
-
-        // TODO: Save preference to localStorage
-        // localStorage.setItem('looptech_collection_view', view);
+        applyView(view);
+        try {
+          localStorage.setItem(VIEW_STORAGE_KEY, view);
+        } catch(e) {}
       });
     });
 
-    // Filter Toggle Functionality
-    const filterToggles = document.querySelectorAll('.collection-looptech__filter-toggle');
-
-    filterToggles.forEach(toggle => {
-      toggle.addEventListener('click', function() {
-        const filterName = this.dataset.filter;
-        const content = document.querySelector(`[data-filter-content="${filterName}"]`);
-        const isExpanded = this.getAttribute('aria-expanded') === 'true';
-
-        this.setAttribute('aria-expanded', !isExpanded);
-        content.style.display = isExpanded ? 'none' : 'block';
-      });
-    });
-
-    // Sort Functionality
-    const sortSelect = document.getElementById('sort-by');
-    if (sortSelect) {
-      sortSelect.addEventListener('change', function() {
-        const url = new URL(window.location.href);
-        url.searchParams.set('sort_by', this.value);
-        window.location.href = url.toString();
+    // Clone sidebar filters to mobile drawer
+    const sidebarFilters = document.getElementById('looptech-filters');
+    const mobileFiltersContent = document.getElementById('mobile-filters-content');
+    if (sidebarFilters && mobileFiltersContent) {
+      // Clone filter groups (not header)
+      const filterGroups = sidebarFilters.querySelectorAll('.looptech-filter-group');
+      filterGroups.forEach(group => {
+        mobileFiltersContent.appendChild(group.cloneNode(true));
       });
     }
-
-    // TODO: Toggle reminder state management
-    // TODO: Filter form submission
-    // TODO: Price range slider initialization
-
   });
 </script>
 
-{% endpaginate %}
+{%- endpaginate -%}
 
 {% schema %}
 {
   "name": "LoopTech Collection",
   "tag": "section",
-  "class": "collection-looptech-section",
+  "class": "looptech-collection-section",
   "settings": [
     {
       "type": "header",
+      "content": "Collection Source"
+    },
+    {
+      "type": "collection",
+      "id": "source_collection",
+      "label": "Select Collection",
+      "info": "Leave blank to use the current collection page"
+    },
+    {
+      "type": "header",
+      "content": "Toggle Filtering (Tier 1)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_toggle_filtering",
+      "label": "Enable Toggle Filtering",
+      "default": true,
+      "info": "Filter products by Brand New/Renewed based on product tags or SKU condition codes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_toggle_reminder",
+      "label": "Show Toggle Reminder Bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "brand_new_reminder",
+      "label": "Brand New Reminder Text",
+      "default": "You're viewing Brand New products. Switch to Renewed for savings."
+    },
+    {
+      "type": "text",
+      "id": "renewed_reminder",
+      "label": "Renewed Reminder Text",
+      "default": "You're viewing Renewed products. Switch to Brand New for latest."
+    },
+    {
+      "type": "header",
+      "content": "Sidebar Filters (Tier 2)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sidebar",
+      "label": "Show Filter Sidebar",
+      "default": true,
+      "info": "SKU-based filters: Brand, Storage, Color"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_filter",
+      "label": "Show Price Range Filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_brand_filter",
+      "label": "Show Brand Filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_capacity_filter",
+      "label": "Show Storage/Capacity Filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_filter",
+      "label": "Show Color Filter",
+      "default": true
+    },
+    {
+      "type": "header",
       "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "default_view",
+      "label": "Default View",
+      "options": [
+        { "value": "tiles", "label": "Long Tiles (List)" },
+        { "value": "grid", "label": "Grid" }
+      ],
+      "default": "tiles"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "label": "Products Per Page",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "grid_columns_desktop",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "label": "Grid Columns (Desktop)",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show Collection Description",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Offer Banner"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_offer_banner",
+      "label": "Show Offer Banner",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "offer_text",
+      "label": "Offer Text",
+      "default": "10% Off Any Laptop or Tablet with Any Smartphone Purchase"
+    },
+    {
+      "type": "text",
+      "id": "offer_icon",
+      "label": "Offer Icon (emoji)"
+    },
+    {
+      "type": "header",
+      "content": "Promo Card"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo_card",
+      "label": "Show Promo Card",
+      "default": true,
+      "info": "Displays a promotional card to switch modes"
+    },
+    {
+      "type": "range",
+      "id": "promo_card_position",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "label": "Promo Card Position",
+      "default": 3,
+      "info": "Show after X products"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
     },
     {
       "type": "range",
@@ -306,121 +647,6 @@
       "unit": "px",
       "label": "Padding Bottom",
       "default": 24
-    },
-    {
-      "type": "range",
-      "id": "products_per_page",
-      "min": 4,
-      "max": 24,
-      "step": 2,
-      "label": "Products per page",
-      "default": 12
-    },
-    {
-      "type": "select",
-      "id": "default_view",
-      "label": "Default View",
-      "options": [
-        { "value": "tiles", "label": "Long Tiles" },
-        { "value": "grid", "label": "Grid" }
-      ],
-      "default": "tiles"
-    },
-    {
-      "type": "header",
-      "content": "Toggle Reminder"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_toggle_reminder",
-      "label": "Show toggle reminder bar",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "brand_new_reminder",
-      "label": "Brand New Reminder Text",
-      "default": "You are currently browsing Brand New. Switch to Renewed, using the toggle."
-    },
-    {
-      "type": "text",
-      "id": "renewed_reminder",
-      "label": "Renewed Reminder Text",
-      "default": "You are currently browsing Renewed. Switch to Brand New, using the toggle."
-    },
-    {
-      "type": "header",
-      "content": "Offer Banner"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_offer_banner",
-      "label": "Show offer banner",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "offer_text",
-      "label": "Offer Text",
-      "default": "10% Off Any Laptop or Tablet with Any Smartphone Purchase"
-    },
-    {
-      "type": "text",
-      "id": "offer_icon",
-      "label": "Offer Icon (emoji)"
-    },
-    {
-      "type": "image_picker",
-      "id": "offer_image",
-      "label": "Offer Banner Image"
-    },
-    {
-      "type": "header",
-      "content": "Promo Card"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_promo_card",
-      "label": "Show 'Check out Renewed' promo card",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "promo_card_position",
-      "min": 1,
-      "max": 12,
-      "step": 1,
-      "label": "Promo card position (after X products)",
-      "default": 2
-    },
-    {
-      "type": "text",
-      "id": "promo_eyebrow",
-      "label": "Promo Card Eyebrow",
-      "default": "Fair? Good? Excellent?"
-    },
-    {
-      "type": "text",
-      "id": "promo_headline",
-      "label": "Promo Card Headline",
-      "default": "F THAT."
-    },
-    {
-      "type": "text",
-      "id": "promo_subtext",
-      "label": "Promo Card Subtext",
-      "default": "One condition to rule them all."
-    },
-    {
-      "type": "text",
-      "id": "promo_cta_text",
-      "label": "Promo Card CTA Text",
-      "default": "Check out Renewed"
-    },
-    {
-      "type": "url",
-      "id": "promo_cta_url",
-      "label": "Promo Card CTA URL"
     }
   ],
   "presets": [

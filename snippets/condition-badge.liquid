@@ -1,111 +1,81 @@
 {%- comment -%}
-  Condition Badge
+  CONDITION BADGE
 
-  Displays the product condition based on SKU parsing.
+  Displays a colored badge showing product condition.
 
-  Parameters:
-    - product: Product object (optional)
-    - sku: SKU string (optional)
-    - show_badge: Boolean to control visibility (default: true)
+  Input (one of these):
+    product - Product object
+    sku - Direct SKU string
 
   Usage:
     {% render 'condition-badge', product: product %}
     {% render 'condition-badge', sku: variant.sku %}
-    {% render 'condition-badge', product: product, show_badge: section.settings.show_condition_badge %}
 {%- endcomment -%}
 
 {%- liquid
-  # Get SKU from product or parameter
-  if product
-    assign badge_sku = product.variants.first.sku
-  elsif sku
-    assign badge_sku = sku
+  assign badge_mode = 'unknown'
+  assign badge_label = ''
+  assign badge_class = ''
+
+  # Check product tags first
+  if product != blank
+    if product.tags contains 'brand-new'
+      assign badge_mode = 'brand-new'
+    elsif product.tags contains 'renewed'
+      assign badge_mode = 'renewed'
+    endif
   endif
 
-  # Parse SKU
-  assign sku_parts = badge_sku | split: '-'
-  assign condition_code = sku_parts[3] | default: ''
+  # Fallback to SKU parsing
+  if badge_mode == 'unknown'
+    if sku != blank
+      assign check_sku = sku
+    elsif product != blank
+      assign check_sku = product.selected_or_first_available_variant.sku
+    endif
 
-  # Determine badge label and class based on condition code
-  case condition_code
-    when 'NEW'
+    if check_sku != blank
+      render 'sku-parser', sku: check_sku
+      if sku_is_valid
+        assign badge_mode = sku_mode
+      endif
+    endif
+  endif
+
+  # Set display properties
+  case badge_mode
+    when 'brand-new'
       assign badge_label = 'Brand New'
       assign badge_class = 'condition-badge--new'
-      assign badge_color_bg = '#10b981'
-      assign badge_color_text = '#ffffff'
-    when 'REFA'
-      assign badge_label = 'Grade A'
-      assign badge_class = 'condition-badge--grade-a'
-      assign badge_color_bg = '#3b82f6'
-      assign badge_color_text = '#ffffff'
-    when 'REFB'
-      assign badge_label = 'Grade B'
-      assign badge_class = 'condition-badge--grade-b'
-      assign badge_color_bg = '#f59e0b'
-      assign badge_color_text = '#ffffff'
-    when 'REFC'
-      assign badge_label = 'Grade C'
-      assign badge_class = 'condition-badge--grade-c'
-      assign badge_color_bg = '#6b7280'
-      assign badge_color_text = '#ffffff'
-    else
-      assign badge_label = ''
-      assign badge_class = ''
+    when 'renewed'
+      assign badge_label = 'Renewed'
+      assign badge_class = 'condition-badge--renewed'
   endcase
-
-  # Check if badge should be shown
-  if show_badge == nil
-    assign show_badge = true
-  endif
 -%}
 
-{%- if badge_label != blank and show_badge -%}
-  <span class="condition-badge {{ badge_class }}"
-        style="background-color: {{ badge_color_bg }}; color: {{ badge_color_text }};"
-        data-condition="{{ condition_code }}">
-    {{ badge_label }}
+{%- if badge_label != blank -%}
+  <span class="condition-badge {{ badge_class }}">
+    {{- badge_label -}}
   </span>
 {%- endif -%}
 
-<style>
+{%- style -%}
   .condition-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 4px 10px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    line-height: 1.2;
-    white-space: nowrap;
-    vertical-align: middle;
+    letter-spacing: 0.5px;
+    line-height: 1;
   }
-
   .condition-badge--new {
-    background-color: #10b981;
-    color: white;
+    background-color: #dcfce7;
+    color: #166534;
   }
-
-  .condition-badge--grade-a {
-    background-color: #3b82f6;
-    color: white;
+  .condition-badge--renewed {
+    background-color: #dbeafe;
+    color: #1e40af;
   }
-
-  .condition-badge--grade-b {
-    background-color: #f59e0b;
-    color: white;
-  }
-
-  .condition-badge--grade-c {
-    background-color: #6b7280;
-    color: white;
-  }
-
-  /* Responsive sizing */
-  @media screen and (max-width: 749px) {
-    .condition-badge {
-      font-size: 0.625rem;
-      padding: 0.2rem 0.5rem;
-    }
-  }
-</style>
+{%- endstyle -%}

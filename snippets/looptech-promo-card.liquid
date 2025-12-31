@@ -2,25 +2,47 @@
   LoopTech Promo Card
 
   A promotional card that appears within the product grid.
-  Used to promote "Renewed" products or other offerings.
+  Mode-aware: Shows "Check out Renewed" when browsing Brand New, and vice versa.
 
   Parameters:
     - style: 'tile' for horizontal layout, 'grid' for square/vertical layout
+    - current_mode: 'brand-new' or 'renewed' (for mode-aware content)
 
-  TODO: Make content dynamic via section settings
-  TODO: Add analytics tracking for clicks
+  Content automatically adapts based on current_mode:
+    - In brand-new mode: Promotes Renewed products
+    - In renewed mode: Promotes Brand New products
 {% endcomment %}
 
 {% assign card_style = style | default: 'tile' %}
+{% assign mode = current_mode | default: 'brand-new' %}
 
-{% comment %} Get settings from parent section if available {% endcomment %}
-{% assign promo_eyebrow = section.settings.promo_eyebrow | default: 'Fair? Good? Excellent?' %}
-{% assign promo_headline = section.settings.promo_headline | default: 'F THAT.' %}
-{% assign promo_subtext = section.settings.promo_subtext | default: 'One condition to rule them all.' %}
-{% assign promo_cta_text = section.settings.promo_cta_text | default: 'Check out Renewed' %}
-{% assign promo_cta_url = section.settings.promo_cta_url | default: '/collections/renewed' %}
+{% comment %} Mode-aware content defaults {% endcomment %}
+{% if mode == 'brand-new' %}
+  {% comment %} User is viewing Brand New - promote Renewed {% endcomment %}
+  {% assign default_eyebrow = 'Fair? Good? Excellent?' %}
+  {% assign default_headline = 'F THAT.' %}
+  {% assign default_subtext = 'One condition to rule them all.' %}
+  {% assign default_cta_text = 'Check out Renewed' %}
+  {% assign default_cta_url = '?mode=renewed' %}
+  {% assign promo_gradient = 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)' %}
+{% else %}
+  {% comment %} User is viewing Renewed - promote Brand New {% endcomment %}
+  {% assign default_eyebrow = 'Want factory fresh?' %}
+  {% assign default_headline = 'GO NEW.' %}
+  {% assign default_subtext = 'Premium devices, straight from the box.' %}
+  {% assign default_cta_text = 'Check out Brand New' %}
+  {% assign default_cta_url = '?mode=brand-new' %}
+  {% assign promo_gradient = 'linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%)' %}
+{% endif %}
 
-<div class="looptech-promo-card looptech-promo-card--{{ card_style }}">
+{% comment %} Get settings from parent section if available, fallback to mode-aware defaults {% endcomment %}
+{% assign promo_eyebrow = section.settings.promo_eyebrow | default: default_eyebrow %}
+{% assign promo_headline = section.settings.promo_headline | default: default_headline %}
+{% assign promo_subtext = section.settings.promo_subtext | default: default_subtext %}
+{% assign promo_cta_text = section.settings.promo_cta_text | default: default_cta_text %}
+{% assign promo_cta_url = section.settings.promo_cta_url | default: default_cta_url %}
+
+<div class="looptech-promo-card looptech-promo-card--{{ card_style }} looptech-promo-card--{{ mode }}" style="background: {{ promo_gradient }};">
   <a href="{{ promo_cta_url }}" class="looptech-promo-card__link">
 
     <div class="looptech-promo-card__content">
@@ -42,7 +64,6 @@
 <style>
   /* Base Promo Card */
   .looptech-promo-card {
-    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%);
     border-radius: 14px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -50,7 +71,15 @@
 
   .looptech-promo-card:hover {
     transform: translateY(-4px);
+  }
+
+  /* Mode-specific hover shadows */
+  .looptech-promo-card--brand-new:hover {
     box-shadow: -1px 8px 24px rgba(99, 102, 241, 0.3);
+  }
+
+  .looptech-promo-card--renewed:hover {
+    box-shadow: -1px 8px 24px rgba(59, 130, 246, 0.3);
   }
 
   .looptech-promo-card__link {

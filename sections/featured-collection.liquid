@@ -17,6 +17,29 @@
     <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
+
+{%- comment -%}
+  INLINE MODE DETECTION - DO NOT use render 'detect-current-mode'
+  Liquid's render tag creates isolated variable scope.
+{%- endcomment -%}
+{%- liquid
+  assign current_mode = 'brand-new'
+  assign has_url_mode = false
+  assign url_string = request.url | downcase
+
+  if url_string contains 'mode=renewed'
+    assign current_mode = 'renewed'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=brand-new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  endif
+-%}
+{%- assign visible_product_count = 0 -%}
+
 {%- liquid
   assign ratio = section.settings.image.aspect_ratio
   if ratio == 0 or ratio == null
@@ -223,11 +246,44 @@
                           assign temp = 0
                         -%}
                         {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
+                          {%- comment -%} INLINE PRODUCT FILTERING - DO NOT use render 'product-mode-filter' {%- endcomment -%}
+                          {%- liquid
+                            assign show_product = false
+                            assign product_mode = 'unknown'
+
+                            # Check product tags first
+                            if product.tags contains 'brand-new'
+                              assign product_mode = 'brand-new'
+                            elsif product.tags contains 'renewed'
+                              assign product_mode = 'renewed'
+                            endif
+
+                            # Fallback: Parse SKU condition code
+                            if product_mode == 'unknown'
+                              assign sku = product.selected_or_first_available_variant.sku | default: ''
+                              assign sku_parts = sku | split: '-'
+                              if sku_parts.size >= 6
+                                assign sku_condition = sku_parts[3] | upcase
+                                if sku_condition == 'NEW'
+                                  assign product_mode = 'brand-new'
+                                elsif sku_condition == 'REN' or sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
+                                  assign product_mode = 'renewed'
+                                endif
+                              endif
+                            endif
+
+                            # Apply filter: show if mode matches OR if unknown (fail-open for this section)
+                            if product_mode == current_mode or product_mode == 'unknown'
+                              assign show_product = true
+                            endif
+                          -%}
+                          {%- if show_product -%}
+                            {%- assign visible_product_count = visible_product_count | plus: 1 -%}
                           {% if temp == 0 %}
                           <li id="Slide-{{ section.id }}-{{ forloop.index }}" class="grid__item slider__slide">
                           {% endif %}
                             {% render 'card-product',
-                              card_product: product, 
+                              card_product: product,
                               card_style: section.settings.card_style,
                               show_quantity: settings.show_quantity,
                               media_aspect_ratio: settings.image_ratio,
@@ -259,6 +315,8 @@
                           </li>
                           {% assign temp = 0 %}
                           {% endif %}
+                          {%- endif -%}
+                          {%- comment -%} End LoopTech Toggle Filtering {%- endcomment -%}
                         {% endfor %}   
                       </ul>
                       {% if section.settings.arrow_position == 'inline' %}

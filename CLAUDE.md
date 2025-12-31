@@ -180,6 +180,102 @@ Three modes configured in section settings:
 - ARIA attributes managed dynamically
 - Skip links for keyboard navigation
 
+## CRITICAL: Toggle Filtering System (Brand New / Renewed)
+
+This theme has a **mandatory toggle filtering system** that allows users to switch between "Brand New" and "Renewed" product views. **ALL sections that display products MUST implement toggle filtering.**
+
+### Toggle System Core Files
+
+- `snippets/detect-current-mode.liquid` - Detects current mode from URL or localStorage
+- `snippets/product-mode-filter.liquid` - Filters products based on current mode
+- `snippets/sku-parser.liquid` - Parses SKU to determine product condition
+- `sections/mode-toggle.liquid` - The UI toggle component
+- `assets/sku-parser.js` - JavaScript SKU parser (globally loaded)
+
+### Required Pattern for ALL Product-Displaying Sections
+
+**CRITICAL:** Liquid's `render` tag creates an isolated variable scope. Variables assigned inside a rendered snippet are NOT accessible to the parent template. You MUST inline the mode detection and filtering logic directly in each section.
+
+Every section that loops through products MUST include:
+
+```liquid
+{%- comment -%} 1. INLINE mode detection at top of section (DO NOT use render) {%- endcomment -%}
+{%- liquid
+  assign current_mode = 'brand-new'
+  assign url_string = request.url | downcase
+
+  if url_string contains 'mode=renewed'
+    assign current_mode = 'renewed'
+  elsif url_string contains 'mode=brand-new'
+    assign current_mode = 'brand-new'
+  elsif url_string contains 'mode=new'
+    assign current_mode = 'brand-new'
+  endif
+-%}
+
+{%- comment -%} 2. Before product loop {%- endcomment -%}
+{%- assign visible_count = 0 -%}
+
+{%- comment -%} 3. Inside product loop - INLINE filtering logic {%- endcomment -%}
+{%- if section.settings.enable_toggle_filtering -%}
+  {%- liquid
+    assign show_product = false
+    assign product_mode = 'unknown'
+
+    # Check product tags
+    if product.tags contains 'brand-new'
+      assign product_mode = 'brand-new'
+    elsif product.tags contains 'renewed'
+      assign product_mode = 'renewed'
+    endif
+
+    # Show if mode matches OR if unknown (fail-open)
+    if product_mode == current_mode
+      assign show_product = true
+    elsif product_mode == 'unknown'
+      assign show_product = true
+    endif
+  -%}
+{%- else -%}
+  {%- assign show_product = true -%}
+{%- endif -%}
+
+{%- if show_product -%}
+  {%- assign visible_count = visible_count | plus: 1 -%}
+  <!-- Product card HTML here -->
+{%- endif -%}
+
+{%- comment -%} 4. After product loop - empty state {%- endcomment -%}
+{%- if section.settings.enable_toggle_filtering and visible_count == 0 -%}
+  <div class="empty-state">
+    <p>No {{ current_mode | replace: '-', ' ' }} products found.</p>
+  </div>
+{%- endif -%}
+```
+
+### Required Schema Setting
+
+Add this to every product-displaying section's schema:
+
+```json
+{
+  "type": "checkbox",
+  "id": "enable_toggle_filtering",
+  "label": "Enable Toggle Filtering",
+  "default": true,
+  "info": "When enabled, only products matching the current Brand New/Renewed mode will be displayed."
+}
+```
+
+### Mode Values
+
+- `brand-new` - Products with tag `brand-new` OR SKU condition code `NEW`
+- `renewed` - Products with tag `renewed` OR SKU condition codes `REN`, `REFA`, `REFB`, `REFC`
+
+### SKU Format
+
+`BRAND-MODEL-CAPACITY-CONDITION-COLOR-SEQUENCE` (e.g., `APPL-IPH15PM-256-NEW-BLK-001`)
+
 ## Custom Features
 
 - **Age Verification**: `age-verification.js` + `section-age-verification.css`

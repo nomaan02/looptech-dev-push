@@ -5,20 +5,29 @@
  * Example: APPL-IPH14P-256-NEW-GRA-001
  *
  * Condition Codes:
- *   NEW  = Brand New → mode: 'new'
- *   REFA = Refurbished Grade A → mode: 'refurbished'
- *   REFB = Refurbished Grade B → mode: 'refurbished'
- *   REFC = Refurbished Grade C → mode: 'refurbished'
+ *   NEW = Brand New → mode: 'brand-new'
+ *   REN = Renewed → mode: 'renewed'
  */
 
 const LooptechSKU = {
   // Condition code to mode mapping
   CONDITION_MAP: {
-    'NEW': 'new',
-    'REFA': 'refurbished',
-    'REFB': 'refurbished',
-    'REFC': 'refurbished'
+    'NEW': { mode: 'brand-new', label: 'Brand New', class: 'condition-badge--new' },
+    'REN': { mode: 'renewed', label: 'Renewed', class: 'condition-badge--renewed' },
+    // Legacy support
+    'REFA': { mode: 'renewed', label: 'Renewed', class: 'condition-badge--renewed' },
+    'REFB': { mode: 'renewed', label: 'Renewed', class: 'condition-badge--renewed' },
+    'REFC': { mode: 'renewed', label: 'Renewed', class: 'condition-badge--renewed' }
   },
+
+  // Valid mode values
+  VALID_MODES: ['brand-new', 'renewed'],
+
+  // localStorage key for mode persistence
+  STORAGE_KEY: 'looptech_mode',
+
+  // Default mode
+  DEFAULT_MODE: 'brand-new',
 
   // Brand code lookup table (from sku-generator.jsx)
   BRANDS: {
@@ -33,14 +42,6 @@ const LooptechSKU = {
     'MSIX': { name: 'MSI', slug: 'msi' },
     'HUAW': { name: 'Huawei', slug: 'huawei' },
     'GOOG': { name: 'Google', slug: 'google' }
-  },
-
-  // Condition code to human-readable label
-  CONDITIONS: {
-    'NEW': { label: 'Brand New', grade: null },
-    'REFA': { label: 'Refurbished', grade: 'A' },
-    'REFB': { label: 'Refurbished', grade: 'B' },
-    'REFC': { label: 'Refurbished', grade: 'C' }
   },
 
   // Capacity codes
@@ -73,6 +74,17 @@ const LooptechSKU = {
   },
 
   /**
+   * Normalize legacy mode values to current standard
+   * @param {string} mode - Mode value to normalize
+   * @returns {string} Normalized mode value
+   */
+  normalizeMode(mode) {
+    if (mode === 'new') return 'brand-new';
+    if (mode === 'Renewed') return 'renewed';
+    return mode;
+  },
+
+  /**
    * Parse a SKU string into its components
    * @param {string} sku - The SKU to parse
    * @returns {Object|null} Parsed SKU object or null if invalid
@@ -84,9 +96,10 @@ const LooptechSKU = {
     if (parts.length < 6) return null;
 
     const [brand, model, capacity, condition, color, sequence] = parts;
+    const conditionUpper = condition.toUpperCase();
 
-    const mode = this.CONDITION_MAP[condition];
-    if (!mode) return null; // Invalid condition code
+    const conditionInfo = this.CONDITION_MAP[conditionUpper];
+    if (!conditionInfo) return null; // Invalid condition code
 
     return {
       raw: sku,
@@ -101,58 +114,67 @@ const LooptechSKU = {
         display: this.CAPACITIES[capacity] || capacity
       },
       condition: {
-        code: condition,
-        label: this.CONDITIONS[condition]?.label || condition,
-        grade: this.CONDITIONS[condition]?.grade || null
+        code: conditionUpper === 'REFA' || conditionUpper === 'REFB' || conditionUpper === 'REFC' ? 'REN' : conditionUpper,
+        label: conditionInfo.label,
+        originalCode: conditionUpper
       },
       color: {
         code: color,
         display: this.COLORS[color] || color
       },
       sequence: sequence,
-      mode: mode, // 'new' or 'refurbished'
-      isNew: mode === 'new',
-      isRefurbished: mode === 'refurbished'
+      mode: conditionInfo.mode, // 'brand-new' or 'renewed'
+      isBrandNew: conditionInfo.mode === 'brand-new',
+      isRenewed: conditionInfo.mode === 'renewed'
     };
   },
 
   /**
    * Get the mode for a SKU (quick check)
    * @param {string} sku - The SKU to check
-   * @returns {string} 'new', 'refurbished', or 'unknown'
+   * @returns {string} 'brand-new', 'renewed', or 'unknown'
    */
   getMode(sku) {
     if (!sku || typeof sku !== 'string') return 'unknown';
     const parts = sku.split('-');
     if (parts.length < 4) return 'unknown';
-    return this.CONDITION_MAP[parts[3]] || 'unknown';
+    const conditionInfo = this.CONDITION_MAP[parts[3].toUpperCase()];
+    return conditionInfo?.mode || 'unknown';
   },
 
   /**
    * Check if a SKU matches the given mode
    * @param {string} sku - The SKU to check
-   * @param {string} mode - 'new' or 'refurbished'
+   * @param {string} mode - 'brand-new' or 'renewed'
    * @returns {boolean}
    */
   matchesMode(sku, mode) {
-    return this.getMode(sku) === mode;
+    const normalizedMode = this.normalizeMode(mode);
+    return this.getMode(sku) === normalizedMode;
   },
 
   /**
    * Filter an array of products by mode
    * @param {Array} products - Array of Shopify product objects
-   * @param {string} mode - 'new' or 'refurbished'
+   * @param {string} mode - 'brand-new' or 'renewed'
    * @returns {Array} Filtered products
    */
   filterByMode(products, mode) {
+    const normalizedMode = this.normalizeMode(mode);
     return products.filter(product => {
+      // Check product tags first
+      if (product.tags) {
+        const tags = Array.isArray(product.tags) ? product.tags : product.tags.split(',').map(t => t.trim());
+        if (tags.includes('brand-new') && normalizedMode === 'brand-new') return true;
+        if (tags.includes('renewed') && normalizedMode === 'renewed') return true;
+      }
       // Check first variant SKU (primary condition)
       const primarySku = product.variants?.[0]?.sku;
-      if (primarySku && this.matchesMode(primarySku, mode)) {
+      if (primarySku && this.matchesMode(primarySku, normalizedMode)) {
         return true;
       }
       // Fallback: check if ANY variant matches the mode
-      return product.variants?.some(v => this.matchesMode(v.sku, mode));
+      return product.variants?.some(v => this.matchesMode(v.sku, normalizedMode));
     });
   },
 
@@ -165,14 +187,41 @@ const LooptechSKU = {
     const parsed = this.parse(sku);
     if (!parsed) return null;
 
-    const badgeMap = {
-      'NEW': { label: 'Brand New', class: 'condition-badge--new' },
-      'REFA': { label: 'Grade A', class: 'condition-badge--grade-a' },
-      'REFB': { label: 'Grade B', class: 'condition-badge--grade-b' },
-      'REFC': { label: 'Grade C', class: 'condition-badge--grade-c' }
+    return {
+      label: parsed.condition.label,
+      class: parsed.isBrandNew ? 'condition-badge--new' : 'condition-badge--renewed',
+      mode: parsed.mode
     };
+  },
 
-    return badgeMap[parsed.condition.code] || null;
+  /**
+   * Get current mode from URL or localStorage
+   * @returns {string} Current mode ('brand-new' or 'renewed')
+   */
+  getCurrentMode() {
+    // Check URL first
+    const urlParams = new URLSearchParams(window.location.search);
+    let mode = urlParams.get('mode');
+
+    // Normalize legacy values
+    mode = this.normalizeMode(mode);
+
+    if (this.VALID_MODES.includes(mode)) {
+      try {
+        localStorage.setItem(this.STORAGE_KEY, mode);
+      } catch(e) {}
+      return mode;
+    }
+
+    // Fall back to localStorage
+    try {
+      mode = localStorage.getItem(this.STORAGE_KEY);
+      if (this.VALID_MODES.includes(mode)) {
+        return mode;
+      }
+    } catch(e) {}
+
+    return this.DEFAULT_MODE;
   }
 };
 

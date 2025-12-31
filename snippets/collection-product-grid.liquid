@@ -20,8 +20,8 @@
   # Detect current mode
   assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
   assign current_mode = 'new'
-  if url_mode == 'refurbished'
-    assign current_mode = 'refurbished'
+  if url_mode == 'renewed'
+    assign current_mode = 'renewed'
   endif
 
   # Set defaults
@@ -59,10 +59,8 @@
           # Check if product SKU matches current mode
           if current_mode == 'new' and sku_condition == 'NEW'
             assign should_display = true
-          elsif current_mode == 'refurbished'
-            if sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
-              assign should_display = true
-            endif
+          elsif current_mode == 'renewed' and sku_condition == 'REN'
+            assign should_display = true
           endif
         else
           # Fallback for products without proper SKU - show in both modes

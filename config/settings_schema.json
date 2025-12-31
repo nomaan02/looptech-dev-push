@@ -191,10 +191,9 @@
         "min": 1000,
         "max": 1800,
         "step": 50,
-        "default": 1270,
+        "default": 1200,
         "unit": "px",
-        "label": "t:settings_schema.layout.settings.page_width.label",
-        "info": "Standard width is 1270px for consistency across all sections"
+        "label": "t:settings_schema.layout.settings.page_width.label"
       },
       {
         "type": "header",

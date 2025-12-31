@@ -15,31 +15,32 @@
         "welcome_banner_C3b8yF": {
           "type": "welcome_banner",
           "settings": {
-            "title": "Welcome Back",
-            "show_subtitle": true,
+            "title": "",
+            "show_subtitle": false,
             "subtitle": "We've changed a few things around here...",
-            "show_description": true,
+            "show_description": false,
             "description": "Discover our new toggle feature! Switch between brand new and renewed products with a single click.",
-            "background_image": "shopify://shop_images/PLAIN_FLIP.png",
-            "overlay_opacity": 35,
-            "gradient_start": "#0f172a",
-            "gradient_end": "#1a1035"
+            "background_image": "shopify://shop_images/placeholder-hero.png",
+            "overlay_opacity": 0,
+            "gradient_start": "#041c4d",
+            "gradient_end": "#4563e6"
           }
         },
         "promo_tile_horizontal_CWm86R": {
           "type": "promo_tile_horizontal",
           "settings": {
-            "line_1": "Gawk Gawk",
-            "line_2": "9000.",
+            "line_1": "Gaming Laptop",
+            "line_2": "Megasale",
             "show_subtitle": true,
             "show_button": true,
             "button_text": "Shop Now",
             "button_link": "",
             "background_image": "shopify://shop_images/PPLAIN.png",
-            "overlay_opacity": 0,
+            "decorative_image": "shopify://shop_images/gaming-laptop-placeholder.png",
+            "overlay_opacity": 45,
             "tile_style": "looptech-tile-shark",
             "gradient_start": "#1f2937",
-            "gradient_end": "#111827"
+            "gradient_end": "#4563e6"
           }
         },
         "promo_tile_horizontal_KXMBXX": {
@@ -52,10 +53,10 @@
             "button_text": "Shop Now",
             "button_link": "",
             "background_image": "shopify://shop_images/PLAIN_FLIP.png",
-            "overlay_opacity": 0,
+            "overlay_opacity": 50,
             "tile_style": "looptech-tile-friday",
-            "gradient_start": "#7c3aed",
-            "gradient_end": "#5b21b6"
+            "gradient_start": "#141e4c",
+            "gradient_end": "#4563e7"
           }
         },
         "promo_tile_vertical_AdGxan": {
@@ -68,10 +69,10 @@
             "button_text": "Shop Now",
             "button_link": "",
             "background_image": "shopify://shop_images/SQ.png",
-            "overlay_opacity": 0,
+            "overlay_opacity": 50,
             "tile_style": "looptech-tile-apple",
-            "gradient_start": "#1e3a5f",
-            "gradient_end": "#0c1929"
+            "gradient_start": "#041c4d",
+            "gradient_end": "#4563e6"
           }
         }
       },
@@ -85,172 +86,108 @@
       "settings": {
         "container_max_width": 1400,
         "padding_top": 0,
-        "padding_bottom": 4,
-        "padding_horizontal": 16,
-        "tile_gap": 16
+        "padding_bottom": 16,
+        "padding_horizontal": 0,
+        "tile_gap": 24
       }
     },
-    "1762700052b2089e17": {
-      "type": "_blocks",
+    "shopdev_recently_viewed_products_pRdVwD": {
+      "type": "shopdev-recently-viewed-products",
       "blocks": {
-        "ai_gen_block_38562b2_gKFkbr": {
-          "type": "ai_gen_block_38562b2",
-          "name": "MAIN TOGGLE",
-          "disabled": true,
+        "product_ye48jL": {
+          "type": "product",
           "settings": {
-            "container_max_width": 1050,
-            "vertical_padding": 5,
-            "background_color": "#ffffff",
-            "announcement_text": "<h3>Browse Between Brand New & Renewed Devices With Ease!</h3>",
-            "text_size": 14,
-            "text_weight": "400",
-            "text_color": "#000000",
-            "toggle_option_1_text": "Brand New",
-            "toggle_option_1_url": "https://www.looptech.uk",
-            "toggle_option_2_text": "Renewed",
-            "toggle_option_2_url": "shopify://policies/refund-policy",
-            "toggle_font_size": 13,
-            "toggle_font_weight": "500",
-            "toggle_padding_vertical": 6,
-            "toggle_padding_horizontal": 16,
-            "toggle_border_radius": 6,
-            "toggle_border_width": 1,
-            "toggle_border_color": "#cccccc",
-            "toggle_active_bg_color": "#007bff",
-            "toggle_active_text_color": "#ffffff",
-            "toggle_inactive_text_color": "#000000",
-            "toggle_hover_bg_color": "#f0f0f0",
-            "toggle_hover_text_color": "#000000",
-            "custom_css": ""
-          },
-          "blocks": {}
+            "product": "iphone-16-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_ieKtcB": {
+          "type": "product",
+          "settings": {
+            "product": "iphone-17-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_zh7N4d": {
+          "type": "product",
+          "settings": {
+            "product": "galaxy-s25-ultra-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_EwQBFW": {
+          "type": "product",
+          "settings": {
+            "product": "pixel-10-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_r4PFkV": {
+          "type": "product",
+          "settings": {
+            "product": "nothing-phone-3a-pro-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_ePL4Vq": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "variant_description": "",
+            "show_color_swatches": true,
+            "color_1": "",
+            "color_2": "",
+            "color_3": "",
+            "color_4": "",
+            "additional_colors": 4
+          }
         }
       },
       "block_order": [
-        "ai_gen_block_38562b2_gKFkbr"
+        "product_ye48jL",
+        "product_ieKtcB",
+        "product_zh7N4d",
+        "product_EwQBFW",
+        "product_r4PFkV",
+        "product_ePL4Vq"
       ],
-      "name": "Main Toggle Section",
-      "settings": {}
-    },
-    "1762699567a90a233e": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_63cc393_UNyne3": {
-          "type": "ai_gen_block_63cc393",
-          "name": "Announcement Bar Main",
-          "disabled": true,
-          "settings": {
-            "container_max_width": 1050,
-            "container_padding_top": 0,
-            "container_padding_bottom": 0,
-            "background_color": "#ffffff",
-            "announcement_text": "<h4>Browse Between Brand New & Refurbished Devices With Ease!</h4>",
-            "text_size": 15,
-            "text_weight": "500",
-            "text_color": "#000000",
-            "text_padding": 15,
-            "toggle_option_1": "Brand New",
-            "toggle_option_2": "Renewed",
-            "toggle_border_radius": 5,
-            "toggle_padding": 0,
-            "toggle_border_width": 1,
-            "toggle_border_color": "#dcdcdc",
-            "toggle_font_size": 13,
-            "toggle_font_weight": "500",
-            "option_padding_vertical": 7,
-            "option_padding_horizontal": 16,
-            "active_background_color": "#007bff",
-            "active_text_color": "#ffffff",
-            "inactive_text_color": "#000000",
-            "custom_css": ""
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_63cc393_UNyne3"
-      ],
-      "settings": {}
-    },
-    "17626417209d8e018e": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_875766e_Y94zxd": {
-          "type": "ai_gen_block_875766e",
-          "disabled": true,
-          "settings": {
-            "announcement_text": "<h4>Browse Brand New & Renewed Devices With Ease! </h4>",
-            "font_family": "assistant_n4",
-            "font_size": 16,
-            "mobile_font_size": 12,
-            "background_color": "#ffffff",
-            "text_color": "#ffffff",
-            "padding_top": 20,
-            "padding_bottom": 12,
-            "padding_horizontal": 40,
-            "mobile_padding_top": 14,
-            "mobile_padding_bottom": 16,
-            "mobile_padding_horizontal": 16,
-            "show_toggle": true,
-            "option_1_text": "Brand New",
-            "option_2_text": "Renewed",
-            "toggle_height": 32,
-            "mobile_toggle_height": 30,
-            "toggle_option_padding": 18,
-            "mobile_toggle_option_padding": 12,
-            "toggle_option_min_width": 80,
-            "mobile_toggle_option_min_width": 80,
-            "toggle_font_size": 13,
-            "mobile_toggle_font_size": 12,
-            "toggle_border_width": 1,
-            "toggle_border_radius": 6,
-            "toggle_slider_radius": 4,
-            "toggle_border_color": "#e9e9e9",
-            "toggle_active_bg_color": "#007bff",
-            "toggle_active_text_color": "#ffffff",
-            "toggle_inactive_text_color": "#000000"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_875766e_Y94zxd"
-      ],
-      "settings": {}
-    },
-    "1762641466a6753d23": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_1cd1b43_YQkKzC": {
-          "type": "ai_gen_block_1cd1b43",
-          "settings": {
-            "announcement_text": "<p>Browse Brand New & Refurbished Tech With Ease!</p>",
-            "text_size": 15,
-            "option_1_text": "Brand New",
-            "option_2_text": "Renewed",
-            "toggle_height": 32,
-            "toggle_padding": 16,
-            "toggle_text_size": 13,
-            "toggle_border_width": 1,
-            "toggle_border_radius": 20,
-            "toggle_slider_radius": 18,
-            "background_color": "#ffffff",
-            "text_color": "#000000",
-            "toggle_border_color": "#d9d9d9",
-            "toggle_active_bg_color": "#007bff",
-            "toggle_active_text_color": "#ffffff",
-            "toggle_inactive_text_color": "#000000",
-            "padding_vertical": 18,
-            "padding_horizontal": 40
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_1cd1b43_YQkKzC"
-      ],
-      "disabled": true,
-      "settings": {}
+      "name": "Recently Viewed Products",
+      "settings": {
+        "heading": "Pick up where you left off.",
+        "collection": "testprods",
+        "padding_top": 20,
+        "padding_bottom": 0
+      }
     },
     "rich_text_B7E8LA": {
       "type": "rich-text",
@@ -423,31 +360,30 @@
         "brand_tab_H8RfCB": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "iPhone test",
-            "collection": "iphone-renewed"
+            "brand_name": "test2",
+            "collection": "testprods"
           }
         },
         "brand_tab_JRYtcX": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "Gaming Laptops test",
+            "brand_name": "test3",
             "collection": "gaming-laptops-renewed"
           }
         },
         "brand_tab_XK8gn9": {
           "type": "brand_tab",
           "settings": {
-            "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
-            "brand_name": "Razer",
-            "collection": "ignore-dev-purpose-tester-copy"
+            "brand_name": "test4",
+            "collection": "testprods"
           }
         },
         "brand_tab_bwW4kh": {
           "type": "brand_tab",
           "settings": {
             "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
-            "brand_name": "Dell",
-            "collection": "ignore-dev-purpose-tester-copy-1"
+            "brand_name": "test5",
+            "collection": "testprods"
           }
         },
         "brand_tab_NEBKaB": {
@@ -470,13 +406,15 @@
       ],
       "name": "Product Spotlight Carousel",
       "settings": {
+        "padding_top": 16,
+        "padding_bottom": 48,
         "left_column_width": 30,
         "hero_position": "left",
         "section_heading": "Top brands. Renewed.",
         "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
-        "featured_collection": "iphone-renewed",
-        "featured_collection_refurbished": "ignore-dev-purpose-tester-copy-1",
-        "section_height": 650,
+        "featured_collection": "testprods",
+        "featured_collection_Renewed": "ignore-dev-purpose-tester-copy-1",
+        "section_height": 600,
         "desktop_column_layout": "two-column",
         "desktop_show_hero": true,
         "desktop_products_per_view": 4,
@@ -498,54 +436,429 @@
         "carousel_background_color": "#f2f2f2"
       }
     },
-    "featured_collection_D8P9jY": {
-      "type": "featured-collection",
-      "custom_css": [],
-      "name": "Campaign Deal",
+    "slideshow_8MBqYK": {
+      "type": "slideshow",
+      "blocks": {
+        "slide_XUtrDh": {
+          "type": "slide",
+          "settings": {
+            "enable_video_looping": false,
+            "auto_play_video": false,
+            "video_url": "",
+            "image": "shopify://shop_images/Best_Selling_Tech_of_2025_9.png",
+            "image_overlay_opacity": 0,
+            "text_caption": "",
+            "outline_text": false,
+            "heading": "",
+            "heading_size": "h1",
+            "font_color": "",
+            "subheading": "<p></p><p></p>",
+            "description": "",
+            "text_style": "body",
+            "button_label": "",
+            "link": "",
+            "link_window": true,
+            "view_all_style": "solid",
+            "box_align": "middle-left",
+            "show_text_box": false,
+            "text_alignment": "left",
+            "color_scheme": "",
+            "text_alignment_mobile": "center"
+          }
+        }
+      },
+      "block_order": [
+        "slide_XUtrDh"
+      ],
+      "custom_css": [
+        "@media screen and (max-width: 750px) {.page-width {display: none !important; }}"
+      ],
+      "name": "Slideshow (Desktop)",
       "settings": {
-        "color_scheme": "scheme-abe3bc68-5409-41dd-abcf-8f9ac474947a",
-        "collection": "dell-hp-megasale",
-        "title": "",
-        "heading_size": "h2",
-        "head_align": "center",
-        "heading_color_scheme": "background-1",
-        "head_space": true,
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "products_to_show": 9,
-        "columns_desktop": 5,
-        "show_row_on_desktop": 1,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "link",
-        "view_button_pos": "bottom",
-        "enable_desktop_slider": true,
-        "arrow_position": "inline",
-        "card_style": "standard",
-        "show_count_timer": true,
-        "image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE_7.png",
-        "banner_position": "right",
-        "box_align": "bottom",
-        "text_alignment": "center",
-        "show_text_box": false,
-        "imgcolor_scheme": "background-2",
-        "show_banner_timer": false,
-        "wb_bannerdate": "",
-        "text_caption": "",
-        "outline_text": true,
-        "heading": "",
-        "bnrheading_size": "h2",
-        "sub_heading": "",
-        "button_label": "",
-        "button_link": "",
-        "link_window": true,
-        "button_style_secondary": "link",
-        "card_color_scheme": "background-2",
-        "columns_mobile": "2",
-        "swipe_on_mobile": true,
+        "slide_heading_font": "assistant_n4",
+        "default_font": false,
+        "layout": "grid",
+        "slide_height": "adapt_image",
+        "slider_visual": "dots",
+        "pagenation_foreground": "#000000",
+        "pagenation_background": "#ffffff",
+        "pagenet_corner_radius": 10,
+        "slider_alignment": "center",
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "image_behavior": "none",
+        "accessibility_info": "",
+        "color_scheme": "",
+        "show_srolling_bar": false,
+        "wb_marktext": "",
+        "mark_space": 30,
+        "mark_speed": 2,
+        "marq_diection": "right_left",
+        "seprater": "dots",
+        "text_padding_top": 16,
+        "text_padding_bottom": 16,
+        "show_text_below": true,
         "padding_top": 16,
         "padding_bottom": 16
+      }
+    },
+    "shopdev_recently_viewed_products_DF7nEi": {
+      "type": "shopdev-recently-viewed-products",
+      "blocks": {
+        "product_nPiPJP": {
+          "type": "product",
+          "settings": {
+            "product": "iphone-16-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_WXntWN": {
+          "type": "product",
+          "settings": {
+            "product": "iphone-17-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_3AikfX": {
+          "type": "product",
+          "settings": {
+            "product": "galaxy-s25-ultra-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_VNe4tf": {
+          "type": "product",
+          "settings": {
+            "product": "pixel-10-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_N46qJa": {
+          "type": "product",
+          "settings": {
+            "product": "nothing-phone-3a-pro-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_yBGKq9": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "variant_description": "",
+            "show_color_swatches": true,
+            "color_1": "",
+            "color_2": "",
+            "color_3": "",
+            "color_4": "",
+            "additional_colors": 4
+          }
+        }
+      },
+      "block_order": [
+        "product_nPiPJP",
+        "product_WXntWN",
+        "product_3AikfX",
+        "product_VNe4tf",
+        "product_N46qJa",
+        "product_yBGKq9"
+      ],
+      "name": "Recently Viewed Products",
+      "settings": {
+        "heading": "Pick up where you left off.",
+        "collection": "all-products",
+        "padding_top": 20,
+        "padding_bottom": 0
+      }
+    },
+    "product_spotlight_carousel_LDGedP": {
+      "type": "product-spotlight-carousel",
+      "blocks": {
+        "brand_tab_kCfa64": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Brand",
+            "collection": ""
+          }
+        },
+        "brand_tab_b7xEb7": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Samsung",
+            "collection": ""
+          }
+        },
+        "brand_tab_FTA9XQ": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "iPhone test",
+            "collection": "iphone-renewed"
+          }
+        },
+        "brand_tab_RDWGQh": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_name": "Gaming Laptops test",
+            "collection": "gaming-laptops-renewed"
+          }
+        },
+        "brand_tab_VWV7QX": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
+            "brand_name": "Razer",
+            "collection": "ignore-dev-purpose-tester-copy"
+          }
+        },
+        "brand_tab_rVmcfW": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
+            "brand_name": "Dell",
+            "collection": "ignore-dev-purpose-tester-copy-1"
+          }
+        },
+        "brand_tab_AndygY": {
+          "type": "brand_tab",
+          "settings": {
+            "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
+            "brand_name": "HP",
+            "collection": "ignore-dev-purpose-tester-copy"
+          }
+        }
+      },
+      "block_order": [
+        "brand_tab_kCfa64",
+        "brand_tab_b7xEb7",
+        "brand_tab_FTA9XQ",
+        "brand_tab_RDWGQh",
+        "brand_tab_VWV7QX",
+        "brand_tab_rVmcfW",
+        "brand_tab_AndygY"
+      ],
+      "name": "Product Spotlight Carousel",
+      "settings": {
+        "padding_top": 24,
+        "padding_bottom": 48,
+        "left_column_width": 35,
+        "hero_position": "left",
+        "section_heading": "Top of the range gaming products",
+        "hero_image": "shopify://shop_images/Your_paragraph_text_4_6f2bf127-5906-41f2-b734-60e71f23946d.png",
+        "featured_collection": "all-products",
+        "featured_collection_Renewed": "ignore-dev-purpose-tester-copy-1",
+        "section_height": 600,
+        "desktop_column_layout": "two-column",
+        "desktop_show_hero": true,
+        "desktop_products_per_view": 4,
+        "mobile_column_layout": "single-column",
+        "mobile_show_hero": false,
+        "mobile_card_width_percent": 27,
+        "mobile_card_height": 200,
+        "mobile_product_image_height": 250,
+        "mobile_card_spacing": 32,
+        "mobile_card_padding": 14,
+        "mobile_nav_tab_height": 32,
+        "mobile_nav_tab_padding": 8,
+        "mobile_nav_tab_spacing": 4,
+        "mobile_nav_icon_size": 16,
+        "products_limit": 7,
+        "show_ratings": true,
+        "show_starting_at_text": false,
+        "show_new_price_comparison": false,
+        "carousel_background_color": "#2d2f38"
+      }
+    },
+    "slideshow_RPq63Q": {
+      "type": "slideshow",
+      "blocks": {
+        "slide_bLMX3h": {
+          "type": "slide",
+          "settings": {
+            "enable_video_looping": false,
+            "auto_play_video": false,
+            "video_url": "",
+            "image": "shopify://shop_images/Best_Selling_Tech_of_2025_6.png",
+            "image_overlay_opacity": 0,
+            "text_caption": "",
+            "outline_text": false,
+            "heading": "",
+            "heading_size": "h1",
+            "font_color": "",
+            "subheading": "",
+            "description": "",
+            "text_style": "body",
+            "button_label": "",
+            "link": "",
+            "link_window": true,
+            "view_all_style": "solid",
+            "box_align": "middle-left",
+            "show_text_box": true,
+            "text_alignment": "left",
+            "color_scheme": "",
+            "text_alignment_mobile": "center"
+          }
+        }
+      },
+      "block_order": [
+        "slide_bLMX3h"
+      ],
+      "custom_css": [
+        "@media screen and (max-width: 750px) {.page-width {display: none !important; }}"
+      ],
+      "name": "Laptops (Desktop)",
+      "settings": {
+        "slide_heading_font": "assistant_n4",
+        "default_font": false,
+        "layout": "grid",
+        "slide_height": "adapt_image",
+        "slider_visual": "counter",
+        "pagenation_foreground": "#000000",
+        "pagenation_background": "#ffffff",
+        "pagenet_corner_radius": 18,
+        "slider_alignment": "center",
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "image_behavior": "none",
+        "accessibility_info": "Slideshow about our brand",
+        "color_scheme": "",
+        "show_srolling_bar": false,
+        "wb_marktext": "Add promotional text here",
+        "mark_space": 30,
+        "mark_speed": 2,
+        "marq_diection": "right_left",
+        "seprater": "dots",
+        "text_padding_top": 8,
+        "text_padding_bottom": 8,
+        "show_text_below": true,
+        "padding_top": 16,
+        "padding_bottom": 16
+      }
+    },
+    "shopdev_recently_viewed_products_34mftT": {
+      "type": "shopdev-recently-viewed-products",
+      "blocks": {
+        "product_h6xRnH": {
+          "type": "product",
+          "settings": {
+            "product": "iphone-16-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_yEdctm": {
+          "type": "product",
+          "settings": {
+            "product": "iphone-17-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_hTUgfN": {
+          "type": "product",
+          "settings": {
+            "product": "galaxy-s25-ultra-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_gfQVLn": {
+          "type": "product",
+          "settings": {
+            "product": "pixel-10-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_krADDD": {
+          "type": "product",
+          "settings": {
+            "product": "nothing-phone-3a-pro-renewed",
+            "variant_description": "Deep Purple - E-Sim + Physical Sim",
+            "show_color_swatches": true,
+            "color_1": "#000000",
+            "color_2": "#c0c0c0",
+            "color_3": "#9d98ff",
+            "color_4": "#ff0c14",
+            "additional_colors": 4
+          }
+        },
+        "product_6hVkdm": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "variant_description": "",
+            "show_color_swatches": true,
+            "color_1": "",
+            "color_2": "",
+            "color_3": "",
+            "color_4": "",
+            "additional_colors": 4
+          }
+        }
+      },
+      "block_order": [
+        "product_h6xRnH",
+        "product_yEdctm",
+        "product_hTUgfN",
+        "product_gfQVLn",
+        "product_krADDD",
+        "product_6hVkdm"
+      ],
+      "name": "Recently Viewed Products",
+      "settings": {
+        "heading": "Pick up where you left off.",
+        "collection": "all-products",
+        "padding_top": 20,
+        "padding_bottom": 0
       }
     },
     "product_with_offer_banner_WDEC3w": {
@@ -631,155 +944,6 @@
         "padding_bottom": 60
       }
     },
-    "product_with_offer_banner_DMRJ84": {
-      "type": "product_with_offer_banner",
-      "blocks": {
-        "banner_with_text_f8zrNj": {
-          "type": "banner_with_text",
-          "settings": {
-            "image": "shopify://shop_images/Your_paragraph_text_10.png",
-            "box_align": "top",
-            "text_alignment": "center",
-            "show_text_box": false,
-            "imgcolor_scheme": "",
-            "heading": "",
-            "bnrheading_size": "h0",
-            "sub_heading": "",
-            "button_label": "",
-            "button_link": "",
-            "link_window": true,
-            "button_style_secondary": "link"
-          }
-        },
-        "product_card_tp8jRk": {
-          "type": "product_card",
-          "settings": {
-            "title": "Recommended For You",
-            "heading_size": "h1",
-            "head_align": "center",
-            "heading_color_scheme": "",
-            "head_space": false,
-            "description": "",
-            "description_style": "body",
-            "button_label": "View all",
-            "button_link": "",
-            "view_all_style": "link",
-            "collection": "",
-            "card_style": "standard",
-            "image_ratio": "adapt",
-            "product_to_show": 3,
-            "show_secondary_image": false,
-            "show_vendor": false,
-            "enable_addtocart": true,
-            "card_color_scheme": ""
-          }
-        },
-        "product_card_rWz98w": {
-          "type": "product_card",
-          "settings": {
-            "title": "Most Popular",
-            "heading_size": "h1",
-            "head_align": "center",
-            "heading_color_scheme": "",
-            "head_space": false,
-            "description": "",
-            "description_style": "body",
-            "button_label": "View all",
-            "button_link": "",
-            "view_all_style": "link",
-            "collection": "",
-            "card_style": "standard",
-            "image_ratio": "adapt",
-            "product_to_show": 3,
-            "show_secondary_image": false,
-            "show_vendor": false,
-            "enable_addtocart": true,
-            "card_color_scheme": ""
-          }
-        }
-      },
-      "block_order": [
-        "banner_with_text_f8zrNj",
-        "product_card_tp8jRk",
-        "product_card_rWz98w"
-      ],
-      "custom_css": [
-        "@media screen and (max-width: 750px) {.page-width {display: none !important; }}"
-      ],
-      "name": "Product with offer banner (DESKTOP)",
-      "settings": {
-        "full_width": false,
-        "color_scheme": "",
-        "padding_top": 36,
-        "padding_bottom": 32
-      }
-    },
-    "slideshow_8MBqYK": {
-      "type": "slideshow",
-      "blocks": {
-        "slide_XUtrDh": {
-          "type": "slide",
-          "settings": {
-            "enable_video_looping": false,
-            "auto_play_video": false,
-            "video_url": "",
-            "image": "shopify://shop_images/Best_Selling_Tech_of_2025_9.png",
-            "image_overlay_opacity": 0,
-            "text_caption": "",
-            "outline_text": false,
-            "heading": "",
-            "heading_size": "h1",
-            "font_color": "",
-            "subheading": "<p></p><p></p>",
-            "description": "",
-            "text_style": "body",
-            "button_label": "",
-            "link": "",
-            "link_window": true,
-            "view_all_style": "solid",
-            "box_align": "middle-left",
-            "show_text_box": false,
-            "text_alignment": "left",
-            "color_scheme": "",
-            "text_alignment_mobile": "center"
-          }
-        }
-      },
-      "block_order": [
-        "slide_XUtrDh"
-      ],
-      "custom_css": [
-        "@media screen and (max-width: 750px) {.page-width {display: none !important; }}"
-      ],
-      "name": "Slideshow (Desktop)",
-      "settings": {
-        "slide_heading_font": "assistant_n4",
-        "default_font": false,
-        "layout": "grid",
-        "slide_height": "adapt_image",
-        "slider_visual": "dots",
-        "pagenation_foreground": "#000000",
-        "pagenation_background": "#ffffff",
-        "pagenet_corner_radius": 10,
-        "slider_alignment": "center",
-        "auto_rotate": false,
-        "change_slides_speed": 5,
-        "image_behavior": "none",
-        "accessibility_info": "",
-        "color_scheme": "",
-        "show_srolling_bar": false,
-        "wb_marktext": "",
-        "mark_space": 30,
-        "mark_speed": 2,
-        "marq_diection": "right_left",
-        "seprater": "dots",
-        "text_padding_top": 8,
-        "text_padding_bottom": 8,
-        "show_text_below": true,
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
-    },
     "slideshow_7Dwehj": {
       "type": "slideshow",
       "blocks": {
@@ -844,137 +1008,6 @@
         "show_text_below": true,
         "padding_top": 0,
         "padding_bottom": 0
-      }
-    },
-    "featured_collection_wcayxU": {
-      "type": "featured-collection",
-      "name": "t:sections.featured-collection.presets.name",
-      "settings": {
-        "color_scheme": "",
-        "collection": "",
-        "title": "",
-        "heading_size": "h1",
-        "head_align": "left",
-        "heading_color_scheme": "",
-        "head_space": true,
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "products_to_show": 7,
-        "columns_desktop": 5,
-        "show_row_on_desktop": 1,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "link",
-        "view_button_pos": "bottom",
-        "enable_desktop_slider": true,
-        "arrow_position": "inline",
-        "card_style": "standard",
-        "show_count_timer": true,
-        "banner_position": "left",
-        "box_align": "top",
-        "text_alignment": "center",
-        "show_text_box": false,
-        "imgcolor_scheme": "",
-        "show_banner_timer": false,
-        "wb_bannerdate": "",
-        "text_caption": "Image text",
-        "outline_text": false,
-        "heading": "Heading",
-        "bnrheading_size": "h1",
-        "sub_heading": "Sub Heading",
-        "button_label": "Button label",
-        "button_link": "",
-        "link_window": true,
-        "button_style_secondary": "link",
-        "card_color_scheme": "",
-        "columns_mobile": "2",
-        "swipe_on_mobile": true,
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
-    },
-    "product_with_offer_banner_ABid39": {
-      "type": "product_with_offer_banner",
-      "blocks": {
-        "product_card_ebYaKn": {
-          "type": "product_card",
-          "settings": {
-            "title": "Best Selling Consoles",
-            "heading_size": "h1",
-            "head_align": "center",
-            "heading_color_scheme": "",
-            "head_space": true,
-            "description": "",
-            "description_style": "body",
-            "button_label": "View all",
-            "button_link": "",
-            "view_all_style": "link",
-            "collection": "",
-            "card_style": "standard",
-            "image_ratio": "adapt",
-            "product_to_show": 3,
-            "show_secondary_image": false,
-            "show_vendor": false,
-            "enable_addtocart": true,
-            "card_color_scheme": ""
-          }
-        },
-        "product_card_pxgkEq": {
-          "type": "product_card",
-          "settings": {
-            "title": "Level Up Now",
-            "heading_size": "h1",
-            "head_align": "center",
-            "heading_color_scheme": "",
-            "head_space": true,
-            "description": "",
-            "description_style": "body",
-            "button_label": "View all",
-            "button_link": "",
-            "view_all_style": "link",
-            "collection": "",
-            "card_style": "standard",
-            "image_ratio": "adapt",
-            "product_to_show": 3,
-            "show_secondary_image": false,
-            "show_vendor": false,
-            "enable_addtocart": true,
-            "card_color_scheme": ""
-          }
-        },
-        "banner_with_text_6NQ4fU": {
-          "type": "banner_with_text",
-          "settings": {
-            "image": "shopify://shop_images/Your_paragraph_text_4_6f2bf127-5906-41f2-b734-60e71f23946d.png",
-            "box_align": "top",
-            "text_alignment": "center",
-            "show_text_box": false,
-            "imgcolor_scheme": "",
-            "heading": "",
-            "bnrheading_size": "h0",
-            "sub_heading": "",
-            "button_label": "",
-            "button_link": "",
-            "link_window": true,
-            "button_style_secondary": "link"
-          }
-        }
-      },
-      "block_order": [
-        "product_card_ebYaKn",
-        "product_card_pxgkEq",
-        "banner_with_text_6NQ4fU"
-      ],
-      "custom_css": [
-        "@media screen and (max-width: 750px) {.page-width {display: none !important; }}"
-      ],
-      "name": "Gaming Unleased (Desktop)",
-      "settings": {
-        "full_width": false,
-        "color_scheme": "",
-        "padding_top": 40,
-        "padding_bottom": 36
       }
     },
     "product_with_offer_banner_R7CV4p": {
@@ -1060,207 +1093,6 @@
         "padding_bottom": 0
       }
     },
-    "collection_list_4UfqzV": {
-      "type": "collection-list",
-      "blocks": {
-        "featured_collection_kHqf9w": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_JygHfz": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_t6CYee": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_Ha6n7i": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_erQLja": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_gTe4T9": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_3x9P6m": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_a6hXVT": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        },
-        "featured_collection_7RPifp": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "",
-            "title": "",
-            "url": "",
-            "showtext": "",
-            "customb_style": "solid"
-          }
-        }
-      },
-      "block_order": [
-        "featured_collection_kHqf9w",
-        "featured_collection_JygHfz",
-        "featured_collection_t6CYee",
-        "featured_collection_Ha6n7i",
-        "featured_collection_erQLja",
-        "featured_collection_gTe4T9",
-        "featured_collection_3x9P6m",
-        "featured_collection_a6hXVT",
-        "featured_collection_7RPifp"
-      ],
-      "name": "t:sections.collection-list.presets.name",
-      "settings": {
-        "color_scheme": "",
-        "title": "",
-        "heading_size": "h2",
-        "head_align": "left",
-        "heading_color_scheme": "",
-        "head_space": true,
-        "description": "",
-        "description_style": "body",
-        "view_button_pos": "bottom",
-        "button_label": "View all",
-        "button_url": "",
-        "view_all_style": "link",
-        "show_view_all": false,
-        "arrow_position": "inline",
-        "image_ratio": "square",
-        "columns_desktop": 9,
-        "rows": 1,
-        "card_flex_direction": "column",
-        "design_type": "below",
-        "design_align": "center",
-        "show_circle": false,
-        "catheading_size": "small",
-        "blockcolor_scheme": "",
-        "columns_mobile": "3",
-        "padding_top": 0,
-        "padding_bottom": 60
-      }
-    },
-    "slideshow_RPq63Q": {
-      "type": "slideshow",
-      "blocks": {
-        "slide_bLMX3h": {
-          "type": "slide",
-          "settings": {
-            "enable_video_looping": false,
-            "auto_play_video": false,
-            "video_url": "",
-            "image": "shopify://shop_images/Best_Selling_Tech_of_2025_6.png",
-            "image_overlay_opacity": 0,
-            "text_caption": "",
-            "outline_text": false,
-            "heading": "",
-            "heading_size": "h1",
-            "font_color": "",
-            "subheading": "",
-            "description": "",
-            "text_style": "body",
-            "button_label": "",
-            "link": "",
-            "link_window": true,
-            "view_all_style": "solid",
-            "box_align": "middle-left",
-            "show_text_box": true,
-            "text_alignment": "left",
-            "color_scheme": "",
-            "text_alignment_mobile": "center"
-          }
-        }
-      },
-      "block_order": [
-        "slide_bLMX3h"
-      ],
-      "custom_css": [
-        "@media screen and (max-width: 750px) {.page-width {display: none !important; }}"
-      ],
-      "name": "Laptops (Desktop)",
-      "settings": {
-        "slide_heading_font": "assistant_n4",
-        "default_font": false,
-        "layout": "grid",
-        "slide_height": "adapt_image",
-        "slider_visual": "counter",
-        "pagenation_foreground": "#000000",
-        "pagenation_background": "#ffffff",
-        "pagenet_corner_radius": 10,
-        "slider_alignment": "center",
-        "auto_rotate": false,
-        "change_slides_speed": 5,
-        "image_behavior": "none",
-        "accessibility_info": "Slideshow about our brand",
-        "color_scheme": "",
-        "show_srolling_bar": false,
-        "wb_marktext": "Add promotional text here",
-        "mark_space": 30,
-        "mark_speed": 2,
-        "marq_diection": "right_left",
-        "seprater": "dots",
-        "text_padding_top": 8,
-        "text_padding_bottom": 8,
-        "show_text_below": true,
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
-    },
     "slideshow_XaMwmn": {
       "type": "slideshow",
       "blocks": {
@@ -1327,54 +1159,6 @@
         "padding_bottom": 0
       }
     },
-    "featured_collection_9nUBcj": {
-      "type": "featured-collection",
-      "name": "t:sections.featured-collection.presets.name",
-      "settings": {
-        "color_scheme": "",
-        "collection": "",
-        "title": "",
-        "heading_size": "h1",
-        "head_align": "left",
-        "heading_color_scheme": "",
-        "head_space": true,
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "products_to_show": 7,
-        "columns_desktop": 5,
-        "show_row_on_desktop": 1,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "link",
-        "view_button_pos": "bottom",
-        "enable_desktop_slider": true,
-        "arrow_position": "inline",
-        "card_style": "standard",
-        "show_count_timer": true,
-        "banner_position": "left",
-        "box_align": "top",
-        "text_alignment": "center",
-        "show_text_box": false,
-        "imgcolor_scheme": "",
-        "show_banner_timer": false,
-        "wb_bannerdate": "",
-        "text_caption": "Image text",
-        "outline_text": false,
-        "heading": "Heading",
-        "bnrheading_size": "h1",
-        "sub_heading": "Sub Heading",
-        "button_label": "Button label",
-        "button_link": "",
-        "link_window": true,
-        "button_style_secondary": "link",
-        "card_color_scheme": "",
-        "columns_mobile": "2",
-        "swipe_on_mobile": true,
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
-    },
     "collage_FXfDCd": {
       "type": "collage",
       "blocks": {
@@ -1416,12 +1200,12 @@
             "image": "shopify://shop_images/Up_To_70_Off_A_Huge_Range_of_Laptops_PCs_More_770_x_500_px_3_c58e5fee-e17f-403f-aef4-9f65d1f55cfb.png",
             "image_overlay_opacity": 0,
             "subheading": "<p>As Good As New. Looptech Guaranteed.</p>",
-            "heading": "Are Refurbished Computers Good?",
+            "heading": "Are Renewed Computers Good?",
             "heading_size": "h2",
-            "text": "<p>Read our blog, to learn about new versus refurbished.</p>",
+            "text": "<p>Read our blog, to learn about new versus Renewed.</p>",
             "text_style": "body",
             "button_label_1": "Read now",
-            "button_link_1": "shopify://blogs/news/are-refurbished-computers-good",
+            "button_link_1": "shopify://blogs/news/are-Renewed-computers-good",
             "link_window": true,
             "view_all_style": "link",
             "button_label_11": "",
@@ -1646,7 +1430,7 @@
         "show_gap": true,
         "section_color_scheme": "",
         "padding_top": 60,
-        "padding_bottom": 0
+        "padding_bottom": 40
       }
     },
     "logo_bar_wwDLdr": {
@@ -1754,6 +1538,7 @@
         "logo_image_ywcprX",
         "logo_image_b7TXPq"
       ],
+      "disabled": true,
       "name": "t:sections.logo_bar.presets.name",
       "settings": {
         "full_width": true,
@@ -1843,25 +1628,19 @@
   },
   "order": [
     "looptech_hero_section_N4eNhq",
-    "1762700052b2089e17",
-    "1762699567a90a233e",
-    "17626417209d8e018e",
-    "1762641466a6753d23",
+    "shopdev_recently_viewed_products_pRdVwD",
     "rich_text_B7E8LA",
     "f4fc861e-a8e9-4733-8984-e73213d48588",
     "product_spotlight_carousel_9XXKjm",
-    "featured_collection_D8P9jY",
-    "product_with_offer_banner_WDEC3w",
-    "product_with_offer_banner_DMRJ84",
     "slideshow_8MBqYK",
-    "slideshow_7Dwehj",
-    "featured_collection_wcayxU",
-    "product_with_offer_banner_ABid39",
-    "product_with_offer_banner_R7CV4p",
-    "collection_list_4UfqzV",
+    "shopdev_recently_viewed_products_DF7nEi",
+    "product_spotlight_carousel_LDGedP",
     "slideshow_RPq63Q",
+    "shopdev_recently_viewed_products_34mftT",
+    "product_with_offer_banner_WDEC3w",
+    "slideshow_7Dwehj",
+    "product_with_offer_banner_R7CV4p",
     "slideshow_XaMwmn",
-    "featured_collection_9nUBcj",
     "collage_FXfDCd",
     "image_banner_b6faWP",
     "logo_bar_wwDLdr",

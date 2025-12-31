@@ -1,28 +1,34 @@
 {%- comment -%}
   Mode Toggle Section
-  Switches between Brand New and Refurbished product views
+  Switches between Brand New and Renewed product views
 
   This toggle works with the SKU-based product filtering system.
   Products are filtered based on their SKU condition code:
     - NEW → Brand New mode
-    - REFA, REFB, REFC → Refurbished mode
+    - ren, ren, ren → Renewed mode
 
   Compatible with both collection-based and SKU-based filtering.
 {%- endcomment -%}
 
+{%- comment -%}
+  INLINE MODE DETECTION
+  DO NOT use render 'detect-current-mode' - Liquid's render tag creates isolated
+  variable scope, so current_mode would be undefined in this parent template.
+{%- endcomment -%}
 {%- liquid
-  # Detect mode from URL parameter
-  assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
-  assign current_mode = 'new'
-  if url_mode == 'refurbished'
-    assign current_mode = 'refurbished'
-  endif
+  assign current_mode = 'brand-new'
+  assign has_url_mode = false
+  assign url_string = request.url | downcase
 
-  # For SKU-based sections, determine which condition codes to match
-  if current_mode == 'new'
-    assign target_conditions = 'NEW'
-  else
-    assign target_conditions = ''
+  if url_string contains 'mode=renewed'
+    assign current_mode = 'renewed'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=brand-new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
   endif
 -%}
 
@@ -39,9 +45,9 @@
         <div class="mode-toggle-track" data-current-mode="{{ current_mode }}">
           <div class="mode-toggle-slider" data-position="{{ current_mode }}"></div>
           <button
-            class="mode-toggle-option {% if current_mode == 'new' %}active{% endif %}"
-            data-mode="new"
-            aria-pressed="{% if current_mode == 'new' %}true{% else %}false{% endif %}"
+            class="mode-toggle-option {% if current_mode == 'brand-new' %}active{% endif %}"
+            data-mode="brand-new"
+            aria-pressed="{% if current_mode == 'brand-new' %}true{% else %}false{% endif %}"
             type="button">
             <span class="mode-toggle-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -51,9 +57,9 @@
             <span class="mode-toggle-label">{{ section.settings.new_label | default: "Brand New" }}</span>
           </button>
           <button
-            class="mode-toggle-option {% if current_mode == 'refurbished' %}active{% endif %}"
-            data-mode="refurbished"
-            aria-pressed="{% if current_mode == 'refurbished' %}true{% else %}false{% endif %}"
+            class="mode-toggle-option {% if current_mode == 'renewed' %}active{% endif %}"
+            data-mode="renewed"
+            aria-pressed="{% if current_mode == 'renewed' %}true{% else %}false{% endif %}"
             type="button">
             <span class="mode-toggle-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -83,7 +89,7 @@
 
   @media (min-width: 1024px) {
     .mode-toggle-section .page-width {
-      padding: 0 2rem;
+      padding: 0;
     }
   }
 
@@ -154,8 +160,8 @@
     z-index: 1;
   }
 
-  /* Move slider to refurbished position */
-  .mode-toggle-slider[data-position="refurbished"] {
+  /* Move slider to renewed position */
+  .mode-toggle-slider[data-position="renewed"] {
     transform: translateX(calc(100% + 3px));
   }
 
@@ -338,14 +344,50 @@
   (function() {
     'use strict';
 
+    const STORAGE_KEY = 'looptech_mode';
+    const DEFAULT_MODE = 'brand-new';
+    const VALID_MODES = ['brand-new', 'renewed'];
+
     const toggleOptions = document.querySelectorAll('.mode-toggle-option[data-mode]');
     const slider = document.querySelector('.mode-toggle-slider');
     const track = document.querySelector('.mode-toggle-track');
 
+    // Normalize legacy mode values
+    function normalizeMode(mode) {
+      if (mode === 'new') return 'brand-new';
+      if (mode === 'Renewed') return 'renewed';
+      return mode;
+    }
+
+    // Get current mode from URL or localStorage
+    function getCurrentMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let mode = urlParams.get('mode');
+
+      // Normalize legacy values
+      mode = normalizeMode(mode);
+
+      if (VALID_MODES.includes(mode)) {
+        try {
+          localStorage.setItem(STORAGE_KEY, mode);
+        } catch(e) {}
+        return mode;
+      }
+
+      // Fall back to localStorage
+      try {
+        mode = localStorage.getItem(STORAGE_KEY);
+        if (VALID_MODES.includes(mode)) {
+          return mode;
+        }
+      } catch(e) {}
+
+      return DEFAULT_MODE;
+    }
+
     // Initialize slider position on load
     function initializeSlider() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentMode = urlParams.get('mode') || 'new';
+      const currentMode = getCurrentMode();
 
       if (slider) {
         slider.setAttribute('data-position', currentMode);
@@ -364,27 +406,39 @@
       });
     }
 
+    // Set mode and navigate
+    function setMode(newMode) {
+      if (!VALID_MODES.includes(newMode)) {
+        console.error('Invalid mode:', newMode);
+        return;
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEY, newMode);
+      } catch(error) {
+        console.warn('Could not save mode preference:', error);
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('mode', newMode);
+      window.location.href = url.toString();
+    }
+
     // Handle toggle click
     toggleOptions.forEach(option => {
       option.addEventListener('click', function(e) {
         e.preventDefault();
 
         const newMode = this.getAttribute('data-mode');
-        const currentMode = slider?.getAttribute('data-position') || 'new';
 
-        // Don't reload if clicking the same mode
-        if (newMode === currentMode) {
+        // Check URL mode, not localStorage - URL is the source of truth for Liquid
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlMode = urlParams.get('mode');
+
+        // Only skip navigation if URL already has the correct mode parameter
+        // This fixes the bug where localStorage had mode but URL didn't
+        if (urlMode === newMode) {
           return;
-        }
-
-        const url = new URL(window.location.href);
-        url.searchParams.set('mode', newMode);
-
-        // Store preference in localStorage
-        try {
-          localStorage.setItem('preferredMode', newMode);
-        } catch(error) {
-          console.warn('Could not save mode preference:', error);
         }
 
         // Update UI immediately before reload for smooth UX
@@ -405,38 +459,51 @@
 
         // Small delay to show animation before reload
         setTimeout(() => {
-          window.location.href = url.toString();
+          setMode(newMode);
         }, 150);
       });
     });
 
-    // Apply stored preference on first visit
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeSlider();
-
+    // Sync localStorage preference to URL (ensures Liquid gets the correct mode)
+    // This fixes the bug where DOMContentLoaded might not fire if script loads after DOM ready
+    function syncURLWithLocalStorage() {
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const urlMode = urlParams.get('mode');
 
-        // Only apply localStorage if no URL parameter exists
+        // If URL has no mode, but localStorage does, redirect to add mode to URL
         if (!urlMode) {
-          const storedMode = localStorage.getItem('preferredMode');
-          if (storedMode && (storedMode === 'new' || storedMode === 'refurbished')) {
+          const storedMode = localStorage.getItem(STORAGE_KEY);
+          if (storedMode && VALID_MODES.includes(storedMode)) {
             const url = new URL(window.location.href);
             url.searchParams.set('mode', storedMode);
             window.location.href = url.toString();
+            return; // Stop execution, page will reload
           }
         }
       } catch(error) {
-        console.warn('Could not apply stored mode preference:', error);
+        console.warn('Could not sync mode preference:', error);
       }
-    });
+    }
 
-    // Initialize immediately if DOM is already loaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeSlider);
-    } else {
+    // Initialize slider and sync URL - handles both DOM loaded and not loaded cases
+    function init() {
       initializeSlider();
+      syncURLWithLocalStorage();
+    }
+
+    // Expose globally for debugging and external use
+    window.LooptechToggle = {
+      getCurrentMode: getCurrentMode,
+      setMode: setMode,
+      STORAGE_KEY: STORAGE_KEY
+    };
+
+    // Run initialization - whether DOM is loading or already loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
     }
   })();
 </script>
@@ -448,11 +515,11 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "This toggle switches between Brand New and Refurbished product views across your entire store."
+      "content": "This toggle switches between Brand New and Renewed product views across your entire store."
     },
     {
       "type": "paragraph",
-      "content": "**How it works:** Products are filtered based on their SKU condition code (4th segment). Brand New shows products with 'NEW' condition. Refurbished shows products with 'REFA', 'REFB', or 'REFC' conditions."
+      "content": "**How it works:** Products are filtered based on their SKU condition code (4th segment). Brand New shows products with 'NEW' condition. Renewed shows products with 'ren', 'ren', or 'ren' conditions."
     },
     {
       "type": "header",
@@ -477,7 +544,7 @@
       "id": "refurb_label",
       "label": "Renewed Button Label",
       "default": "Renewed",
-      "info": "Shows products with SKU condition codes: REFA, REFB, REFC"
+      "info": "Shows products with SKU condition codes: ren, ren, ren"
     },
     {
       "type": "header",
@@ -489,7 +556,7 @@
     },
     {
       "type": "paragraph",
-      "content": "**Refurbished Mode:** Displays products from your refurbished collections (e.g., 'all-refurbished', 'refurbished-phones', 'refurbished-laptops') and filters by SKU conditions 'REFA', 'REFB', 'REFC'."
+      "content": "**Renewed Mode:** Displays products from your Renewed collections (e.g., 'all-Renewed', 'Renewed-phones', 'Renewed-laptops') and filters by SKU conditions 'ren', 'ren', 'ren'."
     },
     {
       "type": "paragraph",

@@ -5,21 +5,34 @@
   SKU-Based Filtering:
   Products are filtered based on their SKU condition code (4th segment):
   - Brand New mode: Shows products with 'NEW' condition
-  - Refurbished mode: Shows products with 'REFA', 'REFB', or 'REFC' conditions
+  - Renewed mode: Shows products with 'REN' condition
 {%- endcomment -%}
 
+{%- comment -%}
+  INLINE MODE DETECTION - DO NOT use render 'detect-current-mode'
+  Liquid's render tag creates isolated variable scope.
+{%- endcomment -%}
 {%- liquid
-  # Mode Detection for Brand New / Refurbished Toggle
-  assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
-  assign current_mode = 'new'
-  if url_mode == 'refurbished'
-    assign current_mode = 'refurbished'
-  endif
+  assign current_mode = 'brand-new'
+  assign has_url_mode = false
+  assign url_string = request.url | downcase
 
-  # grab all the section settings
+  if url_string contains 'mode=renewed'
+    assign current_mode = 'renewed'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=brand-new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  endif
+-%}
+
+{%- liquid
   # Select collection based on mode
-  if current_mode == 'refurbished' and section.settings.featured_collection_refurbished != blank
-    assign featured_collection = section.settings.featured_collection_refurbished
+  if current_mode == 'renewed' and section.settings.featured_collection_renewed != blank
+    assign featured_collection = section.settings.featured_collection_renewed
   else
     assign featured_collection = section.settings.featured_collection
   endif
@@ -157,10 +170,10 @@
 
   {%- # section heading above the carousel -%}
   {%- if section_heading != blank -%}
-    <div class="page-width">
-      <div class="title-wrapper title-wrapper--no-top-margin">
-        <h2 class="title inline-richtext h2">{{ section_heading }}</h2>
-      </div>
+    <div class="spotlight-heading-container" style="max-width: 1270px; margin: 0 auto; padding: 0 16px;">
+      <h2 class="spotlight-section-heading">
+        {{ section_heading }}
+      </h2>
     </div>
   {%- endif -%}
 
@@ -269,12 +282,10 @@
 
                         if sku_is_valid
                           # Check if product SKU matches current mode
-                          if current_mode == 'new' and sku_condition == 'NEW'
+                          if current_mode == 'brand-new' and sku_condition == 'NEW'
                             assign should_display = true
-                          elsif current_mode == 'refurbished'
-                            if sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
-                              assign should_display = true
-                            endif
+                          elsif current_mode == 'renewed' and sku_condition == 'REN'
+                            assign should_display = true
                           endif
                         else
                           # Fallback for products without proper SKU - show in both modes
@@ -467,12 +478,10 @@
 
                         if sku_is_valid
                           # Check if product SKU matches current mode
-                          if current_mode == 'new' and sku_condition == 'NEW'
+                          if current_mode == 'brand-new' and sku_condition == 'NEW'
                             assign should_display = true
-                          elsif current_mode == 'refurbished'
-                            if sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
-                              assign should_display = true
-                            endif
+                          elsif current_mode == 'renewed' and sku_condition == 'REN'
+                            assign should_display = true
                           endif
                         else
                           # Fallback for products without proper SKU - show in both modes
@@ -541,8 +550,27 @@
 
 #shopify-section-{{ section.id }} .product-spotlight-section {
   width: 100%;
-  padding: 60px 40px;
+  padding: {{ section.settings.padding_top }}px 16px {{ section.settings.padding_bottom }}px;
   background-color: transparent;
+}
+
+@media (min-width: 768px) {
+  #shopify-section-{{ section.id }} .product-spotlight-section {
+    padding: {{ section.settings.padding_top }}px 24px {{ section.settings.padding_bottom }}px;
+  }
+}
+
+#shopify-section-{{ section.id }} .spotlight-section-heading {
+  color: #0A0A0A;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 30px;
+  margin-bottom: 24px;
+}
+
+/* Responsive heading container padding - standardized with site design */
+#shopify-section-{{ section.id }} .spotlight-heading-container {
+  padding: 0 !important;
 }
 
 #shopify-section-{{ section.id }} .spotlight-container {
@@ -809,24 +837,14 @@
 }
 
 #shopify-section-{{ section.id }} .carousel-track {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 20px;
+  display: flex;
+  gap: 24px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 20px 0;
-}
-
-/* Desktop: responsive products per view */
-@media (min-width: 768px) {
-  #shopify-section-{{ section.id }} .carousel-track {
-    {% assign desktop_ppv = section.settings.desktop_products_per_view | default: 3 %}
-    {% assign column_width = 100.0 | divided_by: desktop_ppv %}
-    grid-auto-columns: minmax(280px, calc({{ column_width }}% - 14px));
-  }
+  padding: 24px 0;
 }
 
 #shopify-section-{{ section.id }} .carousel-track::-webkit-scrollbar {
@@ -905,213 +923,169 @@
 }
 
 /* ============================================
-   product cards
-   fixed height keeps everything aligned
+   product cards - styled to match recently viewed products
+   192px fixed width, compact design
    ============================================ */
 
 #shopify-section-{{ section.id }} .spotlight-product-card {
+  width: 192px;
+  min-width: 192px;
+  max-width: 192px;
   background: #ffffff;
-  border-radius: 16px;
-  padding: 16px;
-  transition: all 0.3s ease;
+  border-radius: 14px;
+  padding: 20px;
+  transition: transform 0.3s ease;
   scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
-  min-width: 280px;
-  height: 400px; /* keeps all cards same height */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: block;
+  box-sizing: border-box;
+  box-shadow: -1px 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 #shopify-section-{{ section.id }} .spotlight-product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+#shopify-section-{{ section.id }} .spotlight-product-card * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 #shopify-section-{{ section.id }} .spotlight-card-link {
   text-decoration: none;
   color: inherit;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  display: block;
 }
 
-/* product image wrapper */
+/* product image wrapper - 130x130px centered */
 #shopify-section-{{ section.id }} .spotlight-card-image-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1; /* square images */
-  background: #f9fafb;
-  border-radius: 12px;
-  margin-bottom: 16px;
+  width: 130px;
+  height: 130px;
   overflow: hidden;
-}
-
-#shopify-section-{{ section.id }} .spotlight-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-
-#shopify-section-{{ section.id }} .spotlight-card-image-placeholder {
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto 12px auto;
 }
 
-#shopify-section-{{ section.id }} .spotlight-card-image-placeholder svg {
-  width: 50%;
-  height: 50%;
-  opacity: 0.2;
+#shopify-section-{{ section.id }} .spotlight-card-image {
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
 }
 
+#shopify-section-{{ section.id }} .spotlight-card-image-placeholder {
+  width: 130px;
+  height: 130px;
+  background: #f3f4f6;
+}
 
-/* color variant swatches */
+/* color variant swatches - 12px circles, centered */
 #shopify-section-{{ section.id }} .spotlight-card-swatches {
   display: flex;
+  justify-content: center;
   gap: 6px;
-  align-items: center;
-  min-height: 32px; /* holds space even if no swatches */
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  min-height: 18px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 #shopify-section-{{ section.id }} .spotlight-swatch {
-  width: 20px;
-  height: 20px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  border: 2px solid #e0e0e0;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  border: 1px solid #E5E7EB;
+  flex-shrink: 0;
 }
 
-#shopify-section-{{ section.id }} .spotlight-swatch:hover {
-  transform: scale(1.15);
-  border-color: #333333;
+#shopify-section-{{ section.id }} .spotlight-swatch-active {
+  border-color: #99A1AF;
 }
 
 #shopify-section-{{ section.id }} .spotlight-swatch-more {
-  font-size: 12px;
-  color: #666666;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 700;
+  color: #858585;
+  line-height: 12px;
+  flex-shrink: 0;
 }
 
-/* card content area */
-#shopify-section-{{ section.id }} .spotlight-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
+/* title wrapper - 40px fixed height */
+#shopify-section-{{ section.id }} .spotlight-card-title-wrapper {
+  height: 40px;
+  margin-bottom: 8px;
 }
 
 #shopify-section-{{ section.id }} .spotlight-card-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0A0A0A;
   margin: 0;
-  line-height: 1.4;
-  height: 40px; /* fixed for 2 lines max */
+  line-height: 20px;
+  width: 130px;
+  max-width: 130px;
+  min-width: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
-/* star rating row */
-#shopify-section-{{ section.id }} .spotlight-card-rating {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  min-height: 24px; /* keep space even when empty */
+/* variant description wrapper - 19px fixed height */
+#shopify-section-{{ section.id }} .spotlight-card-variant-wrapper {
+  height: 19px;
+  margin-bottom: 8px;
 }
 
-#shopify-section-{{ section.id }} .spotlight-star-rating {
-  display: flex;
-  gap: 2px;
+#shopify-section-{{ section.id }} .spotlight-card-variant {
+  font-size: 11px;
+  color: #4A5565;
+  margin: 0;
+  line-height: 19px;
+  width: 130px;
+  max-width: 130px;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
-#shopify-section-{{ section.id }} .spotlight-star {
-  width: 16px;
-  height: 16px;
-}
-
-#shopify-section-{{ section.id }} .spotlight-star-filled {
-  color: #000000;
-}
-
-#shopify-section-{{ section.id }} .spotlight-star-half {
-  color: #000000;
-}
-
-#shopify-section-{{ section.id }} .spotlight-star-empty {
-  color: #d1d5db;
-}
-
-#shopify-section-{{ section.id }} .spotlight-rating-text {
-  font-weight: 600;
-  color: #111827;
-}
-
-#shopify-section-{{ section.id }} .spotlight-rating-count {
-  color: #6b7280;
-}
-
-/* pricing section - pushes to bottom */
+/* pricing section */
 #shopify-section-{{ section.id }} .spotlight-card-price {
-  margin-top: auto;
-  padding-top: 8px;
-}
-
-#shopify-section-{{ section.id }} .spotlight-price-label {
-  font-size: 12px;
-  color: #6b7280;
-  margin: 0 0 4px 0;
-  font-weight: 500;
-}
-
-#shopify-section-{{ section.id }} .spotlight-price-new {
-  font-size: 14px;
-  color: #9ca3af;
-  margin: 0 0 4px 0;
-  font-weight: 500;
-}
-
-#shopify-section-{{ section.id }} .spotlight-price-new del {
-  text-decoration: line-through;
-}
-
-#shopify-section-{{ section.id }} .spotlight-price-wrapper {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
+  max-width: 130px;
 }
 
 #shopify-section-{{ section.id }} .spotlight-price-current {
-  font-size: 24px;
+  font-size: 14px;
   font-weight: 700;
-  color: #000000;
-  line-height: 1;
+  color: #585858;
+  line-height: 16px;
+  white-space: nowrap;
 }
 
 #shopify-section-{{ section.id }} .spotlight-price-compare {
-  font-size: 16px;
-  color: #9ca3af;
+  font-size: 13px;
+  color: #6A7282;
   text-decoration: line-through;
-  line-height: 1;
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
+  line-height: 8px;
+  white-space: nowrap;
 }
 
-#shopify-section-{{ section.id }} .spotlight-price-label-new {
-  font-size: 12px;
-  color: #9ca3af;
-  font-weight: 400;
-  text-decoration: none;
-  text-transform: lowercase;
+#shopify-section-{{ section.id }} .spotlight-price-new-label {
+  font-size: 13px;
+  color: #6A7282;
+  line-height: 24px;
+  white-space: nowrap;
 }
 
 /* ============================================
@@ -1180,9 +1154,9 @@
   }
 
   #shopify-section-{{ section.id }} .carousel-track {
-    grid-auto-columns: minmax(260px, calc(50% - 10px));
+    gap: 16px;
   }
-  
+
   #shopify-section-{{ section.id }} .carousel-fade-overlay {
     width: 100px;
   }
@@ -1331,32 +1305,15 @@
   /* Full-width carousel container */
   #shopify-section-{{ section.id }} .carousel-container {
     margin: 0;
-    padding: 0;
+    padding: 0 16px;
   }
 
-  /* Mobile: Product cards with customizable width for peek effect */
+  /* Mobile: Product cards - maintain same styling as desktop */
   #shopify-section-{{ section.id }} .carousel-track {
-    grid-auto-columns: var(--mobile-card-width, 70vw);
-    gap: var(--mobile-card-spacing, 16px);
-    padding: 0 calc((100vw - var(--mobile-card-width, 70vw)) / 2);
-    justify-content: flex-start;
-    scroll-padding-left: calc((100vw - var(--mobile-card-width, 70vw)) / 2);
+    gap: 12px;
+    padding: 24px 0;
   }
 
-  /* Mobile: Card dimensions and spacing */
-  #shopify-section-{{ section.id }} .spotlight-product-card {
-    height: var(--mobile-card-height, 420px);
-    padding: var(--mobile-card-padding, 12px);
-    min-height: auto;
-  }
-
-  /* Mobile: Product image height control */
-  #shopify-section-{{ section.id }} .spotlight-card-image-wrapper {
-    height: var(--mobile-image-height, 220px);
-    max-height: var(--mobile-image-height, 220px);
-    aspect-ratio: unset;
-  }
-  
   #shopify-section-{{ section.id }} .carousel-fade-overlay {
     display: none;
   }
@@ -1366,65 +1323,18 @@
     display: none;
   }
 
-  /* Compact product cards for mobile */
+  /* Mobile: Keep same card styling but allow flexible width */
   #shopify-section-{{ section.id }} .spotlight-product-card {
-    width: 90vw;
-    min-width: 90vw;
-    height: auto;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-    background: #ffffff;
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: -1px 4px 16px rgba(0, 0, 0, 0.15);
   }
 
   #shopify-section-{{ section.id }} .spotlight-product-card:hover {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  }
-
-  /* Smaller product images */
-  #shopify-section-{{ section.id }} .spotlight-card-image-wrapper {
-    aspect-ratio: 1 / 1;
-    margin-bottom: 12px;
-    border-radius: 8px;
-    max-width: 100%;
-  }
-
-  #shopify-section-{{ section.id }} .spotlight-card-title {
-    font-size: 15px;
-    height: auto;
-    -webkit-line-clamp: 2;
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-
-  #shopify-section-{{ section.id }} .spotlight-card-swatches {
-    margin-bottom: 6px;
-    min-height: 24px;
-  }
-
-  #shopify-section-{{ section.id }} .spotlight-card-rating {
-    margin-bottom: 6px;
-    min-height: 20px;
-  }
-
-  #shopify-section-{{ section.id }} .spotlight-card-price {
-    padding-top: 4px;
-  }
-
-  #shopify-section-{{ section.id }} .spotlight-price-label,
-  #shopify-section-{{ section.id }} .spotlight-price-new {
-    font-size: 11px;
-    margin-bottom: 3px;
-  }
-
-  #shopify-section-{{ section.id }} .spotlight-price-current {
-    font-size: 20px;
-  }
-
-  #shopify-section-{{ section.id }} .spotlight-price-compare {
-    font-size: 14px;
+    transform: translateY(-4px);
   }
 
   /* Enhanced page dots for mobile */
@@ -1454,7 +1364,7 @@
  * carousel JS - handles filtering, arrows, touch etc
  * based on Back Market design
  *
- * Includes SKU-based product filtering for Brand New/Refurbished toggle
+ * Includes SKU-based product filtering for Brand New/Renewed toggle
  */
 (function() {
   'use strict';
@@ -1750,9 +1660,9 @@
       track.style.opacity = '0.5';
       track.style.pointerEvents = 'none';
 
-      // Get current mode from URL
+      // Get current mode from URL (use LooptechSKU if available, else simple check)
       const urlParams = new URLSearchParams(window.location.search);
-      const currentMode = urlParams.get('mode') || 'new';
+      const currentMode = window.LooptechSKU?.getCurrentMode() || urlParams.get('mode') || 'brand-new';
 
       // hit the shopify API (fetch more than limit to account for filtering)
       const fetchLimit = Math.max({{ products_limit }} * 3, 100);
@@ -1815,7 +1725,7 @@
 
   /**
    * build product card HTML dynamically
-   * matches the liquid snippet structure exactly
+   * matches the liquid snippet structure exactly (recently viewed style)
    */
   function createProductCard(product) {
     const article = document.createElement('article');
@@ -1827,65 +1737,101 @@
     const productPrice = firstVariant ? firstVariant.price : product.price;
     const compareAtPrice = firstVariant ? firstVariant.compare_at_price : product.compare_at_price;
 
-    // get product image - API returns it differnetly sometimes
+    // get product image - API returns it differently sometimes
     let imageHtml = '';
     let imageUrl = '';
-    
+
     // check featured_image first
     if (product.featured_image) {
       imageUrl = product.featured_image;
-    } 
+    }
     // fall back to images array (these are objects with .src property)
     else if (product.images && product.images.length > 0) {
       // important: need to access .src property not the whole object
       imageUrl = product.images[0].src || product.images[0];
     }
-    
+
     // build image HTML if we got a valid URL
     if (imageUrl && typeof imageUrl === 'string') {
       imageHtml = `<img src="${imageUrl}" alt="${escapeHtml(product.title)}" loading="lazy" class="spotlight-card-image">`;
     } else {
-      imageHtml = '<div class="spotlight-card-image-placeholder"><svg width="50%" height="50%" opacity="0.2"><rect width="100%" height="100%" fill="#e5e7eb"/></svg></div>';
+      imageHtml = '<div class="spotlight-card-image-placeholder"></div>';
     }
-    
+
     // format prices - handles both cents and decimal formats
     const currentPrice = formatMoney(productPrice);
     const comparePriceFormatted = compareAtPrice ? formatMoney(compareAtPrice) : null;
-    const comparePrice = compareAtPrice && compareAtPrice > productPrice
-      ? `<span class="spotlight-price-compare">${comparePriceFormatted} <span class="spotlight-price-label-new">new</span></span>`
-      : '';
 
-    // conditionally include "Starting at" label based on schema setting
-    const startingAtLabel = showStartingAtText ? '<p class="spotlight-price-label">Starting at</p>' : '';
-    
-    // conditionally include "New" price comparison based on schema setting
-    const newPriceLabel = (showNewPrice && compareAtPrice && compareAtPrice > productPrice) 
-      ? `<p class="spotlight-price-new"><del>New ${comparePriceFormatted}</del></p>` 
-      : '';
+    // build compare price HTML if applicable
+    let comparePriceHtml = '';
+    if (compareAtPrice && compareAtPrice > productPrice) {
+      comparePriceHtml = `
+        <span class="spotlight-price-compare">${comparePriceFormatted}</span>
+        <span class="spotlight-price-new-label">new</span>
+      `;
+    }
 
-    // build the card HTML - must match liquid snippet structure exactly
-    // swatches and rating containers are empty but needed for consistent card height
+    // build color swatches HTML from product options
+    let swatchesHtml = '';
+    if (product.options) {
+      const colorOption = product.options.find(opt =>
+        opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
+      );
+      if (colorOption && colorOption.values && colorOption.values.length > 0) {
+        const maxSwatches = 4;
+        const swatches = colorOption.values.slice(0, maxSwatches);
+        swatches.forEach((color, index) => {
+          const colorLower = color.toLowerCase();
+          let swatchColor = '#CCCCCC';
+          if (colorLower.includes('black')) swatchColor = '#000000';
+          else if (colorLower.includes('white')) swatchColor = '#FFFFFF';
+          else if (colorLower.includes('silver') || colorLower.includes('grey') || colorLower.includes('gray')) swatchColor = '#C0C0C0';
+          else if (colorLower.includes('purple')) swatchColor = '#9D98FF';
+          else if (colorLower.includes('red')) swatchColor = '#FF0C14';
+          else if (colorLower.includes('blue')) swatchColor = '#0000FF';
+          else if (colorLower.includes('green')) swatchColor = '#00FF00';
+          else if (colorLower.includes('yellow') || colorLower.includes('gold')) swatchColor = '#FFD700';
+          else if (colorLower.includes('pink') || colorLower.includes('rose')) swatchColor = '#FFC0CB';
+
+          const activeClass = index === 0 ? 'spotlight-swatch-active' : '';
+          swatchesHtml += `<div class="spotlight-swatch ${activeClass}" style="background-color: ${swatchColor}" title="${escapeHtml(color)}"></div>`;
+        });
+
+        if (colorOption.values.length > maxSwatches) {
+          const additional = colorOption.values.length - maxSwatches;
+          swatchesHtml += `<span class="spotlight-swatch-more">+${additional}</span>`;
+        }
+      }
+    }
+
+    // get variant title for display
+    let variantHtml = '';
+    if (firstVariant && firstVariant.title && firstVariant.title !== 'Default Title') {
+      variantHtml = `<p class="spotlight-card-variant">${escapeHtml(firstVariant.title)}</p>`;
+    }
+
+    // build the card HTML - matches new simplified structure
     article.innerHTML = `
       <a href="/products/${product.handle}" class="spotlight-card-link" aria-label="View ${escapeHtml(product.title)}">
         <div class="spotlight-card-image-wrapper">
           ${imageHtml}
         </div>
-        
-        <div class="spotlight-card-swatches"></div>
-        
-        <div class="spotlight-card-info">
+
+        <div class="spotlight-card-swatches">
+          ${swatchesHtml}
+        </div>
+
+        <div class="spotlight-card-title-wrapper">
           <h3 class="spotlight-card-title">${escapeHtml(product.title)}</h3>
-          
-          <div class="spotlight-card-rating"></div>
-          
-          <div class="spotlight-card-price">
-            ${newPriceLabel}
-            ${startingAtLabel}
-            <div class="spotlight-price-wrapper">
-              <span class="spotlight-price-current">${currentPrice}</span>
-              ${comparePrice}
-            </div>
-          </div>
+        </div>
+
+        <div class="spotlight-card-variant-wrapper">
+          ${variantHtml}
+        </div>
+
+        <div class="spotlight-card-price">
+          <span class="spotlight-price-current">${currentPrice}</span>
+          ${comparePriceHtml}
         </div>
       </a>
     `;
@@ -2023,6 +1969,32 @@
   "settings": [
     {
       "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 24,
+      "info": "Spacing above the section"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 24,
+      "info": "Spacing below the section"
+    },
+    {
+      "type": "header",
       "content": "Layout Settings"
     },
     {
@@ -2061,7 +2033,7 @@
       "type": "text",
       "id": "section_heading",
       "label": "Section Heading",
-      "default": "Top brands, refurbished",
+      "default": "Top brands, Renewed",
       "info": "Main heading displayed above the carousel"
     },
     {
@@ -2082,9 +2054,9 @@
     },
     {
       "type": "collection",
-      "id": "featured_collection_refurbished",
-      "label": "Refurbished Collection",
-      "info": "Collection to show when in refurbished mode"
+      "id": "featured_collection_Renewed",
+      "label": "Renewed Collection",
+      "info": "Collection to show when in Renewed mode"
     },
     {
       "type": "header",
@@ -2315,7 +2287,7 @@
       "id": "show_new_price_comparison",
       "label": "Show 'New' price comparison",
       "default": false,
-      "info": "Display crossed-out 'New' price on refurbished products to show savings vs. new price"
+      "info": "Display crossed-out 'New' price on Renewed products to show savings vs. new price"
     },
     {
       "type": "header",

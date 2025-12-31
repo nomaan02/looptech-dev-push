@@ -1,1 +1,232 @@
-{"sections":{"banner":{"type":"main-collection-banner","settings":{"def_image":"shopify:\/\/shop_images\/a-breathtaking-digital-artwork-showcasin_Hi2zmJRbTreTITVkdxGhaw_ei2soh7-SCiKDcy-kPROtQ.png","show_collection_image":false,"show_collection_description":true,"content_alignment":"center","hero_layout":"overlay","coll_bgcolor":"#000000","coll_color":"#ffffff","coll_overlay":36,"padding_top":0,"padding_bottom":0}},"collection_list_qa3Mtb":{"type":"collection-list","blocks":{"featured_collection_tdqgB8":{"type":"featured_collection","settings":{"collection":"business-laptops","image":"shopify:\/\/shop_images\/23.png","title":"Business Laptops","url":"","showtext":"","customb_style":"link"}},"featured_collection_BaEDXy":{"type":"featured_collection","settings":{"collection":"student-budget-laptops","image":"shopify:\/\/shop_images\/50.png","title":"Budget Laptops","url":"","showtext":"","customb_style":"link"}},"featured_collection_MA4y9i":{"type":"featured_collection","settings":{"collection":"gaming-laptops","image":"shopify:\/\/shop_images\/WiredTech_5.png","title":"Gaming Laptops","url":"shopify:\/\/collections\/gaming-laptops","showtext":"","customb_style":"link"}},"featured_collection_emjfLX":{"type":"featured_collection","settings":{"collection":"workstation-pcs","image":"shopify:\/\/shop_images\/35.png","title":"Workstation PCs","url":"shopify:\/\/collections\/workstation-pcs","showtext":"","customb_style":"link"}},"featured_collection_EjzdB9":{"type":"featured_collection","settings":{"collection":"content-creator-pcs","image":"shopify:\/\/shop_images\/WiredTech_6.png","title":"Content Creator PCs","url":"shopify:\/\/collections\/content-creator-pcs","showtext":"","customb_style":"link"}},"featured_collection_RaGbUP":{"type":"featured_collection","settings":{"collection":"home-office-pcs","image":"shopify:\/\/shop_images\/61.png","title":"Home Office PCs","url":"shopify:\/\/collections\/home-office-pcs","showtext":"","customb_style":"link"}},"featured_collection_F4iCKi":{"type":"featured_collection","settings":{"collection":"all-in-ones","image":"shopify:\/\/shop_images\/WiredTech_7.png","title":"All-In-Ones","url":"shopify:\/\/collections\/all-in-ones","showtext":"","customb_style":"link"}},"featured_collection_cnMDEm":{"type":"featured_collection","settings":{"collection":"all-gaming-pcs","image":"shopify:\/\/shop_images\/WiredTech_8.png","title":"Gaming PCs","url":"shopify:\/\/collections\/all-gaming-pcs","showtext":"","customb_style":"link"}},"featured_collection_LLB7eh":{"type":"featured_collection","settings":{"collection":"all-accessories","image":"shopify:\/\/shop_images\/LoopTech_Home_Page_Offers_1.png","title":"All Accessories","url":"shopify:\/\/collections\/all-accessories","showtext":"","customb_style":"link"}}},"block_order":["featured_collection_tdqgB8","featured_collection_BaEDXy","featured_collection_MA4y9i","featured_collection_emjfLX","featured_collection_EjzdB9","featured_collection_RaGbUP","featured_collection_F4iCKi","featured_collection_cnMDEm","featured_collection_LLB7eh"],"settings":{"color_scheme":"background-1","title":"Shop By Categories","heading_size":"h1","head_align":"left","heading_color_scheme":"scheme-abe3bc68-5409-41dd-abcf-8f9ac474947a","head_space":true,"description":"","description_style":"body","view_button_pos":"top","button_label":"See all categories","button_url":"","view_all_style":"link","show_view_all":true,"arrow_position":"inline","image_ratio":"square","columns_desktop":9,"rows":1,"card_flex_direction":"column","design_type":"below","design_align":"center","show_circle":false,"catheading_size":"small","blockcolor_scheme":"background-1","columns_mobile":"2","padding_top":60,"padding_bottom":24}},"blocks_gqb4yh":{"type":"_blocks","blocks":{"ai_gen_block_38562b2_xw8RmF":{"type":"ai_gen_block_38562b2","name":"MAIN TOGGLE","settings":{"container_max_width":1050,"vertical_padding":5,"background_color":"#ffffff","announcement_text":"<h3>Browse Between Brand New & Renewed Devices With Ease!<\/h3>","text_size":14,"text_weight":"400","text_color":"#000000","toggle_option_1_text":"Brand New","toggle_option_1_url":"https:\/\/www.looptech.uk","toggle_option_2_text":"Renewed","toggle_option_2_url":"shopify:\/\/policies\/refund-policy","toggle_font_size":13,"toggle_font_weight":"500","toggle_padding_vertical":6,"toggle_padding_horizontal":16,"toggle_border_radius":6,"toggle_border_width":1,"toggle_border_color":"#cccccc","toggle_active_bg_color":"#007bff","toggle_active_text_color":"#ffffff","toggle_inactive_text_color":"#000000","toggle_hover_bg_color":"#f0f0f0","toggle_hover_text_color":"#000000","custom_css":""},"blocks":{}}},"block_order":["ai_gen_block_38562b2_xw8RmF"],"name":"Main Toggle Section","settings":{}},"product-grid":{"type":"main-collection-product-grid","blocks":{"6b0ca242-8226-447c-9d68-3d626e4786ad":{"type":"media_promotion","settings":{"img_position":1,"image":"shopify:\/\/shop_images\/make-me-a-image-for-an-ad-that-gives-bla_LfwVsC-JRnywvwTliL_i-Q_0JOjh_D8SIym-D8q_KT-Nw.png","image_overlay_opacity":0,"heading":"Every Friday Is Black Friday.","heading_size":"h0","subheading":"<p>Viral Promotion Coming Soon<\/p>","text":"","text_style":"body","button_label_1":"","button_link_1":"","link_window":true,"view_all_style":"outline","show_text_box":false,"container_overlay_opacity":40,"desktop_content_position":"top-center","desktop_content_alignment":"left","color_scheme":"accent-2"}},"040d4e2f-84f2-4653-80e6-74dab392b0a1":{"type":"media_promotion","settings":{"img_position":7,"image":"shopify:\/\/shop_images\/34_Site_IMGS.png","image_overlay_opacity":0,"heading":"<strong>Enterprise Deals<\/strong>","heading_size":"h0","subheading":"<p>Contact Us Directly<\/p>","text":"<p>Huge Discounts For Bulk Enterprise Purchases<\/p>","text_style":"body","button_label_1":"","button_link_1":"","link_window":true,"view_all_style":"outline","show_text_box":true,"container_overlay_opacity":80,"desktop_content_position":"top-left","desktop_content_alignment":"left","color_scheme":"accent-2"}},"media_promotion_iPKWUc":{"type":"media_promotion","settings":{"img_position":9,"image":"shopify:\/\/shop_images\/a-dynamic-conceptual-advertisement-for-a_z1XcGBfcRLaV7NLatndKxw_01ULyVCXQy6cOLngXpSMJQ.png","image_overlay_opacity":0,"heading":"Don't Miss Out On Viral Deals.","heading_size":"h0","subheading":"<p><br\/>Add Us On Social Media<br\/><br\/><\/p>","text":"<p>Scroll To The Top For Links<\/p>","text_style":"body","button_label_1":"","button_link_1":"","link_window":true,"view_all_style":"solid","show_text_box":true,"container_overlay_opacity":70,"desktop_content_position":"top-left","desktop_content_alignment":"left","color_scheme":"accent-2"}}},"block_order":["6b0ca242-8226-447c-9d68-3d626e4786ad","040d4e2f-84f2-4653-80e6-74dab392b0a1","media_promotion_iPKWUc"],"settings":{"products_per_page":12,"default_grid":"list_view","card_style":"standard","show_count_timer":true,"enable_listdesc":true,"enable_filtering":true,"filter_type":"vertical","enable_sticky":false,"enable_sorting":true,"enable_fill_category":true,"menu":"","pagination_type":"paged","columns_mobile":"2","padding_top":4,"padding_bottom":60}}},"order":["banner","collection_list_qa3Mtb","blocks_gqb4yh","product-grid"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "def_image": "shopify://shop_images/a-breathtaking-digital-artwork-showcasin_Hi2zmJRbTreTITVkdxGhaw_ei2soh7-SCiKDcy-kPROtQ.png",
+        "show_collection_image": false,
+        "show_collection_description": true,
+        "content_alignment": "center",
+        "hero_layout": "overlay",
+        "coll_bgcolor": "#000000",
+        "coll_color": "#ffffff",
+        "coll_overlay": 36,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "collection_looptech_bzwRBb": {
+      "type": "collection-looptech",
+      "name": "LoopTech Collection",
+      "settings": {
+        "padding_top": 24,
+        "padding_bottom": 24,
+        "products_per_page": 12,
+        "default_view": "tiles",
+        "show_toggle_reminder": false,
+        "brand_new_reminder": "You are currently browsing Brand New. Switch to Renewed, using the toggle.",
+        "renewed_reminder": "You are currently browsing Renewed. Switch to Brand New, using the toggle.",
+        "show_offer_banner": true,
+        "offer_text": "10% Off Any Laptop or Tablet with Any Smartphone Purchase",
+        "offer_icon": "",
+        "show_promo_card": true,
+        "promo_card_position": 2,
+        "promo_eyebrow": "Fair? Good? Excellent?",
+        "promo_headline": "F THAT.",
+        "promo_subtext": "One condition to rule them all.",
+        "promo_cta_text": "Check out Renewed",
+        "promo_cta_url": ""
+      }
+    },
+    "featured_collection_CFrFpT": {
+      "type": "featured-collection",
+      "blocks": {
+        "heading_MnXa7H": {
+          "type": "heading",
+          "settings": {
+            "icon1": "hotdeal",
+            "heading": "Heading",
+            "heading_size": "h2",
+            "subheading": ""
+          }
+        },
+        "date_RDBAHr": {
+          "type": "date",
+          "settings": {
+            "wb_enddate": ""
+          }
+        },
+        "button_iUcTw3": {
+          "type": "button",
+          "settings": {
+            "icon2": "flash",
+            "btntxt": "Shop the collection",
+            "link": "",
+            "view_all_style": "link"
+          }
+        }
+      },
+      "block_order": [
+        "heading_MnXa7H",
+        "date_RDBAHr",
+        "button_iUcTw3"
+      ],
+      "name": "t:sections.featured-collection.presets.name",
+      "settings": {
+        "color_scheme": "",
+        "collection": "all-products",
+        "title": "Featured collection",
+        "heading_size": "h1",
+        "head_align": "left",
+        "heading_color_scheme": "",
+        "head_space": true,
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "show_row_on_desktop": 2,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "link",
+        "view_button_pos": "bottom",
+        "enable_desktop_slider": false,
+        "arrow_position": "top",
+        "card_style": "standard",
+        "show_count_timer": true,
+        "banner_position": "left",
+        "box_align": "top",
+        "text_alignment": "center",
+        "show_text_box": false,
+        "imgcolor_scheme": "",
+        "show_banner_timer": false,
+        "wb_bannerdate": "",
+        "text_caption": "Image text",
+        "outline_text": false,
+        "heading": "Heading",
+        "bnrheading_size": "h1",
+        "sub_heading": "Sub Heading",
+        "button_label": "Button label",
+        "button_link": "",
+        "link_window": true,
+        "button_style_secondary": "link",
+        "card_color_scheme": "",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "blocks": {
+        "6b0ca242-8226-447c-9d68-3d626e4786ad": {
+          "type": "media_promotion",
+          "settings": {
+            "img_position": 1,
+            "image": "shopify://shop_images/make-me-a-image-for-an-ad-that-gives-bla_LfwVsC-JRnywvwTliL_i-Q_0JOjh_D8SIym-D8q_KT-Nw.png",
+            "image_overlay_opacity": 0,
+            "heading": "Every Friday Is Black Friday.",
+            "heading_size": "h0",
+            "subheading": "<p>Viral Promotion Coming Soon</p>",
+            "text": "",
+            "text_style": "body",
+            "button_label_1": "",
+            "button_link_1": "",
+            "link_window": true,
+            "view_all_style": "outline",
+            "show_text_box": false,
+            "container_overlay_opacity": 40,
+            "desktop_content_position": "top-center",
+            "desktop_content_alignment": "left",
+            "color_scheme": "accent-2"
+          }
+        },
+        "040d4e2f-84f2-4653-80e6-74dab392b0a1": {
+          "type": "media_promotion",
+          "settings": {
+            "img_position": 7,
+            "image": "shopify://shop_images/34_Site_IMGS.png",
+            "image_overlay_opacity": 0,
+            "heading": "<strong>Enterprise Deals</strong>",
+            "heading_size": "h0",
+            "subheading": "<p>Contact Us Directly</p>",
+            "text": "<p>Huge Discounts For Bulk Enterprise Purchases</p>",
+            "text_style": "body",
+            "button_label_1": "",
+            "button_link_1": "",
+            "link_window": true,
+            "view_all_style": "outline",
+            "show_text_box": true,
+            "container_overlay_opacity": 80,
+            "desktop_content_position": "top-left",
+            "desktop_content_alignment": "left",
+            "color_scheme": "accent-2"
+          }
+        },
+        "media_promotion_iPKWUc": {
+          "type": "media_promotion",
+          "settings": {
+            "img_position": 9,
+            "image": "shopify://shop_images/a-dynamic-conceptual-advertisement-for-a_z1XcGBfcRLaV7NLatndKxw_01ULyVCXQy6cOLngXpSMJQ.png",
+            "image_overlay_opacity": 0,
+            "heading": "Don't Miss Out On Viral Deals.",
+            "heading_size": "h0",
+            "subheading": "<p><br/>Add Us On Social Media<br/><br/></p>",
+            "text": "<p>Scroll To The Top For Links</p>",
+            "text_style": "body",
+            "button_label_1": "",
+            "button_link_1": "",
+            "link_window": true,
+            "view_all_style": "solid",
+            "show_text_box": true,
+            "container_overlay_opacity": 70,
+            "desktop_content_position": "top-left",
+            "desktop_content_alignment": "left",
+            "color_scheme": "accent-2"
+          }
+        }
+      },
+      "block_order": [
+        "6b0ca242-8226-447c-9d68-3d626e4786ad",
+        "040d4e2f-84f2-4653-80e6-74dab392b0a1",
+        "media_promotion_iPKWUc"
+      ],
+      "disabled": true,
+      "settings": {
+        "products_per_page": 12,
+        "default_grid": "list_view",
+        "card_style": "standard",
+        "show_count_timer": true,
+        "enable_listdesc": true,
+        "enable_filtering": true,
+        "default_open": false,
+        "single_column": false,
+        "filter_type": "vertical",
+        "enable_sticky": false,
+        "enable_sorting": true,
+        "enable_fill_category": true,
+        "menu": "",
+        "pagination_type": "paged",
+        "columns_mobile": "2",
+        "padding_top": 4,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "collection_looptech_bzwRBb",
+    "featured_collection_CFrFpT",
+    "product-grid"
+  ]
+}

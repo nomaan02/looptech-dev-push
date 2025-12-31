@@ -30,6 +30,29 @@
       }
   }
 {%- endstyle -%}
+
+{%- comment -%}
+  INLINE MODE DETECTION - DO NOT use render 'detect-current-mode'
+  Liquid's render tag creates isolated variable scope.
+{%- endcomment -%}
+{%- liquid
+  assign current_mode = 'brand-new'
+  assign has_url_mode = false
+  assign url_string = request.url | downcase
+
+  if url_string contains 'mode=renewed'
+    assign current_mode = 'renewed'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=brand-new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  endif
+-%}
+{%- assign visible_product_count = 0 -%}
+
 <div class="section-{{ section.id }}-padding {% if section.settings.enable_sticky == true and section.settings.filter_type == 'vertical'%} vertical_sticky_filter{% endif %}">
   <div class="page-width">
     <nav class="breadcrumb" aria-label="breadcrumbs">
@@ -350,6 +373,40 @@
                   assign blockSize = section.blocks | size | minus: 1
                 %}
                 {%- for product in collection.products -%}
+                  {%- comment -%} INLINE PRODUCT FILTERING - DO NOT use render 'product-mode-filter' {%- endcomment -%}
+                  {%- liquid
+                    assign show_product = false
+                    assign product_mode = 'unknown'
+
+                    # Check product tags first
+                    if product.tags contains 'brand-new'
+                      assign product_mode = 'brand-new'
+                    elsif product.tags contains 'renewed'
+                      assign product_mode = 'renewed'
+                    endif
+
+                    # Fallback: Parse SKU condition code
+                    if product_mode == 'unknown'
+                      assign sku = product.selected_or_first_available_variant.sku | default: ''
+                      assign sku_parts = sku | split: '-'
+                      if sku_parts.size >= 6
+                        assign sku_condition = sku_parts[3] | upcase
+                        if sku_condition == 'NEW'
+                          assign product_mode = 'brand-new'
+                        elsif sku_condition == 'REN' or sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
+                          assign product_mode = 'renewed'
+                        endif
+                      endif
+                    endif
+
+                    # Apply filter: show if mode matches OR if unknown (fail-open for this section)
+                    if product_mode == current_mode or product_mode == 'unknown'
+                      assign show_product = true
+                    endif
+                  -%}
+
+                  {%- if show_product -%}
+                    {%- assign visible_product_count = visible_product_count | plus: 1 -%}
                   {% liquid
                     assign lazy_load = false
                     if forloop.index > 2
@@ -493,8 +550,26 @@
                       section_id: section.id
                     %}
                   </li>
+                  {%- endif -%}
+                  {%- comment -%} End LoopTech Toggle Filtering {%- endcomment -%}
                 {%- endfor -%}
               </ul>
+
+              {%- comment -%} LoopTech Toggle Empty State {%- endcomment -%}
+              {%- if visible_product_count == 0 -%}
+                <div class="looptech-empty-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                  <p style="font-size: 18px; color: #6b7280; margin-bottom: 16px;">
+                    No {{ current_mode | replace: '-', ' ' }} products available in this collection.
+                  </p>
+                  <a
+                    href="{{ collection.url }}?mode={% if current_mode == 'brand-new' %}renewed{% else %}brand-new{% endif %}"
+                    style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; border-radius: 8px; text-decoration: none; font-weight: 500;"
+                  >
+                    View {% if current_mode == 'brand-new' %}Renewed{% else %}Brand New{% endif %} Products
+                  </a>
+                </div>
+              {%- endif -%}
+
               {% if section.settings.pagination_type == 'load-more' %}
                 {%- if paginate.next.url -%}
                   <div class="load-more">

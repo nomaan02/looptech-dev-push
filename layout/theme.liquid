@@ -359,5 +359,9 @@
     
     <script src="{{ 'wbcustom.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'popup.js' | asset_url }}" defer="defer"></script>
+
+    {%- comment -%} LoopTech SKU Parser - Global {%- endcomment -%}
+    <script src="{{ 'sku-parser.js' | asset_url }}" defer="defer"></script>
+    {%- render 'toggle-debug' -%}
   </body>
 </html>

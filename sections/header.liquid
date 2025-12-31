@@ -192,20 +192,29 @@
 -%}
 
 {%- comment -%}
-  Mode Detection for Brand New / Refurbished Toggle
-  Switches between different menus based on URL parameter (?mode=refurbished or ?mode=new)
+  INLINE MODE DETECTION - DO NOT use render 'detect-current-mode'
+  Liquid's render tag creates isolated variable scope.
 {%- endcomment -%}
 {%- liquid
-  # Detect mode from URL parameter
-  assign url_mode = request.url | split: 'mode=' | last | split: '&' | first
-  assign current_mode = 'new'
-  if url_mode == 'refurbished'
-    assign current_mode = 'refurbished'
-  endif
+  assign current_mode = 'brand-new'
+  assign has_url_mode = false
+  assign url_string = request.url | downcase
 
+  if url_string contains 'mode=renewed'
+    assign current_mode = 'renewed'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=brand-new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  elsif url_string contains 'mode=new'
+    assign current_mode = 'brand-new'
+    assign has_url_mode = true
+  endif
+-%}
+{%- liquid
   # Select appropriate menu based on mode
-  if current_mode == 'refurbished' and section.settings.menu_refurbished != blank
-    assign active_menu = linklists[section.settings.menu_refurbished]
+  if current_mode == 'renewed' and section.settings.menu_Renewed != blank
+    assign active_menu = linklists[section.settings.menu_Renewed]
   else
     assign active_menu = section.settings.menu
   endif
@@ -2865,10 +2874,10 @@ customElements.define('sticky-header', StickyHeader);
     },
     {
       "type": "text",
-      "id": "menu_refurbished",
-      "label": "Refurbished Menu Handle",
-      "info": "Enter the menu handle (e.g., 'refurbished-menu'). Create this menu in Navigation > Menus settings first.",
-      "placeholder": "refurbished-menu"
+      "id": "menu_Renewed",
+      "label": "Renewed Menu Handle",
+      "info": "Enter the menu handle (e.g., 'Renewed-menu'). Create this menu in Navigation > Menus settings first.",
+      "placeholder": "Renewed-menu"
     },
     {
       "type": "select",
