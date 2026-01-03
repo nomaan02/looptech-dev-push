@@ -1,0 +1,122 @@
+{%- comment -%}
+  Recently Viewed Product Card
+  Renders a single product card for the recently viewed products section
+
+  Parameters:
+  - product: The product object to render
+  - block: Optional block settings for color swatches (when using blocks instead of collections)
+{%- endcomment -%}
+
+<a href="{{ product.url }}" class="product-card flex-shrink-0 flex-grow-0 w-[192px] min-w-[192px] max-w-[192px] bg-white rounded-[14px] p-[20px] block" style="box-sizing: border-box;">
+  <div class="w-[130px] h-[130px] overflow-hidden flex items-center justify-center mx-auto" style="margin-bottom: 12px;">
+    {% if product.featured_image %}
+      {{ product.featured_image | image_url: width: 130, height: 130, crop: 'center' | image_tag:
+        class: 'w-[130px] h-[130px] object-contain',
+        loading: 'lazy'
+      }}
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'w-[130px] h-[130px] bg-gray-100' }}
+    {% endif %}
+  </div>
+
+  <div class="flex justify-center gap-[6px] flex-wrap" style="min-height: 18px; padding-top: 4px; padding-bottom: 4px; margin-bottom: 8px;">
+    {%- if block != blank and block.settings.show_color_swatches -%}
+      {%- comment -%} Use block settings for color swatches {%- endcomment -%}
+      {% for i in (1..4) %}
+        {% assign color_setting = 'color_' | append: i %}
+        {% if block.settings[color_setting] != blank %}
+          <div class="w-[12px] h-[12px] rounded-full border {% if i == 1 %}border-swatch-active{% else %}border-swatch{% endif %}"
+               style="background-color: {{ block.settings[color_setting] }}"></div>
+        {% endif %}
+      {% endfor %}
+
+      {% if block.settings.additional_colors > 0 %}
+        <span class="text-additional-colors font-bold text-[10px] leading-[12px]">
+          +{{ block.settings.additional_colors }}
+        </span>
+      {% endif %}
+    {%- else -%}
+      {%- comment -%} Auto-detect color options from product {%- endcomment -%}
+      {% assign color_option = null %}
+      {% for option in product.options_with_values %}
+        {% assign option_name_downcase = option.name | downcase %}
+        {% if option_name_downcase == 'color' or option_name_downcase == 'colour' %}
+          {% assign color_option = option %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+
+      {% if color_option != null %}
+        {% assign max_swatches = 4 %}
+        {% for value in color_option.values limit: max_swatches %}
+          {% assign color_downcase = value | downcase %}
+          {% assign swatch_color = '#CCCCCC' %}
+
+          {% if color_downcase contains 'black' %}
+            {% assign swatch_color = '#000000' %}
+          {% elsif color_downcase contains 'white' %}
+            {% assign swatch_color = '#FFFFFF' %}
+          {% elsif color_downcase contains 'silver' or color_downcase contains 'grey' or color_downcase contains 'gray' %}
+            {% assign swatch_color = '#C0C0C0' %}
+          {% elsif color_downcase contains 'purple' %}
+            {% assign swatch_color = '#9D98FF' %}
+          {% elsif color_downcase contains 'red' %}
+            {% assign swatch_color = '#FF0C14' %}
+          {% elsif color_downcase contains 'blue' %}
+            {% assign swatch_color = '#0000FF' %}
+          {% elsif color_downcase contains 'green' %}
+            {% assign swatch_color = '#00FF00' %}
+          {% elsif color_downcase contains 'yellow' or color_downcase contains 'gold' %}
+            {% assign swatch_color = '#FFD700' %}
+          {% elsif color_downcase contains 'pink' or color_downcase contains 'rose' %}
+            {% assign swatch_color = '#FFC0CB' %}
+          {% endif %}
+
+          <div class="w-[12px] h-[12px] rounded-full border flex-shrink-0 {% if forloop.first %}border-swatch-active{% else %}border-swatch{% endif %}"
+               style="background-color: {{ swatch_color }}"></div>
+        {% endfor %}
+
+        {% assign total_colors = color_option.values.size %}
+        {% if total_colors > max_swatches %}
+          {% assign additional = total_colors | minus: max_swatches %}
+          <span class="text-additional-colors font-bold text-[10px] leading-[12px] flex-shrink-0">
+            +{{ additional }}
+          </span>
+        {% endif %}
+      {% endif %}
+    {%- endif -%}
+  </div>
+
+  <div style="height: 40px; margin-bottom: 8px;">
+    <h3 class="text-heading font-bold text-[13px] leading-[20px] line-clamp-2" style="width: 130px; max-width: 130px; min-width: 0;">
+      {{ product.title }}
+    </h3>
+  </div>
+
+  <div style="height: 19px; margin-bottom: 8px;">
+    {%- if block != blank and block.settings.variant_description != blank -%}
+      <p class="text-variant text-[11px] leading-[19px] line-clamp-1" style="width: 130px; max-width: 130px; min-width: 0;">
+        {{ block.settings.variant_description }}
+      </p>
+    {%- elsif product.selected_or_first_available_variant.title != 'Default Title' -%}
+      <p class="text-variant text-[11px] leading-[19px] line-clamp-1" style="width: 130px; max-width: 130px; min-width: 0;">
+        {{ product.selected_or_first_available_variant.title }}
+      </p>
+    {%- endif -%}
+  </div>
+
+  <div class="flex items-baseline gap-[8px] flex-wrap" style="max-width: 130px;">
+    <span class="text-price font-bold text-[14px] leading-[24px] whitespace-nowrap">
+      {{ product.price | money }}
+    </span>
+
+    {% if product.compare_at_price > product.price %}
+      <span class="text-original-price text-[13px] leading-[24px] line-through whitespace-nowrap">
+        {{ product.compare_at_price | money }}
+      </span>
+      <span class="text-original-price text-[13px] leading-[24px] whitespace-nowrap">
+        new
+      </span>
+    {% endif %}
+  </div>
+</a>

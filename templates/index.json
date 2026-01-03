@@ -184,7 +184,8 @@
       "name": "Recently Viewed Products",
       "settings": {
         "heading": "Pick up where you left off.",
-        "collection": "testprods",
+        "collection": "all-new",
+        "collection_renewed": "all-renewed",
         "padding_top": 20,
         "padding_bottom": 0
       }
@@ -346,52 +347,66 @@
         "brand_tab_A66HqC": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_name": "Brand",
-            "collection": ""
+            "collection": "",
+            "collection_renewed": ""
           }
         },
         "brand_tab_NJGH7w": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "Samsung",
-            "collection": ""
+            "is_all_products": false,
+            "brand_name": "All Products",
+            "collection": "all-new",
+            "collection_renewed": "all-renewed"
           }
         },
         "brand_tab_H8RfCB": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "test2",
-            "collection": "testprods"
+            "is_all_products": false,
+            "brand_name": "iPhone",
+            "collection": "iphones-new",
+            "collection_renewed": "iphones-renewed"
           }
         },
         "brand_tab_JRYtcX": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "test3",
-            "collection": "gaming-laptops-renewed"
+            "is_all_products": false,
+            "brand_name": "Samsung",
+            "collection": "samsung-new",
+            "collection_renewed": "samsung-renewed"
           }
         },
         "brand_tab_XK8gn9": {
           "type": "brand_tab",
           "settings": {
-            "brand_name": "test4",
-            "collection": "testprods"
+            "is_all_products": false,
+            "brand_name": "Laptops",
+            "collection": "laptops-new",
+            "collection_renewed": "laptops-renewed"
           }
         },
         "brand_tab_bwW4kh": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
-            "brand_name": "test5",
-            "collection": "testprods"
+            "brand_name": "Dell",
+            "collection": "testprods",
+            "collection_renewed": ""
           }
         },
         "brand_tab_NEBKaB": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
             "brand_name": "HP",
-            "collection": "ignore-dev-purpose-tester-copy"
+            "collection": "ignore-dev-purpose-tester-copy",
+            "collection_renewed": ""
           }
         }
       },
@@ -412,8 +427,6 @@
         "hero_position": "left",
         "section_heading": "Top brands. Renewed.",
         "hero_image": "shopify://shop_images/BLACK_FRIDAY_IS_HERE.png",
-        "featured_collection": "testprods",
-        "featured_collection_Renewed": "ignore-dev-purpose-tester-copy-1",
         "section_height": 600,
         "desktop_column_layout": "two-column",
         "desktop_show_hero": true,
@@ -596,6 +609,7 @@
       "settings": {
         "heading": "Pick up where you left off.",
         "collection": "all-products",
+        "collection_renewed": "",
         "padding_top": 20,
         "padding_bottom": 0
       }
@@ -606,53 +620,67 @@
         "brand_tab_kCfa64": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_name": "Brand",
-            "collection": ""
+            "collection": "",
+            "collection_renewed": ""
           }
         },
         "brand_tab_b7xEb7": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_name": "Samsung",
-            "collection": ""
+            "collection": "",
+            "collection_renewed": ""
           }
         },
         "brand_tab_FTA9XQ": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_name": "iPhone test",
-            "collection": "iphone-renewed"
+            "collection": "iphone-renewed",
+            "collection_renewed": ""
           }
         },
         "brand_tab_RDWGQh": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_name": "Gaming Laptops test",
-            "collection": "gaming-laptops-renewed"
+            "collection": "gaming-laptops-renewed",
+            "collection_renewed": ""
           }
         },
         "brand_tab_VWV7QX": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_logo": "shopify://shop_images/11_5507d120-a191-42af-a544-9bae6a8e8d20.png",
             "brand_name": "Razer",
-            "collection": "ignore-dev-purpose-tester-copy"
+            "collection": "ignore-dev-purpose-tester-copy",
+            "collection_renewed": ""
           }
         },
         "brand_tab_rVmcfW": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_logo": "shopify://shop_images/2_fabd7199-a562-4a09-a95d-678d435cc689.png",
             "brand_name": "Dell",
-            "collection": "ignore-dev-purpose-tester-copy-1"
+            "collection": "ignore-dev-purpose-tester-copy-1",
+            "collection_renewed": ""
           }
         },
         "brand_tab_AndygY": {
           "type": "brand_tab",
           "settings": {
+            "is_all_products": false,
             "brand_logo": "shopify://shop_images/6_293006c9-3c51-4c82-9f63-cac6ae958ce9.png",
             "brand_name": "HP",
-            "collection": "ignore-dev-purpose-tester-copy"
+            "collection": "ignore-dev-purpose-tester-copy",
+            "collection_renewed": ""
           }
         }
       },
@@ -673,8 +701,6 @@
         "hero_position": "left",
         "section_heading": "Top of the range gaming products",
         "hero_image": "shopify://shop_images/Your_paragraph_text_4_6f2bf127-5906-41f2-b734-60e71f23946d.png",
-        "featured_collection": "all-products",
-        "featured_collection_Renewed": "ignore-dev-purpose-tester-copy-1",
         "section_height": 600,
         "desktop_column_layout": "two-column",
         "desktop_show_hero": true,
@@ -694,7 +720,7 @@
         "show_ratings": true,
         "show_starting_at_text": false,
         "show_new_price_comparison": false,
-        "carousel_background_color": "#2d2f38"
+        "carousel_background_color": "#f2f2f2"
       }
     },
     "slideshow_RPq63Q": {
@@ -856,7 +882,8 @@
       "name": "Recently Viewed Products",
       "settings": {
         "heading": "Pick up where you left off.",
-        "collection": "all-products",
+        "collection": "all-new",
+        "collection_renewed": "all-renewed",
         "padding_top": 20,
         "padding_bottom": 0
       }

@@ -2,40 +2,11 @@
   Product carousel with brand tabs - styled like Back Market
   includes logo tabs and nice product cards
 
-  SKU-Based Filtering:
-  Products are filtered based on their SKU condition code (4th segment):
-  - Brand New mode: Shows products with 'NEW' condition
-  - Renewed mode: Shows products with 'REN' condition
+  Note: This section displays products from the selected collection.
+  Use the Theme Editor to select which collection to feature.
 {%- endcomment -%}
 
-{%- comment -%}
-  INLINE MODE DETECTION - DO NOT use render 'detect-current-mode'
-  Liquid's render tag creates isolated variable scope.
-{%- endcomment -%}
 {%- liquid
-  assign current_mode = 'brand-new'
-  assign has_url_mode = false
-  assign url_string = request.url | downcase
-
-  if url_string contains 'mode=renewed'
-    assign current_mode = 'renewed'
-    assign has_url_mode = true
-  elsif url_string contains 'mode=brand-new'
-    assign current_mode = 'brand-new'
-    assign has_url_mode = true
-  elsif url_string contains 'mode=new'
-    assign current_mode = 'brand-new'
-    assign has_url_mode = true
-  endif
--%}
-
-{%- liquid
-  # Select collection based on mode
-  if current_mode == 'renewed' and section.settings.featured_collection_renewed != blank
-    assign featured_collection = section.settings.featured_collection_renewed
-  else
-    assign featured_collection = section.settings.featured_collection
-  endif
   assign hero_image = section.settings.hero_image
   assign hero_position = section.settings.hero_position
   assign section_heading = section.settings.section_heading
@@ -143,14 +114,9 @@
 
 
   assign right_column_width = 100 | minus: left_column_width
-  
-  # pull in products from the selected collection
-  if featured_collection != blank
-    assign collection_products = collections[featured_collection].products
-  endif
 -%}
 
-{%- if featured_collection != blank -%}
+{%- if section.blocks.size > 0 -%}
 <div class="product-spotlight-section"
      data-section-id="{{ section.id }}"
      data-section-height="{{ section_height }}"
@@ -187,43 +153,30 @@
           {%- # brand tabs for filtering collections -%}
           {%- if section.blocks.size > 0 -%}
             <div class="brand-navigation-bar" role="tablist" aria-label="Product collections">
-              
-              {%- # default "show all" tab -%}
-              <button
-                type="button"
-                class="brand-tab-pill active" 
-                data-filter="all" 
-                data-collection="{{ featured_collection }}"
-                role="tab"
-                aria-selected="true"
-                aria-controls="carousel-{{ section.id }}"
-              >
-                <span class="brand-tab-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </span>
-                <span class="brand-tab-label">All Products</span>
-              </button>
 
-              {%- # loop through brand blocks from theme editor -%}
+              {%- # loop through all brand blocks from theme editor -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'brand_tab' and block.settings.collection != blank -%}
                   <button
                     type="button"
-                    class="brand-tab-pill" 
-                    data-filter="{{ block.settings.collection }}"
+                    class="brand-tab-pill{% if forloop.first %} active{% endif %}"
                     data-collection="{{ block.settings.collection }}"
+                    data-collection-renewed="{{ block.settings.collection_renewed }}"
                     role="tab"
-                    aria-selected="false"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
                     aria-controls="carousel-{{ section.id }}"
                     {{ block.shopify_attributes }}
                   >
                     <span class="brand-tab-icon">
-                      {%- if block.settings.brand_logo != blank -%}
+                      {%- if block.settings.is_all_products -%}
+                        {%- # Grid icon for "All Products" tab -%}
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                          <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                      {%- elsif block.settings.brand_logo != blank -%}
                         {%- assign brand_logo_alt = block.settings.brand_name | escape -%}
                         {{
                           block.settings.brand_logo |
@@ -235,6 +188,7 @@
                             class: 'brand-tab-logo'
                         }}
                       {%- else -%}
+                        {%- # Default icon when no logo uploaded -%}
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
                           <circle cx="12" cy="12" r="4" fill="currentColor"/>
@@ -266,69 +220,24 @@
                 </svg>
               </button>
 
-              {%- # track holds all the products, gradient overlay fades the right edge -%}
+              {%- # track container - products loaded via JavaScript -%}
               <div class="carousel-track-container">
-                <div class="carousel-track" data-collection="all" data-mode="{{ current_mode }}">
-                  {%- if collection_products.size > 0 -%}
-                    {%- liquid
-                      # Filter products by SKU condition based on current mode
-                      assign displayed_count = 0
-                    -%}
-                    {%- for product in collection_products -%}
-                      {%- liquid
-                        # Parse SKU to check condition
-                        render 'sku-parser', sku: product.variants.first.sku
-                        assign should_display = false
-
-                        if sku_is_valid
-                          # Check if product SKU matches current mode
-                          if current_mode == 'brand-new' and sku_condition == 'NEW'
-                            assign should_display = true
-                          elsif current_mode == 'renewed' and sku_condition == 'REN'
-                            assign should_display = true
-                          endif
-                        else
-                          # Fallback for products without proper SKU - show in both modes
-                          assign should_display = true
-                        endif
-                      -%}
-
-                      {%- if should_display and displayed_count < products_limit -%}
-                        {%- render 'product-spotlight-card',
-                          product: product,
-                          show_rating: show_ratings,
-                          show_starting_at: show_starting_at_text,
-                          show_new_price: show_new_price_comparison,
-                          section_id: section.id
-                        -%}
-                        {%- assign displayed_count = displayed_count | plus: 1 -%}
-                      {%- endif -%}
-                    {%- endfor -%}
-
-                    {%- if displayed_count == 0 -%}
-                      <div class="carousel-empty">
-                        <p>No {{ current_mode }} products available in this collection.</p>
-                      </div>
-                    {%- endif -%}
-                  {%- else -%}
-                    <div class="carousel-empty">
-                      <p>No products available in this collection.</p>
-                    </div>
-                  {%- endif -%}
+                <div class="carousel-track">
+                  {%- # Products loaded dynamically via JavaScript -%}
+                  <div class="carousel-loading">
+                    <p>Loading products...</p>
+                  </div>
                 </div>
-                
                 {%- # gradient fade on the right edge -%}
                 <div class="carousel-fade-overlay" aria-hidden="true"></div>
               </div>
 
             </div>
 
-            {%- # page dots below carousel -%}
-            {%- if collection_products.size > 3 -%}
-              <div class="carousel-dots" role="tablist" aria-label="Carousel navigation">
-                {%- # dots get created by JS -%}
-              </div>
-            {%- endif -%}
+            {%- # page dots below carousel - created by JS -%}
+            <div class="carousel-dots" role="tablist" aria-label="Carousel navigation">
+              {%- # dots get created by JS based on product count -%}
+            </div>
 
           </div>
 
@@ -383,43 +292,30 @@
           {%- # brand tabs for filtering collections -%}
           {%- if section.blocks.size > 0 -%}
             <div class="brand-navigation-bar" role="tablist" aria-label="Product collections">
-              
-              {%- # default "show all" tab -%}
-              <button
-                type="button"
-                class="brand-tab-pill active" 
-                data-filter="all" 
-                data-collection="{{ featured_collection }}"
-                role="tab"
-                aria-selected="true"
-                aria-controls="carousel-{{ section.id }}"
-              >
-                <span class="brand-tab-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </span>
-                <span class="brand-tab-label">All Products</span>
-              </button>
 
-              {%- # loop through brand blocks from theme editor -%}
+              {%- # loop through all brand blocks from theme editor -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'brand_tab' and block.settings.collection != blank -%}
                   <button
                     type="button"
-                    class="brand-tab-pill" 
-                    data-filter="{{ block.settings.collection }}"
+                    class="brand-tab-pill{% if forloop.first %} active{% endif %}"
                     data-collection="{{ block.settings.collection }}"
+                    data-collection-renewed="{{ block.settings.collection_renewed }}"
                     role="tab"
-                    aria-selected="false"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
                     aria-controls="carousel-{{ section.id }}"
                     {{ block.shopify_attributes }}
                   >
                     <span class="brand-tab-icon">
-                      {%- if block.settings.brand_logo != blank -%}
+                      {%- if block.settings.is_all_products -%}
+                        {%- # Grid icon for "All Products" tab -%}
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                          <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                      {%- elsif block.settings.brand_logo != blank -%}
                         {%- assign brand_logo_alt = block.settings.brand_name | escape -%}
                         {{
                           block.settings.brand_logo |
@@ -431,6 +327,7 @@
                             class: 'brand-tab-logo'
                         }}
                       {%- else -%}
+                        {%- # Default icon when no logo uploaded -%}
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
                           <circle cx="12" cy="12" r="4" fill="currentColor"/>
@@ -462,71 +359,24 @@
                 </svg>
               </button>
 
-              {%- # track holds all the products, gradient overlay fades the right edge -%}
+              {%- # track container - products loaded via JavaScript -%}
               <div class="carousel-track-container">
-                <div class="carousel-track" data-collection="all" data-mode="{{ current_mode }}">
-                  {%- if collection_products.size > 0 -%}
-                    {%- liquid
-                      # Filter products by SKU condition based on current mode
-                      assign displayed_count = 0
-                    -%}
-                    {%- for product in collection_products -%}
-                      {%- liquid
-                        # Parse SKU to check condition
-                        render 'sku-parser', sku: product.variants.first.sku
-                        assign should_display = false
-
-                        if sku_is_valid
-                          # Check if product SKU matches current mode
-                          if current_mode == 'brand-new' and sku_condition == 'NEW'
-                            assign should_display = true
-                          elsif current_mode == 'renewed' and sku_condition == 'REN'
-                            assign should_display = true
-                          endif
-                        else
-                          # Fallback for products without proper SKU - show in both modes
-                          assign should_display = true
-                        endif
-                      -%}
-
-                      {%- if should_display and displayed_count < products_limit -%}
-                        {%- render 'product-spotlight-card',
-                          product: product,
-                          show_rating: show_ratings,
-                          show_starting_at: show_starting_at_text,
-                          show_new_price: show_new_price_comparison,
-                          section_id: section.id
-                        -%}
-                        {%- assign displayed_count = displayed_count | plus: 1 -%}
-                      {%- endif -%}
-                    {%- endfor -%}
-                    
-                    
-
-                    {%- if displayed_count == 0 -%}
-                      <div class="carousel-empty">
-                        <p>No {{ current_mode }} products available in this collection.</p>
-                      </div>
-                    {%- endif -%}
-                  {%- else -%}
-                    <div class="carousel-empty">
-                      <p>No products available in this collection.</p>
-                    </div>
-                  {%- endif -%}
+                <div class="carousel-track">
+                  {%- # Products loaded dynamically via JavaScript -%}
+                  <div class="carousel-loading">
+                    <p>Loading products...</p>
+                  </div>
                 </div>
-                
                 {%- # gradient fade on the right edge -%}
                 <div class="carousel-fade-overlay" aria-hidden="true"></div>
               </div>
 
             </div>
 
-            {%- # page dots below carousel -%}
-            {%- if collection_products.size > 3 -%}
-              <div class="carousel-dots" role="tablist" aria-label="Carousel navigation">
-                {%- # dots get created by JS -%}
-              </div>
-            {%- endif -%}
+            {%- # page dots below carousel - created by JS -%}
+            <div class="carousel-dots" role="tablist" aria-label="Carousel navigation">
+              {%- # dots get created by JS based on product count -%}
+            </div>
 
           </div>
 
@@ -538,7 +388,7 @@
 </div>
 {%- else -%}
   <div class="spotlight-placeholder">
-    <p>Please select a collection in the theme editor to display products.</p>
+    <p>Please add brand tab blocks and configure collections in the Theme Editor.</p>
   </div>
 {%- endif -%}
 
@@ -1126,6 +976,7 @@
    ============================================ */
 
 #shopify-section-{{ section.id }} .carousel-empty,
+#shopify-section-{{ section.id }} .carousel-loading,
 #shopify-section-{{ section.id }} .spotlight-placeholder {
   padding: 60px 20px;
   text-align: center;
@@ -1356,15 +1207,10 @@
 }
 </style>
 
-{%- # Load SKU Parser JavaScript for filtering -%}
-<script src="{{ 'sku-parser.js' | asset_url }}" defer></script>
-
 <script>
 /**
  * carousel JS - handles filtering, arrows, touch etc
  * based on Back Market design
- *
- * Includes SKU-based product filtering for Brand New/Renewed toggle
  */
 (function() {
   'use strict';
@@ -1383,7 +1229,6 @@
 
   let currentPage = 0;
   let itemsPerPage = 3;
-  let originalProductsHTML = ''; // save the original products for restore
   const showStartingAtText = {{ show_starting_at_text | json }}; // setting from schema
   const showNewPrice = {{ show_new_price_comparison | json }}; // setting from schema
 
@@ -1392,9 +1237,6 @@
    */
   function init() {
     if (!track) return;
-
-    // save initial products so we can restore them later
-    originalProductsHTML = track.innerHTML;
 
     // Set CSS custom properties from data attributes
     const sectionElement = document.querySelector(`#shopify-section-${sectionId} .product-spotlight-section`);
@@ -1449,10 +1291,10 @@
     }
 
     calculateItemsPerPage();
-    updateNavigationState();
-    createDots();
-    updateFadeOverlay();
     attachEventListeners();
+
+    // Load first tab's products on page load
+    initCarousel();
 
     // recalculate on window resize with debounce
     let resizeTimer;
@@ -1464,6 +1306,19 @@
         createDots();
       }, 250);
     });
+  }
+
+  /**
+   * Load products for the first (active) tab on page load
+   */
+  function initCarousel() {
+    const firstTab = section.querySelector('.brand-tab-pill.active');
+    if (firstTab) {
+      const collectionHandle = getCollectionForMode(firstTab);
+      if (collectionHandle) {
+        loadCollectionProducts(collectionHandle);
+      }
+    }
   }
 
   /**
@@ -1601,13 +1456,35 @@
   }
 
   /**
+   * Get current mode from localStorage
+   */
+  function getCurrentMode() {
+    try {
+      const mode = localStorage.getItem('looptech-mode');
+      return (mode === 'renewed') ? 'renewed' : 'brand-new';
+    } catch (e) {
+      return 'brand-new';
+    }
+  }
+
+  /**
+   * Get the correct collection handle based on current mode
+   */
+  function getCollectionForMode(button) {
+    const mode = getCurrentMode();
+    if (mode === 'renewed') {
+      // Use renewed collection if available, otherwise fall back to brand-new
+      return button.dataset.collectionRenewed || button.dataset.collection;
+    }
+    return button.dataset.collection;
+  }
+
+  /**
    * when user clicks a brand tab
    */
   function handleBrandClick(event) {
     const button = event.currentTarget;
-    const collectionHandle = button.dataset.collection;
-    const filter = button.dataset.filter;
-    
+
     // switch active state to clicked tab
     brandTabButtons.forEach(tab => {
       tab.classList.remove('active');
@@ -1616,41 +1493,32 @@
     button.classList.add('active');
     button.setAttribute('aria-selected', 'true');
 
-    // load products or restore original
-    if (filter === 'all' || !collectionHandle || collectionHandle === '{{ featured_collection }}') {
-      // just restore the original products - no reload
-      restoreOriginalProducts();
-    } else {
-      // fetch from the collection API
+    // Always fetch products based on current mode
+    const collectionHandle = getCollectionForMode(button);
+    if (collectionHandle) {
       loadCollectionProducts(collectionHandle);
     }
   }
 
   /**
-   * put back the original products (for "All" tab)
+   * Refresh current brand tab when mode changes
    */
-  function restoreOriginalProducts() {
-    if (!track || !originalProductsHTML) return;
-
-    // fade out smoothly
-    track.style.opacity = '0.5';
-    track.style.pointerEvents = 'none';
-    
-    setTimeout(() => {
-      track.innerHTML = originalProductsHTML;
-      track.scrollLeft = 0;
-      currentPage = 0;
-      updateNavigationState();
-      createDots();
-      updateFadeOverlay();
-      track.style.opacity = '1';
-      track.style.pointerEvents = 'auto';
-    }, 150);
+  function refreshCurrentTab() {
+    const activeTab = section.querySelector('.brand-tab-pill.active');
+    if (activeTab) {
+      // Re-fetch products with correct collection for current mode
+      const collectionHandle = getCollectionForMode(activeTab);
+      if (collectionHandle) {
+        loadCollectionProducts(collectionHandle);
+      }
+    }
   }
+
+  // Listen for mode changes from the toggle
+  window.addEventListener('looptech-mode-change', refreshCurrentTab);
 
   /**
    * fetch products from a specific collection via API
-   * Includes SKU-based filtering based on current mode
    */
   async function loadCollectionProducts(collectionHandle) {
     if (!track) return;
@@ -1660,38 +1528,22 @@
       track.style.opacity = '0.5';
       track.style.pointerEvents = 'none';
 
-      // Get current mode from URL (use LooptechSKU if available, else simple check)
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentMode = window.LooptechSKU?.getCurrentMode() || urlParams.get('mode') || 'brand-new';
-
-      // hit the shopify API (fetch more than limit to account for filtering)
-      const fetchLimit = Math.max({{ products_limit }} * 3, 100);
-      const response = await fetch(`/collections/${collectionHandle}/products.json?limit=${fetchLimit}`);
+      // hit the shopify API
+      const response = await fetch(`/collections/${collectionHandle}/products.json?limit={{ products_limit }}`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-
-      // Filter products by SKU condition using LooptechSKU parser
-      let filteredProducts = data.products || [];
-      if (window.LooptechSKU) {
-        filteredProducts = window.LooptechSKU.filterByMode(data.products || [], currentMode);
-      }
-
-      // Limit to products_limit after filtering
-      filteredProducts = filteredProducts.slice(0, {{ products_limit }});
-
-      // can remove this in prod if needed
-      console.log('Loaded collection:', collectionHandle, 'Total:', data.products?.length, 'Filtered:', filteredProducts.length, 'Mode:', currentMode);
+      const products = data.products || [];
 
       // clear everything first
       track.innerHTML = '';
 
-      if (filteredProducts.length > 0) {
+      if (products.length > 0) {
         // build cards for each product
-        filteredProducts.forEach((product, index) => {
+        products.forEach((product, index) => {
           try {
             const card = createProductCard(product);
             track.appendChild(card);
@@ -1700,8 +1552,8 @@
           }
         });
       } else {
-        // no products found after filtering
-        track.innerHTML = `<div class="carousel-empty"><p>No ${currentMode} products found in this collection.</p></div>`;
+        // no products found
+        track.innerHTML = `<div class="carousel-empty"><p>No products found in this collection.</p></div>`;
       }
 
       // reset to first page
@@ -2044,22 +1896,6 @@
     },
     {
       "type": "header",
-      "content": "Product Collection"
-    },
-    {
-      "type": "collection",
-      "id": "featured_collection",
-      "label": "Product Collection",
-      "info": "Main collection to display"
-    },
-    {
-      "type": "collection",
-      "id": "featured_collection_Renewed",
-      "label": "Renewed Collection",
-      "info": "Collection to show when in Renewed mode"
-    },
-    {
-      "type": "header",
       "content": "Section Dimensions"
     },
     {
@@ -2308,6 +2144,13 @@
       "limit": 10,
       "settings": [
         {
+          "type": "checkbox",
+          "id": "is_all_products",
+          "label": "Show as 'All Products' tab",
+          "default": false,
+          "info": "When enabled, shows grid icon instead of brand logo"
+        },
+        {
           "type": "image_picker",
           "id": "brand_logo",
           "label": "Brand Logo",
@@ -2321,10 +2164,24 @@
           "info": "Brand name displayed below logo"
         },
         {
+          "type": "header",
+          "content": "Brand New Products"
+        },
+        {
           "type": "collection",
           "id": "collection",
-          "label": "Linked Collection",
-          "info": "Collection to show when this brand is selected (optional)"
+          "label": "Brand New Collection",
+          "info": "Collection to show when Brand New mode is active"
+        },
+        {
+          "type": "header",
+          "content": "Renewed Products"
+        },
+        {
+          "type": "collection",
+          "id": "collection_renewed",
+          "label": "Renewed Collection",
+          "info": "Collection to show when Renewed mode is active"
         }
       ]
     }
@@ -2334,6 +2191,13 @@
       "name": "Product Spotlight Carousel",
       "category": "Products",
       "blocks": [
+        {
+          "type": "brand_tab",
+          "settings": {
+            "is_all_products": true,
+            "brand_name": "All Products"
+          }
+        },
         {
           "type": "brand_tab",
           "settings": {

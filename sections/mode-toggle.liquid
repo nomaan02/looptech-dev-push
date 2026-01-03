@@ -1,38 +1,92 @@
 {%- comment -%}
-  Mode Toggle Section
-  Switches between Brand New and Renewed product views
+  Mode Toggle Section - Dual Behavior
 
-  This toggle works with the SKU-based product filtering system.
-  Products are filtered based on their SKU condition code:
-    - NEW → Brand New mode
-    - ren, ren, ren → Renewed mode
+  ARCHITECTURE:
+  - On COLLECTION pages: Uses <a> links → navigates to parallel collection (SEO-friendly)
+  - On NON-COLLECTION pages: Uses <button> → JavaScript swaps visibility in-place (no navigation)
 
-  Compatible with both collection-based and SKU-based filtering.
+  Required:
+  - Collections must follow naming: {category}-new / {category}-renewed
+  - Product sections must have [data-mode-content="brand-new"] and [data-mode-content="renewed"] wrappers
 {%- endcomment -%}
 
-{%- comment -%}
-  INLINE MODE DETECTION
-  DO NOT use render 'detect-current-mode' - Liquid's render tag creates isolated
-  variable scope, so current_mode would be undefined in this parent template.
-{%- endcomment -%}
 {%- liquid
-  assign current_mode = 'brand-new'
-  assign has_url_mode = false
-  assign url_string = request.url | downcase
+  # ═══════════════════════════════════════════════════════════════════════
+  # PAGE TYPE DETECTION
+  # ═══════════════════════════════════════════════════════════════════════
 
-  if url_string contains 'mode=renewed'
-    assign current_mode = 'renewed'
-    assign has_url_mode = true
-  elsif url_string contains 'mode=brand-new'
-    assign current_mode = 'brand-new'
-    assign has_url_mode = true
-  elsif url_string contains 'mode=new'
-    assign current_mode = 'brand-new'
-    assign has_url_mode = true
+  assign is_collection_page = false
+  assign current_mode = 'brand-new'
+  assign current_handle = collection.handle | default: ''
+  assign base_handle = ''
+
+  if current_handle != blank
+    assign is_collection_page = true
+
+    # Detect mode from collection handle suffix
+    if current_handle contains '-renewed'
+      assign current_mode = 'renewed'
+      assign base_handle = current_handle | remove: '-renewed'
+    elsif current_handle contains '-new'
+      assign current_mode = 'brand-new'
+      assign base_handle = current_handle | remove: '-new'
+    else
+      # Collection without suffix - default to brand-new
+      assign base_handle = current_handle
+    endif
   endif
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # BUILD COLLECTION URLS (for collection pages only)
+  # ═══════════════════════════════════════════════════════════════════════
+
+  if is_collection_page
+    # Build parallel collection handles
+    if base_handle != blank
+      assign new_handle = base_handle | append: '-new'
+      assign renewed_handle = base_handle | append: '-renewed'
+    else
+      assign new_handle = 'all-new'
+      assign renewed_handle = 'all-renewed'
+    endif
+
+    assign new_url = '/collections/' | append: new_handle
+    assign renewed_url = '/collections/' | append: renewed_handle
+
+    # Preserve query params (sort, filters) when switching
+    assign current_query = ''
+    assign full_url = request.url | default: ''
+
+    if full_url contains '?'
+      assign url_parts = full_url | split: '?'
+      if url_parts.size > 1
+        assign query_string = url_parts[1]
+        assign params = query_string | split: '&'
+
+        for param in params
+          unless param contains 'mode=' or param == ''
+            if current_query == ''
+              assign current_query = '?' | append: param
+            else
+              assign current_query = current_query | append: '&' | append: param
+            endif
+          endunless
+        endfor
+      endif
+    endif
+
+    assign new_url = new_url | append: current_query
+    assign renewed_url = renewed_url | append: current_query
+  endif
+
+  # Get labels from settings
+  assign new_label = section.settings.new_label | default: 'Brand New'
+  assign renewed_label = section.settings.refurb_label | default: 'Renewed'
 -%}
 
-<div class="mode-toggle-section color-{{ section.settings.color_scheme }} gradient" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+<div class="mode-toggle-section color-{{ section.settings.color_scheme }} gradient"
+     style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;"
+     data-is-collection-page="{{ is_collection_page }}">
   <div class="page-width">
     <div class="mode-toggle-wrapper">
       {%- if section.settings.heading != blank -%}
@@ -41,46 +95,85 @@
         </div>
       {%- endif -%}
 
-      <div class="mode-toggle-container">
+      <nav class="mode-toggle-container" aria-label="Product condition filter">
         <div class="mode-toggle-track" data-current-mode="{{ current_mode }}">
           <div class="mode-toggle-slider" data-position="{{ current_mode }}"></div>
-          <button
-            class="mode-toggle-option {% if current_mode == 'brand-new' %}active{% endif %}"
-            data-mode="brand-new"
-            aria-pressed="{% if current_mode == 'brand-new' %}true{% else %}false{% endif %}"
-            type="button">
-            <span class="mode-toggle-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              </svg>
-            </span>
-            <span class="mode-toggle-label">{{ section.settings.new_label | default: "Brand New" }}</span>
-          </button>
-          <button
-            class="mode-toggle-option {% if current_mode == 'renewed' %}active{% endif %}"
-            data-mode="renewed"
-            aria-pressed="{% if current_mode == 'renewed' %}true{% else %}false{% endif %}"
-            type="button">
-            <span class="mode-toggle-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21.5 2V8M21.5 8H15.5M21.5 8L18 4.5C16.5 3 14.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C16.5 22 20.5 19 21.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="mode-toggle-label">{{ section.settings.refurb_label | default: "Renewed" }}</span>
-          </button>
+
+          {%- if is_collection_page -%}
+            {%- comment -%} COLLECTION PAGE: Navigation links {%- endcomment -%}
+            <a
+              href="{{ new_url }}"
+              class="mode-toggle__option{% if current_mode == 'brand-new' %} mode-toggle__option--active{% endif %}"
+              data-mode="brand-new"
+              {% if current_mode == 'brand-new' %}aria-current="page"{% endif %}
+            >
+              <span class="mode-toggle__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </span>
+              <span class="mode-toggle__text">{{ new_label }}</span>
+            </a>
+
+            <a
+              href="{{ renewed_url }}"
+              class="mode-toggle__option{% if current_mode == 'renewed' %} mode-toggle__option--active{% endif %}"
+              data-mode="renewed"
+              {% if current_mode == 'renewed' %}aria-current="page"{% endif %}
+            >
+              <span class="mode-toggle__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M21.5 2V8M21.5 8H15.5M21.5 8L18 4.5C16.5 3 14.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C16.5 22 20.5 19 21.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="mode-toggle__text">{{ renewed_label }}</span>
+            </a>
+
+          {%- else -%}
+            {%- comment -%} NON-COLLECTION PAGE: JavaScript buttons for in-place swap {%- endcomment -%}
+            <button
+              type="button"
+              class="mode-toggle__option mode-toggle__option--active"
+              data-mode-switch="brand-new"
+              data-mode="brand-new"
+            >
+              <span class="mode-toggle__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </span>
+              <span class="mode-toggle__text">{{ new_label }}</span>
+            </button>
+
+            <button
+              type="button"
+              class="mode-toggle__option"
+              data-mode-switch="renewed"
+              data-mode="renewed"
+            >
+              <span class="mode-toggle__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M21.5 2V8M21.5 8H15.5M21.5 8L18 4.5C16.5 3 14.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C16.5 22 20.5 19 21.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="mode-toggle__text">{{ renewed_label }}</span>
+            </button>
+          {%- endif -%}
         </div>
-      </div>
+      </nav>
     </div>
   </div>
 </div>
 
 <style>
-  /* Modern Toggle Switch Design */
+  /* ═══════════════════════════════════════════════════════════════════════
+     MODE TOGGLE - Dual Behavior Styles
+     ═══════════════════════════════════════════════════════════════════════ */
+
   .mode-toggle-section {
     width: 100%;
   }
 
-  /* Ensure consistent max-width */
   .mode-toggle-section .page-width {
     max-width: 1270px;
     margin: 0 auto;
@@ -93,7 +186,6 @@
     }
   }
 
-  /* Wrapper for inline layout */
   .mode-toggle-wrapper {
     display: flex;
     justify-content: space-between;
@@ -109,7 +201,7 @@
 
   .mode-toggle-title {
     margin: 0;
-    font-size: 1.125rem;  /* Reduced to better match toggle height */
+    font-size: 1.125rem;
     font-weight: 600;
     color: rgb(var(--color-foreground));
     line-height: 1.2;
@@ -122,19 +214,22 @@
     flex-shrink: 0;
   }
 
-  /* Toggle Track - Rounded bevelled container */
+  /* ─────────────────────────────────────────────────────────────────────
+     Toggle Track
+     ───────────────────────────────────────────────────────────────────── */
+
   .mode-toggle-track {
     position: relative;
     display: inline-flex;
     background: linear-gradient(145deg, #e8eef5, #f5f8fc);
     border-radius: 50px;
-    padding: 3px;  /* Reduced padding */
+    padding: 3px;
     box-shadow:
       inset 0 1px 3px rgba(0, 0, 0, 0.05),
       0 1px 4px rgba(59, 130, 246, 0.06);
     border: 1px solid rgba(59, 130, 246, 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 36px;  /* Fixed height to match text */
+    height: 36px;
   }
 
   .mode-toggle-track:hover {
@@ -143,7 +238,10 @@
       0 2px 6px rgba(59, 130, 246, 0.1);
   }
 
-  /* Sliding Indicator */
+  /* ─────────────────────────────────────────────────────────────────────
+     Sliding Indicator
+     ───────────────────────────────────────────────────────────────────── */
+
   .mode-toggle-slider {
     position: absolute;
     top: 3px;
@@ -158,23 +256,26 @@
       0 1px 2px rgba(0, 0, 0, 0.06),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
     z-index: 1;
+    pointer-events: none;
   }
 
-  /* Move slider to renewed position */
   .mode-toggle-slider[data-position="renewed"] {
     transform: translateX(calc(100% + 3px));
   }
 
-  /* Toggle Options */
-  .mode-toggle-option {
+  /* ─────────────────────────────────────────────────────────────────────
+     Toggle Options (both <a> and <button>)
+     ───────────────────────────────────────────────────────────────────── */
+
+  .mode-toggle__option {
     position: relative;
     z-index: 2;
     display: flex;
     align-items: center;
-    gap: 4px;  /* Reduced gap */
-    padding: 6px 16px;  /* Reduced padding */
-    min-width: 120px;  /* Reduced width */
-    font-size: 0.8125rem;  /* Slightly smaller text */
+    gap: 4px;
+    padding: 6px 16px;
+    min-width: 120px;
+    font-size: 0.8125rem;
     font-weight: 600;
     background: transparent;
     border: none;
@@ -183,57 +284,75 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     color: #64748b;
     justify-content: center;
-    height: 30px;  /* Fixed height for consistency */
+    height: 30px;
+    text-decoration: none;
+    font-family: inherit;
   }
 
-  .mode-toggle-option:hover {
+  .mode-toggle__option:hover {
     color: #475569;
     transform: scale(1.02);
+    text-decoration: none;
   }
 
-  /* Active state - white text when slider is behind */
-  .mode-toggle-option.active {
+  .mode-toggle__option--active {
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
-  /* Icon styling */
-  .mode-toggle-icon {
+  .mode-toggle__option--active:hover {
+    color: #ffffff;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Icons
+     ───────────────────────────────────────────────────────────────────── */
+
+  .mode-toggle__icon {
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .mode-toggle-icon svg {
-    width: 14px;  /* Reduced icon size */
+  .mode-toggle__icon svg {
+    width: 14px;
     height: 14px;
   }
 
-  .mode-toggle-option:hover .mode-toggle-icon {
+  .mode-toggle__option:hover .mode-toggle__icon {
     transform: scale(1.05) rotate(3deg);
   }
 
-  .mode-toggle-option.active .mode-toggle-icon {
+  .mode-toggle__option--active .mode-toggle__icon {
     transform: scale(1.1);
   }
 
-  /* Label text */
-  .mode-toggle-label {
+  /* ─────────────────────────────────────────────────────────────────────
+     Text Label
+     ───────────────────────────────────────────────────────────────────── */
+
+  .mode-toggle__text {
     font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.01em;
     transition: all 0.3s ease;
   }
 
-  /* Focus state for accessibility */
-  .mode-toggle-option:focus-visible {
+  /* ─────────────────────────────────────────────────────────────────────
+     Accessibility
+     ───────────────────────────────────────────────────────────────────── */
+
+  .mode-toggle__option:focus-visible {
     outline: 3px solid #3b82f6;
     outline-offset: 4px;
   }
 
-  /* Add subtle animation on load */
-  @keyframes slideIn {
+  /* ─────────────────────────────────────────────────────────────────────
+     Animation on load
+     ───────────────────────────────────────────────────────────────────── */
+
+  @keyframes modeToggleSlideIn {
     from {
       opacity: 0;
       transform: translateY(-10px);
@@ -245,10 +364,13 @@
   }
 
   .mode-toggle-track {
-    animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: modeToggleSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Mobile Responsive Design */
+  /* ─────────────────────────────────────────────────────────────────────
+     Mobile Responsive
+     ───────────────────────────────────────────────────────────────────── */
+
   @media screen and (max-width: 749px) {
     .mode-toggle-wrapper {
       flex-direction: column;
@@ -272,36 +394,36 @@
       height: 34px;
     }
 
-    .mode-toggle-option {
+    .mode-toggle__option {
       padding: 5px 14px;
       min-width: 110px;
       font-size: 0.75rem;
       height: 28px;
     }
 
-    .mode-toggle-label {
+    .mode-toggle__text {
       font-size: 0.75rem;
     }
 
-    .mode-toggle-icon svg {
+    .mode-toggle__icon svg {
       width: 13px;
       height: 13px;
     }
   }
 
   @media screen and (max-width: 480px) {
-    .mode-toggle-option {
+    .mode-toggle__option {
       padding: 5px 12px;
       min-width: 100px;
       font-size: 0.75rem;
       gap: 3px;
     }
 
-    .mode-toggle-label {
+    .mode-toggle__text {
       font-size: 0.75rem;
     }
 
-    .mode-toggle-icon svg {
+    .mode-toggle__icon svg {
       width: 12px;
       height: 12px;
     }
@@ -311,7 +433,10 @@
     }
   }
 
-  /* High contrast mode support */
+  /* ─────────────────────────────────────────────────────────────────────
+     Accessibility Preferences
+     ───────────────────────────────────────────────────────────────────── */
+
   @media (prefers-contrast: high) {
     .mode-toggle-track {
       border: 2px solid currentColor;
@@ -321,16 +446,15 @@
       background: #1d4ed8;
     }
 
-    .mode-toggle-option.active {
+    .mode-toggle__option--active {
       font-weight: 700;
     }
   }
 
-  /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     .mode-toggle-slider,
-    .mode-toggle-option,
-    .mode-toggle-icon {
+    .mode-toggle__option,
+    .mode-toggle__icon {
       transition-duration: 0.01ms;
     }
 
@@ -341,171 +465,170 @@
 </style>
 
 <script>
-  (function() {
-    'use strict';
+/**
+ * Mode Toggle - Dual Behavior JavaScript
+ *
+ * On COLLECTION pages: This script only handles hover animations (navigation is via links)
+ * On NON-COLLECTION pages: This script handles the in-place content swap
+ */
+(function() {
+  'use strict';
 
-    const STORAGE_KEY = 'looptech_mode';
-    const DEFAULT_MODE = 'brand-new';
-    const VALID_MODES = ['brand-new', 'renewed'];
+  const STORAGE_KEY = 'looptech-mode';
+  const VALID_MODES = ['brand-new', 'renewed'];
 
-    const toggleOptions = document.querySelectorAll('.mode-toggle-option[data-mode]');
+  // Check if we're on a collection page
+  const isCollectionPage = window.location.pathname.includes('/collections/');
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // UTILITY FUNCTIONS
+  // ═══════════════════════════════════════════════════════════════════════
+
+  function getStoredMode() {
+    try {
+      const mode = localStorage.getItem(STORAGE_KEY);
+      return VALID_MODES.includes(mode) ? mode : 'brand-new';
+    } catch (e) {
+      return 'brand-new';
+    }
+  }
+
+  function setStoredMode(mode) {
+    try {
+      localStorage.setItem(STORAGE_KEY, mode);
+    } catch (e) {
+      // localStorage not available
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // IN-PLACE MODE SWAP (Non-Collection Pages Only)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  function applyMode(mode) {
+    if (!VALID_MODES.includes(mode)) return;
+
+    // Store preference
+    setStoredMode(mode);
+
+    // Update toggle button states
+    document.querySelectorAll('[data-mode-switch]').forEach(btn => {
+      const btnMode = btn.getAttribute('data-mode-switch');
+      if (btnMode === mode) {
+        btn.classList.add('mode-toggle__option--active');
+      } else {
+        btn.classList.remove('mode-toggle__option--active');
+      }
+    });
+
+    // Update slider position
+    const slider = document.querySelector('.mode-toggle-slider');
+    if (slider) {
+      slider.setAttribute('data-position', mode);
+    }
+
+    // Update track data attribute
+    const track = document.querySelector('.mode-toggle-track');
+    if (track) {
+      track.setAttribute('data-current-mode', mode);
+    }
+
+    // Swap visibility of all mode-content sections
+    document.querySelectorAll('[data-mode-content]').forEach(el => {
+      const contentMode = el.getAttribute('data-mode-content');
+      if (contentMode === mode) {
+        el.style.display = '';
+        el.removeAttribute('hidden');
+      } else {
+        el.style.display = 'none';
+        el.setAttribute('hidden', '');
+      }
+    });
+
+    // Dispatch custom event so other components (like carousels) can react
+    window.dispatchEvent(new CustomEvent('looptech-mode-change', { detail: { mode: mode } }));
+
+    console.log('[LoopTech Mode Toggle] Applied mode:', mode);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // HOVER ANIMATION (All Pages)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  function setupHoverAnimation() {
+    const options = document.querySelectorAll('.mode-toggle__option');
     const slider = document.querySelector('.mode-toggle-slider');
     const track = document.querySelector('.mode-toggle-track');
 
-    // Normalize legacy mode values
-    function normalizeMode(mode) {
-      if (mode === 'new') return 'brand-new';
-      if (mode === 'Renewed') return 'renewed';
-      return mode;
-    }
+    if (!slider || !track || options.length === 0) return;
 
-    // Get current mode from URL or localStorage
-    function getCurrentMode() {
-      const urlParams = new URLSearchParams(window.location.search);
-      let mode = urlParams.get('mode');
-
-      // Normalize legacy values
-      mode = normalizeMode(mode);
-
-      if (VALID_MODES.includes(mode)) {
-        try {
-          localStorage.setItem(STORAGE_KEY, mode);
-        } catch(e) {}
-        return mode;
-      }
-
-      // Fall back to localStorage
-      try {
-        mode = localStorage.getItem(STORAGE_KEY);
-        if (VALID_MODES.includes(mode)) {
-          return mode;
-        }
-      } catch(e) {}
-
-      return DEFAULT_MODE;
-    }
-
-    // Initialize slider position on load
-    function initializeSlider() {
-      const currentMode = getCurrentMode();
-
-      if (slider) {
-        slider.setAttribute('data-position', currentMode);
-      }
-
-      // Update active states
-      toggleOptions.forEach(option => {
-        const optionMode = option.getAttribute('data-mode');
-        if (optionMode === currentMode) {
-          option.classList.add('active');
-          option.setAttribute('aria-pressed', 'true');
-        } else {
-          option.classList.remove('active');
-          option.setAttribute('aria-pressed', 'false');
+    options.forEach(option => {
+      option.addEventListener('mouseenter', function() {
+        const hoverMode = this.getAttribute('data-mode');
+        if (hoverMode) {
+          slider.setAttribute('data-position', hoverMode);
         }
       });
-    }
 
-    // Set mode and navigate
-    function setMode(newMode) {
-      if (!VALID_MODES.includes(newMode)) {
-        console.error('Invalid mode:', newMode);
-        return;
-      }
-
-      try {
-        localStorage.setItem(STORAGE_KEY, newMode);
-      } catch(error) {
-        console.warn('Could not save mode preference:', error);
-      }
-
-      const url = new URL(window.location.href);
-      url.searchParams.set('mode', newMode);
-      window.location.href = url.toString();
-    }
-
-    // Handle toggle click
-    toggleOptions.forEach(option => {
-      option.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const newMode = this.getAttribute('data-mode');
-
-        // Check URL mode, not localStorage - URL is the source of truth for Liquid
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlMode = urlParams.get('mode');
-
-        // Only skip navigation if URL already has the correct mode parameter
-        // This fixes the bug where localStorage had mode but URL didn't
-        if (urlMode === newMode) {
-          return;
-        }
-
-        // Update UI immediately before reload for smooth UX
-        if (slider) {
-          slider.setAttribute('data-position', newMode);
-        }
-
-        toggleOptions.forEach(btn => {
-          const btnMode = btn.getAttribute('data-mode');
-          if (btnMode === newMode) {
-            btn.classList.add('active');
-            btn.setAttribute('aria-pressed', 'true');
-          } else {
-            btn.classList.remove('active');
-            btn.setAttribute('aria-pressed', 'false');
-          }
-        });
-
-        // Small delay to show animation before reload
-        setTimeout(() => {
-          setMode(newMode);
-        }, 150);
+      option.addEventListener('mouseleave', function() {
+        // Return to current active mode
+        const currentMode = track.getAttribute('data-current-mode') || 'brand-new';
+        slider.setAttribute('data-position', currentMode);
       });
     });
+  }
 
-    // Sync localStorage preference to URL (ensures Liquid gets the correct mode)
-    // This fixes the bug where DOMContentLoaded might not fire if script loads after DOM ready
-    function syncURLWithLocalStorage() {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlMode = urlParams.get('mode');
+  // ═══════════════════════════════════════════════════════════════════════
+  // INITIALIZATION
+  // ═══════════════════════════════════════════════════════════════════════
 
-        // If URL has no mode, but localStorage does, redirect to add mode to URL
-        if (!urlMode) {
-          const storedMode = localStorage.getItem(STORAGE_KEY);
-          if (storedMode && VALID_MODES.includes(storedMode)) {
-            const url = new URL(window.location.href);
-            url.searchParams.set('mode', storedMode);
-            window.location.href = url.toString();
-            return; // Stop execution, page will reload
-          }
-        }
-      } catch(error) {
-        console.warn('Could not sync mode preference:', error);
-      }
-    }
+  function init() {
+    // Always setup hover animation
+    setupHoverAnimation();
 
-    // Initialize slider and sync URL - handles both DOM loaded and not loaded cases
-    function init() {
-      initializeSlider();
-      syncURLWithLocalStorage();
-    }
+    // Only setup in-place swap on non-collection pages
+    if (!isCollectionPage) {
+      // Apply stored mode on page load
+      const storedMode = getStoredMode();
+      applyMode(storedMode);
 
-    // Expose globally for debugging and external use
-    window.LooptechToggle = {
-      getCurrentMode: getCurrentMode,
-      setMode: setMode,
-      STORAGE_KEY: STORAGE_KEY
-    };
+      // Attach click handlers to toggle buttons
+      document.querySelectorAll('[data-mode-switch]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const newMode = this.getAttribute('data-mode-switch');
+          applyMode(newMode);
+        });
+      });
 
-    // Run initialization - whether DOM is loading or already loaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
+      console.log('[LoopTech Mode Toggle] Initialized in-place swap mode');
     } else {
-      init();
+      // On collection pages, just track the mode for localStorage
+      const track = document.querySelector('.mode-toggle-track');
+      if (track) {
+        const currentMode = track.getAttribute('data-current-mode');
+        if (currentMode && VALID_MODES.includes(currentMode)) {
+          setStoredMode(currentMode);
+        }
+      }
+      console.log('[LoopTech Mode Toggle] Initialized navigation mode');
     }
-  })();
+  }
+
+  // Expose API for external use
+  window.LooptechModeToggle = {
+    getMode: getStoredMode,
+    setMode: applyMode,
+    STORAGE_KEY: STORAGE_KEY
+  };
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
 
 {% schema %}
@@ -515,15 +638,15 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "This toggle switches between Brand New and Renewed product views across your entire store."
+      "content": "**On collection pages:** Toggle navigates between parallel collections (phones-new ↔ phones-renewed)"
     },
     {
       "type": "paragraph",
-      "content": "**How it works:** Products are filtered based on their SKU condition code (4th segment). Brand New shows products with 'NEW' condition. Renewed shows products with 'ren', 'ren', or 'ren' conditions."
+      "content": "**On homepage/other pages:** Toggle swaps visible content in-place (no navigation)"
     },
     {
       "type": "header",
-      "content": "Content Settings"
+      "content": "Content"
     },
     {
       "type": "text",
@@ -536,35 +659,17 @@
       "type": "text",
       "id": "new_label",
       "label": "Brand New Button Label",
-      "default": "Brand New",
-      "info": "Shows products with SKU condition code: NEW"
+      "default": "Brand New"
     },
     {
       "type": "text",
       "id": "refurb_label",
       "label": "Renewed Button Label",
-      "default": "Renewed",
-      "info": "Shows products with SKU condition codes: ren, ren, ren"
+      "default": "Renewed"
     },
     {
       "type": "header",
-      "content": "Collection Mapping"
-    },
-    {
-      "type": "paragraph",
-      "content": "**Brand New Mode:** Displays products from your main collections (e.g., 'all-new', 'new-phones', 'new-laptops') and filters by SKU condition 'NEW'."
-    },
-    {
-      "type": "paragraph",
-      "content": "**Renewed Mode:** Displays products from your Renewed collections (e.g., 'all-Renewed', 'Renewed-phones', 'Renewed-laptops') and filters by SKU conditions 'ren', 'ren', 'ren'."
-    },
-    {
-      "type": "paragraph",
-      "content": "Configure collection settings in individual sections (Product Spotlight Carousel, Featured Collections, etc.)."
-    },
-    {
-      "type": "header",
-      "content": "Design Settings"
+      "content": "Design"
     },
     {
       "type": "color_scheme",
