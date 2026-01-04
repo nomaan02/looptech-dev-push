@@ -34,8 +34,8 @@
                   {{ product.featured_image | image_url: width: 400 }} 400w"
           sizes="(max-width: 640px) 150px, 200px"
           alt="{{ product.featured_image.alt | escape | default: product.title }}"
-          width="200"
-          height="200"
+          width="140"
+          height="140"
           loading="lazy"
         >
       {% else %}
@@ -47,13 +47,54 @@
           </svg>
         </div>
       {% endif %}
-
-      {% comment %} Sale badge {% endcomment %}
-      {% if product.compare_at_price > product.price %}
-        {% assign discount = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
-        <span class="looptech-card-grid__badge">-{{ discount }}%</span>
-      {% endif %}
     </div>
+
+    <!-- Color Swatches - Below image, centered -->
+    {% if color_option_values.size > 0 %}
+      <div class="looptech-card-grid__swatches">
+        {% for color in color_option_values limit: 4 %}
+          {% assign color_lower = color | downcase %}
+          {% case color_lower %}
+            {% when 'black' %}
+              {% assign swatch_color = '#000000' %}
+            {% when 'white' %}
+              {% assign swatch_color = '#FFFFFF' %}
+            {% when 'silver', 'grey', 'gray' %}
+              {% assign swatch_color = '#C0C0C0' %}
+            {% when 'purple' %}
+              {% assign swatch_color = '#9D98FF' %}
+            {% when 'red' %}
+              {% assign swatch_color = '#FF0C14' %}
+            {% when 'blue' %}
+              {% assign swatch_color = '#0000FF' %}
+            {% when 'green' %}
+              {% assign swatch_color = '#00FF00' %}
+            {% when 'gold', 'yellow' %}
+              {% assign swatch_color = '#FFD700' %}
+            {% when 'pink', 'rose', 'rose gold' %}
+              {% assign swatch_color = '#FFC0CB' %}
+            {% when 'natural titanium', 'titanium' %}
+              {% assign swatch_color = '#B8B8B8' %}
+            {% when 'desert titanium' %}
+              {% assign swatch_color = '#C4A77D' %}
+            {% when 'space black' %}
+              {% assign swatch_color = '#1C1C1E' %}
+            {% else %}
+              {% assign swatch_color = '#CCCCCC' %}
+          {% endcase %}
+          <span
+            class="looptech-card-grid__swatch"
+            style="background-color: {{ swatch_color }};"
+            title="{{ color }}"
+          ></span>
+        {% endfor %}
+        {% if color_option_values.size > 4 %}
+          <span class="looptech-card-grid__swatch-more">+{{ color_option_values.size | minus: 4 }}</span>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="looptech-card-grid__swatches"></div>
+    {% endif %}
 
     <!-- Content -->
     <div class="looptech-card-grid__content">
@@ -71,51 +112,6 @@
           <span class="looptech-card-grid__price-compare">{{ product.compare_at_price | money }}</span>
         {% endif %}
       </div>
-
-      <!-- Color Swatches -->
-      {% if color_option_values.size > 0 %}
-        <div class="looptech-card-grid__swatches">
-          {% for color in color_option_values limit: 4 %}
-            {% assign color_lower = color | downcase %}
-            {% case color_lower %}
-              {% when 'black' %}
-                {% assign swatch_color = '#000000' %}
-              {% when 'white' %}
-                {% assign swatch_color = '#FFFFFF' %}
-              {% when 'silver', 'grey', 'gray' %}
-                {% assign swatch_color = '#C0C0C0' %}
-              {% when 'purple' %}
-                {% assign swatch_color = '#9D98FF' %}
-              {% when 'red' %}
-                {% assign swatch_color = '#FF0C14' %}
-              {% when 'blue' %}
-                {% assign swatch_color = '#0000FF' %}
-              {% when 'green' %}
-                {% assign swatch_color = '#00FF00' %}
-              {% when 'gold', 'yellow' %}
-                {% assign swatch_color = '#FFD700' %}
-              {% when 'pink', 'rose', 'rose gold' %}
-                {% assign swatch_color = '#FFC0CB' %}
-              {% when 'natural titanium', 'titanium' %}
-                {% assign swatch_color = '#B8B8B8' %}
-              {% when 'desert titanium' %}
-                {% assign swatch_color = '#C4A77D' %}
-              {% when 'space black' %}
-                {% assign swatch_color = '#1C1C1E' %}
-              {% else %}
-                {% assign swatch_color = '#CCCCCC' %}
-            {% endcase %}
-            <span
-              class="looptech-card-grid__swatch"
-              style="background-color: {{ swatch_color }};"
-              title="{{ color }}"
-            ></span>
-          {% endfor %}
-          {% if color_option_values.size > 4 %}
-            <span class="looptech-card-grid__swatch-more">+{{ color_option_values.size | minus: 4 }}</span>
-          {% endif %}
-        </div>
-      {% endif %}
     </div>
 
   </a>
@@ -129,6 +125,7 @@
     box-shadow: -1px 4px 16px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
+    height: 100%;
   }
 
   .looptech-card-grid:hover {
@@ -155,11 +152,12 @@
   .looptech-card-grid__image {
     position: relative;
     width: 100%;
-    aspect-ratio: 1;
+    max-width: 140px;
+    height: 140px;
+    margin: 0 auto 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
   }
 
   .looptech-card-grid__image img {
@@ -191,11 +189,39 @@
     border-radius: 4px;
   }
 
+  /* Swatches - below image, centered */
+  .looptech-card-grid__swatches {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    min-height: 18px;
+  }
+
+  .looptech-card-grid__swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #E5E7EB;
+  }
+
+  .looptech-card-grid__swatch:first-child {
+    border-color: #99A1AF;
+  }
+
+  .looptech-card-grid__swatch-more {
+    font-size: 10px;
+    color: #858585;
+    font-weight: 700;
+  }
+
   /* Content */
   .looptech-card-grid__content {
     display: flex;
     flex-direction: column;
     flex: 1;
+    text-align: left;
   }
 
   .looptech-card-grid__title {
@@ -225,10 +251,9 @@
   /* Price */
   .looptech-card-grid__price {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0;
+    margin-top: auto;
   }
 
   .looptech-card-grid__price-current {
@@ -239,31 +264,15 @@
   }
 
   .looptech-card-grid__price-compare {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 20px;
     color: #6A7282;
     text-decoration: line-through;
   }
 
-  /* Swatches */
-  .looptech-card-grid__swatches {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: auto;
-  }
-
-  .looptech-card-grid__swatch {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 1px solid #E5E7EB;
-  }
-
-  .looptech-card-grid__swatch-more {
-    font-size: 10px;
-    color: #6A7282;
-    font-weight: 500;
+  .looptech-card-grid__price-compare::after {
+    content: ' new';
+    text-decoration: none;
   }
 </style>

@@ -711,18 +711,28 @@
               {% if menu_content and menu_content.links.size > 0 %}
                 {% for link in menu_content.links %}
                   {% liquid
-                    # Find matching menu_item block for this link
                     assign link_image = null
-                    for menu_item_block in section.blocks
-                      if menu_item_block.type == 'menu_item'
-                        if menu_item_block.settings.parent_nav_item == block.id
-                          if menu_item_block.settings.menu_link_title == link.title or menu_item_block.settings.menu_link_url == link.url
-                            assign link_image = menu_item_block.settings.menu_item_image
-                            break
+
+                    # Option 1: Auto-pull from collection (if enabled and link is a collection)
+                    if section.settings.auto_pull_collection_images
+                      if link.type == 'collection_link' and link.object.image != blank
+                        assign link_image = link.object.image
+                      endif
+                    endif
+
+                    # Option 2: Fall back to manual menu_item block matching
+                    if link_image == blank
+                      for menu_item_block in section.blocks
+                        if menu_item_block.type == 'menu_item'
+                          if menu_item_block.settings.parent_nav_item == block.id
+                            if menu_item_block.settings.menu_link_title == link.title or menu_item_block.settings.menu_link_url == link.url
+                              assign link_image = menu_item_block.settings.menu_item_image
+                              break
+                            endif
                           endif
                         endif
-                      endif
-                    endfor
+                      endfor
+                    endif
                   %}
                   <a href="{{ link.url }}" class="mega-menu-nav-category">
                     <div class="mega-menu-nav-category-image-wrapper">
@@ -778,16 +788,27 @@
                 {% for link in menu_content.links %}
                   {% liquid
                     assign link_image = null
-                    for menu_item_block in section.blocks
-                      if menu_item_block.type == 'menu_item'
-                        if menu_item_block.settings.parent_nav_item == block.id
-                          if menu_item_block.settings.menu_link_title == link.title or menu_item_block.settings.menu_link_url == link.url
-                            assign link_image = menu_item_block.settings.menu_item_image
-                            break
+
+                    # Option 1: Auto-pull from collection (if enabled and link is a collection)
+                    if section.settings.auto_pull_collection_images
+                      if link.type == 'collection_link' and link.object.image != blank
+                        assign link_image = link.object.image
+                      endif
+                    endif
+
+                    # Option 2: Fall back to manual menu_item block matching
+                    if link_image == blank
+                      for menu_item_block in section.blocks
+                        if menu_item_block.type == 'menu_item'
+                          if menu_item_block.settings.parent_nav_item == block.id
+                            if menu_item_block.settings.menu_link_title == link.title or menu_item_block.settings.menu_link_url == link.url
+                              assign link_image = menu_item_block.settings.menu_item_image
+                              break
+                            endif
                           endif
                         endif
-                      endif
-                    endfor
+                      endfor
+                    endif
                   %}
                   <a href="{{ link.url }}" class="mega-menu-nav-category">
                     <div class="mega-menu-nav-category-image-wrapper">
@@ -1219,6 +1240,13 @@
     {
       "type": "header",
       "content": "Dropdown Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_pull_collection_images",
+      "label": "Auto-pull collection images",
+      "default": true,
+      "info": "Automatically use collection featured images for menu items. Set collection images in Shopify Admin > Products > Collections."
     },
     {
       "type": "range",

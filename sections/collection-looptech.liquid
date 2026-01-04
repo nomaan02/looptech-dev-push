@@ -13,52 +13,45 @@
 
 {%- comment -%}
   ============================================================================
-  TIER 1: INLINE MODE DETECTION
-  DO NOT use render 'detect-current-mode' - variables would be isolated
+  COLLECTION SETUP - Auto-detect from URL with naming convention for toggle
   ============================================================================
 {%- endcomment -%}
 {%- liquid
-  assign current_mode = 'brand-new'
-  assign has_url_mode = false
-  assign url_string = request.url | downcase
+  # Use the current page's collection as Brand New
+  assign brand_new_collection = collection
 
-  if url_string contains 'mode=renewed'
-    assign current_mode = 'renewed'
-    assign has_url_mode = true
-  elsif url_string contains 'mode=brand-new'
-    assign current_mode = 'brand-new'
-    assign has_url_mode = true
-  elsif url_string contains 'mode=new'
-    assign current_mode = 'brand-new'
-    assign has_url_mode = true
-  endif
--%}
+  # Derive Renewed collection from naming convention: {handle}-renewed
+  assign renewed_handle = collection.handle | append: '-renewed'
+  assign renewed_collection = collections[renewed_handle]
 
-{%- comment -%} Get collection from schema or use current collection {%- endcomment -%}
-{%- liquid
-  if section.settings.source_collection != blank
-    assign display_collection = section.settings.source_collection
+  # Fallback: If renewed collection doesn't exist, use the same collection
+  if renewed_collection == blank or renewed_collection.products.size == 0
+    assign renewed_collection = collection
+    assign has_renewed_collection = false
   else
-    assign display_collection = collection
+    assign has_renewed_collection = true
   endif
+
+  # Display collection for header/title
+  assign display_collection = brand_new_collection
 -%}
 
 {%- paginate display_collection.products by section.settings.products_per_page -%}
 
 <div class="looptech-collection"
      data-section-id="{{ section.id }}"
-     data-current-mode="{{ current_mode }}"
-     data-collection="{{ display_collection.handle }}"
+     data-brand-new-collection="{{ brand_new_collection.handle }}"
+     data-renewed-collection="{{ renewed_collection.handle }}"
+     data-has-renewed="{{ has_renewed_collection }}"
      style="--padding-top: {{ section.settings.padding_top }}px; --padding-bottom: {{ section.settings.padding_bottom }}px; --grid-columns: {{ section.settings.grid_columns_desktop }};">
 
-  {%- comment -%} Toggle Reminder Bar {%- endcomment -%}
-  {%- if section.settings.show_toggle_reminder -%}
-    <div class="looptech-reminder-bar looptech-reminder-bar--{{ current_mode }}">
-      {%- if current_mode == 'brand-new' -%}
-        {{ section.settings.brand_new_reminder }}
-      {%- else -%}
-        {{ section.settings.renewed_reminder }}
-      {%- endif -%}
+  {%- comment -%} Toggle Reminder Bar - Only show if renewed collection exists {%- endcomment -%}
+  {%- if section.settings.show_toggle_reminder and has_renewed_collection -%}
+    <div class="looptech-reminder-bar looptech-reminder-bar--brand-new" data-mode-reminder="brand-new">
+      {{ section.settings.brand_new_reminder }}
+    </div>
+    <div class="looptech-reminder-bar looptech-reminder-bar--renewed" data-mode-reminder="renewed" style="display: none;">
+      {{ section.settings.renewed_reminder }}
     </div>
   {%- endif -%}
 
@@ -207,65 +200,22 @@
 
         {%- comment -%}
           ======================================================================
-          TIER 1: INLINE PRODUCT FILTERING (Tag + SKU based)
-          Products without valid classification are HIDDEN (strict mode)
+          BRAND NEW PRODUCTS GRID - Visible by default
           ======================================================================
         {%- endcomment -%}
-        <div class="looptech-products-grid"
-             data-view="{{ section.settings.default_view }}"
-             id="products-grid">
+        <div data-mode-content="brand-new">
+          <div class="looptech-products-grid"
+               data-view="{{ section.settings.default_view }}"
+               data-mode-grid="brand-new"
+               id="products-grid-brand-new">
 
-          {%- assign visible_count = 0 -%}
-          {%- assign promo_position = section.settings.promo_card_position -%}
+            {%- assign visible_count_new = 0 -%}
+            {%- assign promo_position = section.settings.promo_card_position -%}
 
-          {%- for product in display_collection.products -%}
+            {%- for product in brand_new_collection.products -%}
+              {%- assign visible_count_new = visible_count_new | plus: 1 -%}
 
-            {%- comment -%}
-              INLINE TIER 1 FILTERING - DO NOT use render 'product-mode-filter'
-              Strict mode: Only show products that match current mode
-            {%- endcomment -%}
-            {%- liquid
-              assign show_product = false
-              assign product_mode = 'unknown'
-
-              # Primary check: Product tags
-              if product.tags contains 'brand-new'
-                assign product_mode = 'brand-new'
-              elsif product.tags contains 'renewed'
-                assign product_mode = 'renewed'
-              endif
-
-              # Fallback: Parse SKU for condition code
-              if product_mode == 'unknown'
-                assign sku = product.selected_or_first_available_variant.sku | default: ''
-                assign sku_parts = sku | split: '-'
-                assign parts_count = sku_parts | size
-
-                if parts_count >= 6
-                  assign sku_condition = sku_parts[3] | upcase
-                  if sku_condition == 'NEW'
-                    assign product_mode = 'brand-new'
-                  elsif sku_condition == 'REN' or sku_condition == 'REFA' or sku_condition == 'REFB' or sku_condition == 'REFC'
-                    assign product_mode = 'renewed'
-                  endif
-                endif
-              endif
-
-              # STRICT MODE: Only show if mode matches (hide unknown)
-              if section.settings.enable_toggle_filtering
-                if product_mode == current_mode
-                  assign show_product = true
-                endif
-              else
-                # Toggle filtering disabled - show all products
-                assign show_product = true
-              endif
-            -%}
-
-            {%- if show_product -%}
-              {%- assign visible_count = visible_count | plus: 1 -%}
-
-              {%- comment -%} Parse SKU for Tier 2 data attributes {%- endcomment -%}
+              {%- comment -%} Parse SKU for data attributes {%- endcomment -%}
               {%- liquid
                 assign sku = product.selected_or_first_available_variant.sku | default: ''
                 assign sku_parts = sku | split: '-'
@@ -287,15 +237,14 @@
               -%}
 
               {%- comment -%} Insert promo card at configured position {%- endcomment -%}
-              {%- if section.settings.show_promo_card and visible_count == promo_position -%}
+              {%- if section.settings.show_promo_card and visible_count_new == promo_position -%}
                 {%- if section.settings.default_view == 'tiles' -%}
-                  {%- render 'looptech-promo-card', style: 'tile', current_mode: current_mode -%}
+                  {%- render 'looptech-promo-card', style: 'tile', current_mode: 'brand-new' -%}
                 {%- else -%}
-                  {%- render 'looptech-promo-card', style: 'grid', current_mode: current_mode -%}
+                  {%- render 'looptech-promo-card', style: 'grid', current_mode: 'brand-new' -%}
                 {%- endif -%}
               {%- endif -%}
 
-              {%- comment -%} Product Card with Data Attributes for Tier 2 JS filtering {%- endcomment -%}
               <article class="looptech-product-item"
                        data-product-id="{{ product.id }}"
                        data-sku="{{ sku }}"
@@ -305,32 +254,113 @@
                        data-color="{{ sku_color }}"
                        data-condition="{{ sku_condition }}"
                        data-price="{{ product.price }}"
-                       data-mode="{{ product_mode }}"
+                       data-mode="brand-new"
                        data-title="{{ product.title | escape }}"
                        data-created="{{ product.created_at | date: '%s' }}">
 
-                {%- if section.settings.default_view == 'tiles' -%}
+                {%- comment -%} Render both card types - CSS controls visibility {%- endcomment -%}
+                <div class="looptech-card-view looptech-card-view--tiles">
                   {%- render 'looptech-product-card-tile', product: product -%}
-                {%- else -%}
+                </div>
+                <div class="looptech-card-view looptech-card-view--grid">
                   {%- render 'looptech-product-card-grid', product: product -%}
-                {%- endif -%}
+                </div>
               </article>
-            {%- endif -%}
+            {%- endfor -%}
 
-          {%- endfor -%}
+            {%- if visible_count_new == 0 -%}
+              <div class="looptech-empty-state">
+                <div class="looptech-empty-state__content">
+                  <h3>No products found</h3>
+                  <p>This collection is empty.</p>
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
         </div>
 
-        {%- comment -%} Empty State {%- endcomment -%}
-        <div class="looptech-empty-state" id="empty-state" {% if visible_count > 0 %}style="display: none;"{% endif %}>
-          <div class="looptech-empty-state__content">
-            <h3>No {{ current_mode | replace: '-', ' ' }} products found</h3>
-            <p>Try adjusting your filters or browse our other collection.</p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-              <button type="button" class="looptech-btn" data-clear-all>Clear All Filters</button>
-              <a href="{{ display_collection.url }}?mode={% if current_mode == 'brand-new' %}renewed{% else %}brand-new{% endif %}" class="looptech-btn" style="background: #6B7280;">
-                View {% if current_mode == 'brand-new' %}Renewed{% else %}Brand New{% endif %}
-              </a>
-            </div>
+        {%- comment -%}
+          ======================================================================
+          RENEWED PRODUCTS GRID - Hidden by default
+          ======================================================================
+        {%- endcomment -%}
+        <div data-mode-content="renewed" style="display: none;">
+          <div class="looptech-products-grid"
+               data-view="{{ section.settings.default_view }}"
+               data-mode-grid="renewed"
+               id="products-grid-renewed">
+
+            {%- assign visible_count_renewed = 0 -%}
+
+            {%- for product in renewed_collection.products -%}
+              {%- assign visible_count_renewed = visible_count_renewed | plus: 1 -%}
+
+              {%- comment -%} Parse SKU for data attributes {%- endcomment -%}
+              {%- liquid
+                assign sku = product.selected_or_first_available_variant.sku | default: ''
+                assign sku_parts = sku | split: '-'
+                assign parts_count = sku_parts | size
+
+                if parts_count >= 6
+                  assign sku_brand = sku_parts[0]
+                  assign sku_model = sku_parts[1]
+                  assign sku_capacity = sku_parts[2]
+                  assign sku_condition = sku_parts[3]
+                  assign sku_color = sku_parts[4]
+                else
+                  assign sku_brand = ''
+                  assign sku_model = ''
+                  assign sku_capacity = ''
+                  assign sku_condition = ''
+                  assign sku_color = ''
+                endif
+              -%}
+
+              {%- comment -%} Insert promo card at configured position {%- endcomment -%}
+              {%- if section.settings.show_promo_card and visible_count_renewed == promo_position -%}
+                {%- if section.settings.default_view == 'tiles' -%}
+                  {%- render 'looptech-promo-card', style: 'tile', current_mode: 'renewed' -%}
+                {%- else -%}
+                  {%- render 'looptech-promo-card', style: 'grid', current_mode: 'renewed' -%}
+                {%- endif -%}
+              {%- endif -%}
+
+              <article class="looptech-product-item"
+                       data-product-id="{{ product.id }}"
+                       data-sku="{{ sku }}"
+                       data-brand="{{ sku_brand }}"
+                       data-model="{{ sku_model }}"
+                       data-capacity="{{ sku_capacity }}"
+                       data-color="{{ sku_color }}"
+                       data-condition="{{ sku_condition }}"
+                       data-price="{{ product.price }}"
+                       data-mode="renewed"
+                       data-title="{{ product.title | escape }}"
+                       data-created="{{ product.created_at | date: '%s' }}">
+
+                {%- comment -%} Render both card types - CSS controls visibility {%- endcomment -%}
+                <div class="looptech-card-view looptech-card-view--tiles">
+                  {%- render 'looptech-product-card-tile', product: product -%}
+                </div>
+                <div class="looptech-card-view looptech-card-view--grid">
+                  {%- render 'looptech-product-card-grid', product: product -%}
+                </div>
+              </article>
+            {%- endfor -%}
+
+            {%- if visible_count_renewed == 0 -%}
+              <div class="looptech-empty-state">
+                <div class="looptech-empty-state__content">
+                  {%- if has_renewed_collection == false -%}
+                    <h3>No Renewed collection found</h3>
+                    <p>Create a collection named "{{ renewed_handle }}" to enable the toggle.</p>
+                  {%- else -%}
+                    <h3>No Renewed products available</h3>
+                    <p>Check back soon for renewed options.</p>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endif -%}
           </div>
         </div>
 
@@ -405,61 +435,149 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  (function() {
+    'use strict';
+
     const VIEW_STORAGE_KEY = 'looptech_collection_view';
     const VALID_VIEWS = ['tiles', 'grid'];
+    const SECTION_ID = '{{ section.id }}';
+    let section = null;
 
-    // View Toggle Functionality
-    const viewButtons = document.querySelectorAll('[data-view-btn]');
-    const productsGrid = document.getElementById('products-grid');
+    // ========================================
+    // MODE SWITCHING FUNCTIONALITY
+    // ========================================
+    function getCurrentMode() {
+      // Use global API if available, otherwise read localStorage directly
+      if (window.LooptechModeToggle && typeof window.LooptechModeToggle.getMode === 'function') {
+        return window.LooptechModeToggle.getMode();
+      }
+      try {
+        const mode = localStorage.getItem('looptech-mode');
+        return (mode === 'renewed') ? 'renewed' : 'brand-new';
+      } catch (e) {
+        return 'brand-new';
+      }
+    }
 
-    function applyView(view) {
-      viewButtons.forEach(b => {
-        const isActive = b.dataset.viewBtn === view;
-        b.classList.toggle('looptech-view-toggle__btn--active', isActive);
+    function updateModeVisibility() {
+      if (!section) {
+        section = document.querySelector('[data-section-id="' + SECTION_ID + '"]');
+      }
+      if (!section) return;
+
+      const mode = getCurrentMode();
+      const hasRenewed = section.dataset.hasRenewed === 'true';
+
+      // If no renewed collection exists, always show brand-new
+      const effectiveMode = (mode === 'renewed' && !hasRenewed) ? 'brand-new' : mode;
+
+      // Update reminder bars
+      const brandNewReminder = section.querySelector('[data-mode-reminder="brand-new"]');
+      const renewedReminder = section.querySelector('[data-mode-reminder="renewed"]');
+      if (brandNewReminder) {
+        brandNewReminder.style.display = effectiveMode === 'brand-new' ? 'block' : 'none';
+      }
+      if (renewedReminder) {
+        renewedReminder.style.display = effectiveMode === 'renewed' ? 'block' : 'none';
+      }
+
+      // Update product grids
+      const brandNewContent = section.querySelector('[data-mode-content="brand-new"]');
+      const renewedContent = section.querySelector('[data-mode-content="renewed"]');
+      if (brandNewContent) {
+        brandNewContent.style.display = effectiveMode === 'brand-new' ? 'block' : 'none';
+      }
+      if (renewedContent) {
+        renewedContent.style.display = effectiveMode === 'renewed' ? 'block' : 'none';
+      }
+
+      // Update product count
+      updateProductCount(effectiveMode);
+
+      console.log('[LoopTech Collection] Mode updated to:', effectiveMode);
+    }
+
+    function updateProductCount(mode) {
+      const countEl = document.getElementById('visible-count');
+      if (!countEl) return;
+
+      const gridId = mode === 'renewed' ? 'products-grid-renewed' : 'products-grid-brand-new';
+      const grid = document.getElementById(gridId);
+      if (grid) {
+        const visibleItems = grid.querySelectorAll('.looptech-product-item:not([style*="display: none"])');
+        countEl.textContent = visibleItems.length + ' products';
+      }
+    }
+
+    // ========================================
+    // INITIALIZATION
+    // ========================================
+    function init() {
+      section = document.querySelector('[data-section-id="' + SECTION_ID + '"]');
+
+      // Initial mode update
+      updateModeVisibility();
+
+      // Listen for mode changes from toggle
+      window.addEventListener('looptech-mode-change', updateModeVisibility);
+
+      // ========================================
+      // VIEW TOGGLE FUNCTIONALITY
+      // ========================================
+      const viewButtons = document.querySelectorAll('[data-view-btn]');
+
+      function applyView(view) {
+        viewButtons.forEach(function(b) {
+          var isActive = b.dataset.viewBtn === view;
+          b.classList.toggle('looptech-view-toggle__btn--active', isActive);
+        });
+
+        // Apply to both grids
+        var grids = section.querySelectorAll('.looptech-products-grid');
+        grids.forEach(function(grid) {
+          grid.dataset.view = view;
+        });
+      }
+
+      // Load saved view preference
+      try {
+        var savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+        if (savedView && VALID_VIEWS.indexOf(savedView) !== -1) {
+          applyView(savedView);
+        }
+      } catch(e) {}
+
+      // Handle view toggle clicks
+      viewButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var view = this.dataset.viewBtn;
+          applyView(view);
+          try {
+            localStorage.setItem(VIEW_STORAGE_KEY, view);
+          } catch(e) {}
+        });
       });
 
-      if (productsGrid) {
-        productsGrid.dataset.view = view;
-
-        // Update product cards based on view
-        const items = productsGrid.querySelectorAll('.looptech-product-item');
-        items.forEach(item => {
-          // View-specific styling is handled by CSS via [data-view] selector
+      // ========================================
+      // MOBILE FILTERS
+      // ========================================
+      var sidebarFilters = document.getElementById('looptech-filters');
+      var mobileFiltersContent = document.getElementById('mobile-filters-content');
+      if (sidebarFilters && mobileFiltersContent) {
+        var filterGroups = sidebarFilters.querySelectorAll('.looptech-filter-group');
+        filterGroups.forEach(function(group) {
+          mobileFiltersContent.appendChild(group.cloneNode(true));
         });
       }
     }
 
-    // Load saved view preference
-    try {
-      const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
-      if (savedView && VALID_VIEWS.includes(savedView)) {
-        applyView(savedView);
-      }
-    } catch(e) {}
-
-    // Handle view toggle clicks
-    viewButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        const view = this.dataset.viewBtn;
-        applyView(view);
-        try {
-          localStorage.setItem(VIEW_STORAGE_KEY, view);
-        } catch(e) {}
-      });
-    });
-
-    // Clone sidebar filters to mobile drawer
-    const sidebarFilters = document.getElementById('looptech-filters');
-    const mobileFiltersContent = document.getElementById('mobile-filters-content');
-    if (sidebarFilters && mobileFiltersContent) {
-      // Clone filter groups (not header)
-      const filterGroups = sidebarFilters.querySelectorAll('.looptech-filter-group');
-      filterGroups.forEach(group => {
-        mobileFiltersContent.appendChild(group.cloneNode(true));
-      });
+    // Run on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
     }
-  });
+  })();
 </script>
 
 {%- endpaginate -%}
@@ -471,25 +589,8 @@
   "class": "looptech-collection-section",
   "settings": [
     {
-      "type": "header",
-      "content": "Collection Source"
-    },
-    {
-      "type": "collection",
-      "id": "source_collection",
-      "label": "Select Collection",
-      "info": "Leave blank to use the current collection page"
-    },
-    {
-      "type": "header",
-      "content": "Toggle Filtering (Tier 1)"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_toggle_filtering",
-      "label": "Enable Toggle Filtering",
-      "default": true,
-      "info": "Filter products by Brand New/Renewed based on product tags or SKU condition codes"
+      "type": "paragraph",
+      "content": "This section automatically displays products from the current collection page. For toggle support, create a parallel collection with '-renewed' suffix (e.g., 'iphones' and 'iphones-renewed')."
     },
     {
       "type": "checkbox",
@@ -570,11 +671,12 @@
     {
       "type": "range",
       "id": "grid_columns_desktop",
-      "min": 3,
-      "max": 5,
+      "min": 2,
+      "max": 4,
       "step": 1,
       "label": "Grid Columns (Desktop)",
-      "default": 4
+      "default": 3,
+      "info": "Number of columns in grid view (recommended: 3)"
     },
     {
       "type": "checkbox",

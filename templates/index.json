@@ -184,7 +184,7 @@
       "name": "Recently Viewed Products",
       "settings": {
         "heading": "Pick up where you left off.",
-        "collection": "all-new",
+        "collection": "all",
         "collection_renewed": "all-renewed",
         "padding_top": 20,
         "padding_bottom": 0
@@ -358,7 +358,7 @@
           "settings": {
             "is_all_products": false,
             "brand_name": "All Products",
-            "collection": "all-new",
+            "collection": "all",
             "collection_renewed": "all-renewed"
           }
         },
@@ -367,7 +367,7 @@
           "settings": {
             "is_all_products": false,
             "brand_name": "iPhone",
-            "collection": "iphones-new",
+            "collection": "iphones",
             "collection_renewed": "iphones-renewed"
           }
         },
@@ -376,7 +376,7 @@
           "settings": {
             "is_all_products": false,
             "brand_name": "Samsung",
-            "collection": "samsung-new",
+            "collection": "samsung",
             "collection_renewed": "samsung-renewed"
           }
         },
@@ -385,7 +385,7 @@
           "settings": {
             "is_all_products": false,
             "brand_name": "Laptops",
-            "collection": "laptops-new",
+            "collection": "laptops",
             "collection_renewed": "laptops-renewed"
           }
         },
@@ -882,7 +882,7 @@
       "name": "Recently Viewed Products",
       "settings": {
         "heading": "Pick up where you left off.",
-        "collection": "all-new",
+        "collection": "all",
         "collection_renewed": "all-renewed",
         "padding_top": 20,
         "padding_bottom": 0

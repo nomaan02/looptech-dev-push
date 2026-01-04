@@ -1085,18 +1085,33 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (min-width: 768px) {
   .looptech-products-grid {
+    gap: 20px;
+  }
+}
+
+/* Grid view - 3 columns max */
+.looptech-products-grid[data-view="grid"] {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .looptech-products-grid[data-view="grid"] {
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 20px;
   }
 }
 
 @media (min-width: 1200px) {
-  .looptech-products-grid {
-    grid-template-columns: repeat(var(--grid-columns, 4), 1fr);
+  .looptech-products-grid[data-view="grid"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
   }
 }
 
@@ -1105,6 +1120,50 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Card View Visibility Toggle
+   Show/hide card types based on current view mode
+   -------------------------------------------------------------------------- */
+
+/* Default: show tiles, hide grid */
+.looptech-card-view--tiles {
+  display: block;
+}
+
+.looptech-card-view--grid {
+  display: none;
+}
+
+/* When grid view is active */
+.looptech-products-grid[data-view="grid"] .looptech-card-view--tiles {
+  display: none;
+}
+
+.looptech-products-grid[data-view="grid"] .looptech-card-view--grid {
+  display: block;
+}
+
+/* When tiles view is active (explicit) */
+.looptech-products-grid[data-view="tiles"] .looptech-card-view--tiles {
+  display: block;
+}
+
+.looptech-products-grid[data-view="tiles"] .looptech-card-view--grid {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Product Item Wrapper - Grid View Sizing
+   -------------------------------------------------------------------------- */
+.looptech-products-grid[data-view="grid"] .looptech-product-item {
+  width: 100%;
+  min-width: 0;
+}
+
+.looptech-products-grid[data-view="grid"] .looptech-card-view--grid {
+  height: 100%;
 }
 
 /* --------------------------------------------------------------------------

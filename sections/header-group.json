@@ -65,7 +65,7 @@
         "second_menu_79cfex": {
           "type": "second-menu",
           "settings": {
-            "secmenu": "secondary-main-menu",
+            "secmenu": "",
             "icon1": "flashsale",
             "icon_color": "#dd1d1d",
             "showsmenu_top": true
@@ -187,6 +187,7 @@
         "show_menu_link": false,
         "shop_dropformat": false,
         "menu": "main-menu",
+        "menu_Renewed": "",
         "main_drop_menu": "click",
         "color_schememenu": "",
         "color__dropmenu": "background-1",
@@ -209,7 +210,7 @@
             "position": "left",
             "enable_dropdown": true,
             "link": "shopify://collections",
-            "menu": "main-menu",
+            "menu": "main-menu-brand-new",
             "display_style": "grid_with_images",
             "dropdown_title": "Browse All Categories",
             "show_icon": true
@@ -221,8 +222,8 @@
             "label": "LAPTOPS",
             "position": "center",
             "enable_dropdown": true,
-            "link": "shopify://products/apple-macbook-pro-2018",
-            "menu": "",
+            "link": "shopify://collections/laptops",
+            "menu": "main-menu",
             "display_style": "grid_with_images",
             "dropdown_title": "Shop Laptops",
             "show_icon": false
@@ -315,6 +316,7 @@
         "nav_font_size": 14,
         "nav_font_weight": "400",
         "nav_spacing": 24,
+        "auto_pull_collection_images": true,
         "categories_per_row": 6,
         "category_font_size": 14,
         "category_font_weight": "700",

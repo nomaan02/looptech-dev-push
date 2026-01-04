@@ -2,11 +2,12 @@
   Mode Toggle Section - Dual Behavior
 
   ARCHITECTURE:
-  - On COLLECTION pages: Uses <a> links → navigates to parallel collection (SEO-friendly)
-  - On NON-COLLECTION pages: Uses <button> → JavaScript swaps visibility in-place (no navigation)
+  - On COLLECTION pages with dual content: Uses in-place JavaScript swap
+  - On COLLECTION pages without dual content: Uses <a> links → navigates to parallel collection
+  - On NON-COLLECTION pages: Uses <button> → JavaScript swaps visibility in-place
 
   Required:
-  - Collections must follow naming: {category}-new / {category}-renewed
+  - Collections must follow naming: {category} (brand-new) / {category}-renewed
   - Product sections must have [data-mode-content="brand-new"] and [data-mode-content="renewed"] wrappers
 {%- endcomment -%}
 
@@ -24,14 +25,13 @@
     assign is_collection_page = true
 
     # Detect mode from collection handle suffix
+    # Convention: {base} = brand-new, {base}-renewed = renewed
     if current_handle contains '-renewed'
       assign current_mode = 'renewed'
       assign base_handle = current_handle | remove: '-renewed'
-    elsif current_handle contains '-new'
-      assign current_mode = 'brand-new'
-      assign base_handle = current_handle | remove: '-new'
     else
-      # Collection without suffix - default to brand-new
+      # Collection without -renewed suffix is brand-new
+      assign current_mode = 'brand-new'
       assign base_handle = current_handle
     endif
   endif
@@ -42,11 +42,12 @@
 
   if is_collection_page
     # Build parallel collection handles
+    # Convention: {base} = brand-new, {base}-renewed = renewed
     if base_handle != blank
-      assign new_handle = base_handle | append: '-new'
+      assign new_handle = base_handle
       assign renewed_handle = base_handle | append: '-renewed'
     else
-      assign new_handle = 'all-new'
+      assign new_handle = 'all'
       assign renewed_handle = 'all-renewed'
     endif
 
@@ -468,8 +469,13 @@
 /**
  * Mode Toggle - Dual Behavior JavaScript
  *
- * On COLLECTION pages: This script only handles hover animations (navigation is via links)
- * On NON-COLLECTION pages: This script handles the in-place content swap
+ * SMART DETECTION:
+ * - If page has [data-mode-content] elements → use in-place JavaScript swap
+ * - Otherwise on collection pages → use navigation links (if they exist)
+ *
+ * This ensures the toggle works correctly whether:
+ * - Using LoopTech Collection (dual collections pre-rendered)
+ * - Using traditional parallel collections (navigation)
  */
 (function() {
   'use strict';
@@ -477,8 +483,16 @@
   const STORAGE_KEY = 'looptech-mode';
   const VALID_MODES = ['brand-new', 'renewed'];
 
-  // Check if we're on a collection page
-  const isCollectionPage = window.location.pathname.includes('/collections/');
+  // ═══════════════════════════════════════════════════════════════════════
+  // SMART DETECTION - Check if in-place swap is available
+  // ═══════════════════════════════════════════════════════════════════════
+
+  function hasDualContent() {
+    // Check if page has pre-rendered dual content (both brand-new and renewed)
+    const brandNewContent = document.querySelector('[data-mode-content="brand-new"]');
+    const renewedContent = document.querySelector('[data-mode-content="renewed"]');
+    return brandNewContent !== null && renewedContent !== null;
+  }
 
   // ═══════════════════════════════════════════════════════════════════════
   // UTILITY FUNCTIONS
@@ -502,7 +516,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // IN-PLACE MODE SWAP (Non-Collection Pages Only)
+  // IN-PLACE MODE SWAP
   // ═══════════════════════════════════════════════════════════════════════
 
   function applyMode(mode) {
@@ -511,13 +525,13 @@
     // Store preference
     setStoredMode(mode);
 
-    // Update toggle button states
-    document.querySelectorAll('[data-mode-switch]').forEach(btn => {
-      const btnMode = btn.getAttribute('data-mode-switch');
-      if (btnMode === mode) {
-        btn.classList.add('mode-toggle__option--active');
+    // Update ALL toggle option states (both buttons and links)
+    document.querySelectorAll('.mode-toggle__option').forEach(el => {
+      const elMode = el.getAttribute('data-mode');
+      if (elMode === mode) {
+        el.classList.add('mode-toggle__option--active');
       } else {
-        btn.classList.remove('mode-toggle__option--active');
+        el.classList.remove('mode-toggle__option--active');
       }
     });
 
@@ -579,6 +593,30 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
+  // CONVERT LINKS TO BUTTONS (when dual content is available)
+  // ═══════════════════════════════════════════════════════════════════════
+
+  function convertLinksToInPlaceSwap() {
+    // Find all toggle links and convert them to in-place swap behavior
+    document.querySelectorAll('.mode-toggle__option[href]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent navigation
+        const newMode = this.getAttribute('data-mode');
+        applyMode(newMode);
+      });
+    });
+
+    // Also handle button-style toggles
+    document.querySelectorAll('[data-mode-switch]').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const newMode = this.getAttribute('data-mode-switch');
+        applyMode(newMode);
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
   // INITIALIZATION
   // ═══════════════════════════════════════════════════════════════════════
 
@@ -586,24 +624,27 @@
     // Always setup hover animation
     setupHoverAnimation();
 
-    // Only setup in-place swap on non-collection pages
-    if (!isCollectionPage) {
-      // Apply stored mode on page load
-      const storedMode = getStoredMode();
-      applyMode(storedMode);
+    // Check if page has dual content (pre-rendered brand-new and renewed)
+    const useInPlaceSwap = hasDualContent();
 
-      // Attach click handlers to toggle buttons
-      document.querySelectorAll('[data-mode-switch]').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          const newMode = this.getAttribute('data-mode-switch');
-          applyMode(newMode);
-        });
+    if (useInPlaceSwap) {
+      // Page has dual content - use in-place swap
+      console.log('[LoopTech Mode Toggle] Detected dual content - using in-place swap');
+    
+      // Apply stored mode after a tick to ensure all listeners are registered
+      const storedMode = getStoredMode();
+      requestAnimationFrame(function() {
+        applyMode(storedMode);
       });
 
-      console.log('[LoopTech Mode Toggle] Initialized in-place swap mode');
+      // Convert any navigation links to in-place swap
+      convertLinksToInPlaceSwap();
+
     } else {
-      // On collection pages, just track the mode for localStorage
+      // No dual content - allow navigation (for traditional parallel collections)
+      console.log('[LoopTech Mode Toggle] No dual content - using navigation mode');
+
+      // Just track the current mode for localStorage
       const track = document.querySelector('.mode-toggle-track');
       if (track) {
         const currentMode = track.getAttribute('data-current-mode');
@@ -611,7 +652,6 @@
           setStoredMode(currentMode);
         }
       }
-      console.log('[LoopTech Mode Toggle] Initialized navigation mode');
     }
   }
 
@@ -638,11 +678,11 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "**On collection pages:** Toggle navigates between parallel collections (phones-new ↔ phones-renewed)"
+      "content": "**Collection naming:** {handle} = Brand New, {handle}-renewed = Renewed (e.g., 'iphones' and 'iphones-renewed')"
     },
     {
       "type": "paragraph",
-      "content": "**On homepage/other pages:** Toggle swaps visible content in-place (no navigation)"
+      "content": "**On pages with dual content:** Toggle swaps visibility in-place. **Otherwise:** Navigates to parallel collection."
     },
     {
       "type": "header",

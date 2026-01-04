@@ -24,106 +24,175 @@
         "padding_bottom": 0
       }
     },
-    "collection_looptech_bzwRBb": {
-      "type": "collection-looptech",
-      "name": "LoopTech Collection",
-      "settings": {
-        "padding_top": 24,
-        "padding_bottom": 24,
-        "products_per_page": 12,
-        "default_view": "tiles",
-        "show_toggle_reminder": false,
-        "brand_new_reminder": "You are currently browsing Brand New. Switch to Renewed, using the toggle.",
-        "renewed_reminder": "You are currently browsing Renewed. Switch to Brand New, using the toggle.",
-        "show_offer_banner": true,
-        "offer_text": "10% Off Any Laptop or Tablet with Any Smartphone Purchase",
-        "offer_icon": "",
-        "show_promo_card": true,
-        "promo_card_position": 2,
-        "promo_eyebrow": "Fair? Good? Excellent?",
-        "promo_headline": "F THAT.",
-        "promo_subtext": "One condition to rule them all.",
-        "promo_cta_text": "Check out Renewed",
-        "promo_cta_url": ""
-      }
-    },
-    "featured_collection_CFrFpT": {
-      "type": "featured-collection",
+    "collection_list_qa3Mtb": {
+      "type": "collection-list",
       "blocks": {
-        "heading_MnXa7H": {
-          "type": "heading",
+        "featured_collection_tdqgB8": {
+          "type": "featured_collection",
           "settings": {
-            "icon1": "hotdeal",
-            "heading": "Heading",
-            "heading_size": "h2",
-            "subheading": ""
+            "collection": "business-laptops",
+            "image": "shopify://shop_images/23.png",
+            "title": "Business Laptops",
+            "url": "",
+            "showtext": "",
+            "customb_style": "link"
           }
         },
-        "date_RDBAHr": {
-          "type": "date",
+        "featured_collection_BaEDXy": {
+          "type": "featured_collection",
           "settings": {
-            "wb_enddate": ""
+            "collection": "student-budget-laptops",
+            "image": "shopify://shop_images/50.png",
+            "title": "Budget Laptops",
+            "url": "",
+            "showtext": "",
+            "customb_style": "link"
           }
         },
-        "button_iUcTw3": {
-          "type": "button",
+        "featured_collection_MA4y9i": {
+          "type": "featured_collection",
           "settings": {
-            "icon2": "flash",
-            "btntxt": "Shop the collection",
-            "link": "",
-            "view_all_style": "link"
+            "collection": "gaming-laptops",
+            "image": "shopify://shop_images/WiredTech_5.png",
+            "title": "Gaming Laptops",
+            "url": "shopify://collections/gaming-laptops",
+            "showtext": "",
+            "customb_style": "link"
+          }
+        },
+        "featured_collection_emjfLX": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "workstation-pcs",
+            "image": "shopify://shop_images/35.png",
+            "title": "Workstation PCs",
+            "url": "shopify://collections/workstation-pcs",
+            "showtext": "",
+            "customb_style": "link"
+          }
+        },
+        "featured_collection_EjzdB9": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "content-creator-pcs",
+            "image": "shopify://shop_images/WiredTech_6.png",
+            "title": "Content Creator PCs",
+            "url": "shopify://collections/content-creator-pcs",
+            "showtext": "",
+            "customb_style": "link"
+          }
+        },
+        "featured_collection_RaGbUP": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "home-office-pcs",
+            "image": "shopify://shop_images/61.png",
+            "title": "Home Office PCs",
+            "url": "shopify://collections/home-office-pcs",
+            "showtext": "",
+            "customb_style": "link"
+          }
+        },
+        "featured_collection_F4iCKi": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "all-in-ones",
+            "image": "shopify://shop_images/WiredTech_7.png",
+            "title": "All-In-Ones",
+            "url": "shopify://collections/all-in-ones",
+            "showtext": "",
+            "customb_style": "link"
+          }
+        },
+        "featured_collection_cnMDEm": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "all-gaming-pcs",
+            "image": "shopify://shop_images/WiredTech_8.png",
+            "title": "Gaming PCs",
+            "url": "shopify://collections/all-gaming-pcs",
+            "showtext": "",
+            "customb_style": "link"
+          }
+        },
+        "featured_collection_LLB7eh": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "all-accessories",
+            "image": "shopify://shop_images/LoopTech_Home_Page_Offers_1.png",
+            "title": "All Accessories",
+            "url": "shopify://collections/all-accessories",
+            "showtext": "",
+            "customb_style": "link"
           }
         }
       },
       "block_order": [
-        "heading_MnXa7H",
-        "date_RDBAHr",
-        "button_iUcTw3"
+        "featured_collection_tdqgB8",
+        "featured_collection_BaEDXy",
+        "featured_collection_MA4y9i",
+        "featured_collection_emjfLX",
+        "featured_collection_EjzdB9",
+        "featured_collection_RaGbUP",
+        "featured_collection_F4iCKi",
+        "featured_collection_cnMDEm",
+        "featured_collection_LLB7eh"
       ],
-      "name": "t:sections.featured-collection.presets.name",
+      "disabled": true,
       "settings": {
-        "color_scheme": "",
-        "collection": "all-products",
-        "title": "Featured collection",
+        "color_scheme": "background-1",
+        "title": "Shop By Categories",
         "heading_size": "h1",
         "head_align": "left",
-        "heading_color_scheme": "",
+        "heading_color_scheme": "scheme-abe3bc68-5409-41dd-abcf-8f9ac474947a",
         "head_space": true,
         "description": "",
-        "show_description": false,
         "description_style": "body",
-        "products_to_show": 4,
-        "columns_desktop": 4,
-        "show_row_on_desktop": 2,
-        "full_width": false,
-        "show_view_all": true,
+        "view_button_pos": "top",
+        "button_label": "See all categories",
+        "button_url": "",
         "view_all_style": "link",
-        "view_button_pos": "bottom",
-        "enable_desktop_slider": false,
-        "arrow_position": "top",
-        "card_style": "standard",
-        "show_count_timer": true,
-        "banner_position": "left",
-        "box_align": "top",
-        "text_alignment": "center",
-        "show_text_box": false,
-        "imgcolor_scheme": "",
-        "show_banner_timer": false,
-        "wb_bannerdate": "",
-        "text_caption": "Image text",
-        "outline_text": false,
-        "heading": "Heading",
-        "bnrheading_size": "h1",
-        "sub_heading": "Sub Heading",
-        "button_label": "Button label",
-        "button_link": "",
-        "link_window": true,
-        "button_style_secondary": "link",
-        "card_color_scheme": "",
+        "show_view_all": true,
+        "arrow_position": "inline",
+        "image_ratio": "square",
+        "columns_desktop": 9,
+        "rows": 1,
+        "card_flex_direction": "column",
+        "design_type": "below",
+        "design_align": "center",
+        "show_circle": false,
+        "catheading_size": "small",
+        "blockcolor_scheme": "background-1",
         "columns_mobile": "2",
-        "swipe_on_mobile": false,
         "padding_top": 60,
-        "padding_bottom": 60
+        "padding_bottom": 24
+      }
+    },
+    "collection_looptech_acYnAR": {
+      "type": "collection-looptech",
+      "name": "LoopTech Collection",
+      "settings": {
+        "source_collection": "laptops-new",
+        "source_collection_renewed": "laptops-renewed",
+        "show_toggle_reminder": true,
+        "brand_new_reminder": "You're viewing Brand New products. Switch to Renewed for savings.",
+        "renewed_reminder": "You're viewing Renewed products. Switch to Brand New for latest.",
+        "show_sidebar": true,
+        "show_price_filter": true,
+        "show_brand_filter": true,
+        "show_capacity_filter": true,
+        "show_color_filter": true,
+        "default_view": "tiles",
+        "products_per_page": 48,
+        "grid_columns_desktop": 3,
+        "show_description": false,
+        "show_offer_banner": true,
+        "offer_text": "10% Off Any Laptop or Tablet with Any Smartphone Purchase",
+        "offer_icon": "",
+        "show_promo_card": true,
+        "promo_card_position": 3,
+        "padding_top": 24,
+        "padding_bottom": 24
       }
     },
     "product-grid": {
@@ -225,8 +294,8 @@
   },
   "order": [
     "banner",
-    "collection_looptech_bzwRBb",
-    "featured_collection_CFrFpT",
+    "collection_list_qa3Mtb",
+    "collection_looptech_acYnAR",
     "product-grid"
   ]
 }
