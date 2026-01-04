@@ -1,0 +1,114 @@
+{%- comment -%}
+  LoopTech Spec Card Grid
+  
+  2-column grid of option cards, typically used for colour selection.
+  Each card shows: colour swatch + name + variant price
+  
+  Parameters:
+    - product: The product object
+    - option: The product option object
+    - option_index: Index of this option (0-based)
+    - section_id: Parent section ID
+{%- endcomment -%}
+
+<div class="looptech-spec-card-grid" data-option-grid data-option-index="{{ option_index }}">
+  {%- for value in option.values -%}
+    {%- liquid
+      # Determine colour swatch
+      assign value_handle = value | downcase | replace: ' ', '-'
+      assign swatch_color = value | downcase
+      
+      # Map common colour names to hex
+      case swatch_color
+        when 'black'
+          assign swatch_hex = '#1a1a1a'
+        when 'white'
+          assign swatch_hex = '#ffffff'
+        when 'silver'
+          assign swatch_hex = '#c0c0c0'
+        when 'gold'
+          assign swatch_hex = '#d4af37'
+        when 'rose gold' or 'rosegold'
+          assign swatch_hex = '#b76e79'
+        when 'pink'
+          assign swatch_hex = '#ffc0cb'
+        when 'blue'
+          assign swatch_hex = '#3b82f6'
+        when 'red'
+          assign swatch_hex = '#ef4444'
+        when 'green'
+          assign swatch_hex = '#22c55e'
+        when 'purple'
+          assign swatch_hex = '#a855f7'
+        when 'space gray' or 'space grey'
+          assign swatch_hex = '#4a4a4a'
+        when 'midnight'
+          assign swatch_hex = '#191970'
+        when 'starlight'
+          assign swatch_hex = '#f5f5dc'
+        when 'natural titanium'
+          assign swatch_hex = '#8b8b83'
+        when 'blue titanium'
+          assign swatch_hex = '#4a5568'
+        when 'white titanium'
+          assign swatch_hex = '#e8e8e0'
+        when 'black titanium'
+          assign swatch_hex = '#2d2d2d'
+        when 'yellow'
+          assign swatch_hex = '#fbbf24'
+        when 'orange'
+          assign swatch_hex = '#f97316'
+        else
+          assign swatch_hex = '#9ca3af'
+      endcase
+      
+      # Find variant price for this option value
+      # We need to find a variant that has this option value
+      # and show its price (will be updated by JS based on other selections)
+      assign display_price = nil
+      assign is_sold_out = true
+      
+      for variant in product.variants
+        if variant.options[option_index] == value
+          if display_price == nil
+            assign display_price = variant.price
+          endif
+          if variant.available
+            assign is_sold_out = false
+          endif
+        endif
+      endfor
+    -%}
+    
+    <label 
+      class="looptech-spec-card{% if is_sold_out %} looptech-spec-card--sold-out{% endif %}"
+      data-spec-option
+      data-option-value="{{ value | escape }}"
+      data-option-index="{{ option_index }}"
+      data-sold-out="{{ is_sold_out }}"
+    >
+      <input
+        type="radio"
+        name="spec-option-{{ option.name | handle }}"
+        value="{{ value | escape }}"
+        data-option-name="{{ option.name }}"
+        data-option-index="{{ option_index }}"
+        {% if is_sold_out %}disabled{% endif %}
+      >
+      
+      <span class="looptech-spec-card__swatch" style="background-color: {{ swatch_hex }};"></span>
+      
+      <span class="looptech-spec-card__text">
+        <span class="looptech-spec-card__name">{{ value }}</span>
+        {%- if is_sold_out -%}
+          <span class="looptech-spec-card__sold-out">Sold out</span>
+        {%- else -%}
+          <span class="looptech-spec-card__price" data-option-price>
+            {{ display_price | money }}
+          </span>
+        {%- endif -%}
+      </span>
+    </label>
+  {%- endfor -%}
+</div>
+

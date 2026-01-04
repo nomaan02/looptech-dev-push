@@ -1,0 +1,236 @@
+{%- comment -%}
+  LoopTech Summary Card
+  
+  Inline section that appears when all spec selections are complete.
+  Two-column layout matching spec modules (image left, content right).
+  
+  Parameters:
+    - product: The product object
+    - current_variant: The selected or first available variant
+    - section_id: Parent section ID
+{%- endcomment -%}
+
+{%- liquid
+  assign product_form_id = 'looptech-summary-form-' | append: section_id
+  
+  # Get variant image (falls back to product featured image)
+  if current_variant.featured_image != blank
+    assign summary_image = current_variant.featured_image
+  else
+    assign summary_image = product.featured_image
+  endif
+-%}
+
+<div class="looptech-summary-card" data-summary-card>
+  <div class="page-width">
+    
+    {%- comment -%} TWO-COLUMN GRID {%- endcomment -%}
+    <div class="looptech-summary-card__grid">
+      
+      {%- comment -%} LEFT COLUMN: Product Image {%- endcomment -%}
+      <div class="looptech-summary-card__image">
+        {%- if summary_image != blank -%}
+          <img
+            src="{{ summary_image | image_url: width: 800 }}"
+            alt="{{ product.title | escape }}"
+            width="800"
+            height="800"
+            loading="lazy"
+            data-summary-image
+          >
+        {%- else -%}
+          <div class="looptech-summary-card__image-placeholder">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} RIGHT COLUMN: Product Summary {%- endcomment -%}
+      <div class="looptech-summary-card__content">
+        
+        {%- comment -%} Product Title {%- endcomment -%}
+        <h2 class="looptech-summary-card__title" data-summary-title>{{ product.title }}</h2>
+        
+        {%- comment -%} Selected Specs {%- endcomment -%}
+        <div class="looptech-summary-card__specs" data-summary-specs>
+          {%- comment -%} Populated by JS with selected specs {%- endcomment -%}
+        </div>
+
+        {%- comment -%} Star Rating {%- endcomment -%}
+        <div class="looptech-summary-card__rating">
+          <div class="looptech-summary-card__stars">
+            {%- for i in (1..5) -%}
+              {%- if i <= 4 -%}
+                <svg class="looptech-summary-card__star looptech-summary-card__star--filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+                </svg>
+              {%- elsif i == 5 -%}
+                <svg class="looptech-summary-card__star looptech-summary-card__star--partial" width="16" height="16" viewBox="0 0 24 24">
+                  <defs>
+                    <linearGradient id="summary-star-partial-{{ section_id }}">
+                      <stop offset="70%" stop-color="currentColor"/>
+                      <stop offset="70%" stop-color="#e5e7eb"/>
+                    </linearGradient>
+                  </defs>
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="url(#summary-star-partial-{{ section_id }})"></polygon>
+                </svg>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <span class="looptech-summary-card__rating-score">4.7/5</span>
+          <span class="looptech-summary-card__rating-count">(4,974 reviews)</span>
+        </div>
+
+        {%- comment -%} Price Block {%- endcomment -%}
+        <div class="looptech-summary-card__price-block">
+          <div class="looptech-summary-card__price-row">
+            <span class="looptech-summary-card__price" data-summary-price>
+              {{ current_variant.price | money }}
+            </span>
+            <span class="looptech-summary-card__price-label">before trade-in</span>
+          </div>
+          <span class="looptech-summary-card__compare-price" data-summary-compare-price style="{% unless current_variant.compare_at_price > current_variant.price %}display: none;{% endunless %}">
+            {{ current_variant.compare_at_price | money }}
+          </span>
+        </div>
+
+        {%- comment -%} Klarna {%- endcomment -%}
+        <div class="looptech-summary-card__klarna">
+          <svg width="40" height="16" viewBox="0 0 90 36" fill="#FFB3C7">
+            <path d="M10.7 0H0v35.3h10.7V0zM24 0c0 6.2-2.5 12-7 16.3l-2.7 2.5 11.4 16.5h13.5L26.5 18.8C30.3 14.2 32.5 8.4 32.5 2V0H24zM42.3 35.3h10.4V0H42.3v35.3zM89.3 24.8c0-5.8-4.3-10.5-10-10.5-5.8 0-10 4.7-10 10.5 0 5.9 4.2 10.5 10 10.5 5.7 0 10-4.6 10-10.5zM59.3 14.3v21h9.5V23.8c0-4.2 3-6.7 7.2-6.7h2.5v-9h-1.7c-3.3 0-6.3 1.5-8 4v-3.8h-9.5zM69.3 0H59v7.5h10.3V0z"/>
+          </svg>
+          <span class="looptech-summary-card__klarna-text">
+            3 payments of <strong data-summary-klarna>{{ current_variant.price | divided_by: 3 | money }}</strong> at 0% interest with Klarna
+          </span>
+        </div>
+
+        {%- comment -%} Confirmation Message {%- endcomment -%}
+        <div class="looptech-summary-card__confirmation">
+          <svg class="looptech-summary-card__confirmation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.96"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>Perfect choice. Let's lock it in.</span>
+        </div>
+
+        {%- comment -%} Add to Cart + Wishlist {%- endcomment -%}
+        <div class="looptech-summary-card__actions">
+          <product-form class="looptech-summary-card__form">
+            {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+              <input type="hidden" name="id" value="{{ current_variant.id }}" data-summary-variant-id>
+              
+              <div class="looptech-summary-card__buttons">
+                <button
+                  type="submit"
+                  name="add"
+                  class="looptech-summary-card__button"
+                  data-summary-add-button
+                >
+                  <span class="looptech-summary-card__button-text">Add To Cart</span>
+                  <span class="looptech-summary-card__button-spinner">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                </button>
+
+                <button type="button" class="looptech-summary-card__wishlist" aria-label="Add to wishlist">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </button>
+              </div>
+            {%- endform -%}
+          </product-form>
+        </div>
+
+        {%- comment -%} Payment Icons {%- endcomment -%}
+        <div class="looptech-summary-card__payments">
+          {%- comment -%} Visa {%- endcomment -%}
+          <svg class="looptech-summary-card__payment-icon" viewBox="0 0 38 24" fill="none">
+            <rect width="38" height="24" rx="3" fill="#1434CB"/>
+            <path d="M15.3 16.2l1.5-9h2.4l-1.5 9h-2.4zm9.9-8.8c-.5-.2-1.2-.4-2.1-.4-2.3 0-4 1.2-4 2.9 0 1.3 1.1 2 2 2.4.9.4 1.2.7 1.2 1.1 0 .6-.7.9-1.4.9-1 0-1.5-.1-2.3-.5l-.3-.2-.3 2c.6.3 1.6.5 2.7.5 2.5 0 4.1-1.2 4.1-3 0-1-.6-1.8-2-2.4-.8-.4-1.3-.7-1.3-1.1 0-.4.4-.8 1.3-.8.7 0 1.3.2 1.7.4l.2.1.5-1.9zm5.7-.2h-1.8c-.6 0-1 .2-1.2.7l-3.5 8.3h2.5s.4-1.1.5-1.4h3c.1.4.3 1.4.3 1.4h2.2l-2-9zm-2.8 5.8c.2-.5.9-2.4.9-2.4s.2-.5.3-.8l.2.7s.4 2.1.5 2.5h-1.9zM13.3 7.4l-2.3 6.1-.2-1.3c-.4-1.4-1.7-2.9-3.2-3.7l2.1 7.7h2.5l3.7-8.8h-2.6z" fill="#fff"/>
+            <path d="M8.8 7.4H5l0 .2c3 .8 5 2.6 5.8 4.9l-.8-4.1c-.1-.6-.5-.9-1.2-1z" fill="#F9A533"/>
+          </svg>
+          {%- comment -%} Mastercard {%- endcomment -%}
+          <svg class="looptech-summary-card__payment-icon" viewBox="0 0 38 24" fill="none">
+            <rect width="38" height="24" rx="3" fill="#fff" stroke="#E5E7EB"/>
+            <circle cx="15" cy="12" r="7" fill="#EB001B"/>
+            <circle cx="23" cy="12" r="7" fill="#F79E1B"/>
+            <path d="M19 6.8a7 7 0 0 0 0 10.4 7 7 0 0 0 0-10.4z" fill="#FF5F00"/>
+          </svg>
+          {%- comment -%} PayPal {%- endcomment -%}
+          <svg class="looptech-summary-card__payment-icon" viewBox="0 0 38 24" fill="none">
+            <rect width="38" height="24" rx="3" fill="#fff" stroke="#E5E7EB"/>
+            <path d="M23.4 7.2c-.3-1.4-1.5-2.2-3.3-2.2h-4.3c-.3 0-.5.2-.6.5l-1.7 11c0 .2.1.4.4.4h2.8l.7-4.3v.1c0-.3.3-.5.6-.5h1.2c2.4 0 4.2-1 4.8-3.8v-.2c-.1 0-.1 0 0 0 .1-1 0-1.7-.6-2z" fill="#003087"/>
+            <path d="M24 9.2v.2c-.6 2.8-2.4 3.8-4.8 3.8h-1.2c-.3 0-.5.2-.6.5l-.8 5c0 .2.1.4.4.4h2.5c.2 0 .5-.2.5-.4l.5-3.3c0-.2.3-.4.5-.4h.3c2.1 0 3.7-.9 4.2-3.4.2-1 .1-1.8-.5-2.4z" fill="#0070E0"/>
+          </svg>
+          {%- comment -%} Apple Pay {%- endcomment -%}
+          <svg class="looptech-summary-card__payment-icon" viewBox="0 0 38 24" fill="none">
+            <rect width="38" height="24" rx="3" fill="#000"/>
+            <path d="M13.8 6.5c-.3.4-.8.7-1.3.6-.1-.5.2-1 .4-1.3.3-.4.8-.6 1.2-.6.1.5-.1 1-.3 1.3zm.3.7c-.7 0-1.3.4-1.7.4-.4 0-.9-.4-1.5-.4-.8 0-1.5.5-1.9 1.2-.8 1.4-.2 3.5.6 4.6.4.6.9 1.2 1.5 1.2.6 0 .8-.4 1.5-.4s.9.4 1.5.4c.7 0 1.1-.6 1.5-1.1.5-.7.7-1.3.7-1.4-.6-.3-1.2-.9-1.2-1.9 0-.8.4-1.5 1-1.9-.4-.5-1-.8-1.6-.8l-.4.1zm7.5.2h-2.4l-1.7 5.3-.1.3h1.4l.5-1.6h1.8l.5 1.6h1.4l-1.4-5.6zm-.7 3l.5-1.6.1-.3.5 1.9h-1.1zm5.5-.3c0-.6-.4-1-1.3-1.2l-.5-.1c-.4-.1-.6-.2-.6-.4s.2-.4.6-.4c.4 0 .7.1 1 .4l.7-.8c-.4-.4-1-.6-1.7-.6-1 0-1.7.5-1.7 1.4 0 .6.4 1 1.3 1.2l.5.1c.5.1.6.2.6.4 0 .3-.3.4-.7.4-.5 0-.9-.2-1.2-.5l-.7.8c.4.4 1.1.7 1.9.7 1.1 0 1.8-.5 1.8-1.4z" fill="#fff"/>
+          </svg>
+          {%- comment -%} Google Pay {%- endcomment -%}
+          <svg class="looptech-summary-card__payment-icon" viewBox="0 0 38 24" fill="none">
+            <rect width="38" height="24" rx="3" fill="#fff" stroke="#E5E7EB"/>
+            <path d="M19.2 12.6v2.3h-.7v-5.7h1.9c.5 0 .9.1 1.2.4.3.3.5.7.5 1.1 0 .5-.2.8-.5 1.1-.3.3-.7.4-1.2.4h-1.2zm0-2.7v2h1.2c.3 0 .5-.1.7-.3.2-.2.3-.4.3-.7 0-.3-.1-.5-.3-.7-.2-.2-.4-.3-.7-.3h-1.2z" fill="#5F6368"/>
+            <path d="M24.6 10.7c.5 0 .9.1 1.2.4.3.3.4.7.4 1.2v2.6h-.7v-.6c-.2.5-.6.7-1.2.7-.4 0-.7-.1-1-.3-.2-.2-.4-.5-.4-.8 0-.4.1-.7.4-.9.3-.2.7-.3 1.2-.3.4 0 .7.1.9.2v-.1c0-.3-.1-.5-.2-.6-.2-.2-.4-.2-.7-.2-.4 0-.7.1-1 .4l-.3-.5c.4-.3.9-.5 1.4-.5zm-.3 3.6c.3 0 .5-.1.7-.2.2-.2.3-.3.3-.6v-.3c-.2-.1-.5-.2-.8-.2-.5 0-.8.2-.8.5 0 .2.1.4.2.5.2.2.3.3.6.3h-.2z" fill="#5F6368"/>
+            <path d="M29.2 14.6l-1.5-3.7h.8l1.1 2.8 1.1-2.8h.8l-1.9 4.5c-.2.5-.6.8-1.2.8-.2 0-.4 0-.6-.1v-.6c.1 0 .3.1.4.1.3 0 .5-.1.6-.4l.3-.6h.1z" fill="#5F6368"/>
+            <path d="M15.7 12.4c0-.2 0-.4-.1-.6h-2.9v1.1h1.7c-.1.4-.3.7-.6.9v.8h1c.6-.5.9-1.3.9-2.2z" fill="#4285F4"/>
+            <path d="M12.7 15.1c.8 0 1.5-.3 2-.8l-1-.8c-.3.2-.6.3-1 .3-.8 0-1.4-.5-1.6-1.2H10v.8c.5 1 1.5 1.7 2.7 1.7z" fill="#34A853"/>
+            <path d="M11.1 12.6c-.1-.2-.1-.4-.1-.6 0-.2 0-.4.1-.6v-.8h-1.7c-.2.4-.3.9-.3 1.4 0 .5.1 1 .3 1.4l1.7-.8z" fill="#FBBC04"/>
+            <path d="M12.7 10.2c.4 0 .8.1 1.1.4l.8-.8c-.5-.5-1.2-.7-1.9-.7-1.2 0-2.2.7-2.7 1.7l1.7.8c.2-.7.8-1.2 1.6-1.2l-.6-.2z" fill="#EA4335"/>
+          </svg>
+          {%- comment -%} Klarna {%- endcomment -%}
+          <svg class="looptech-summary-card__payment-icon" viewBox="0 0 38 24" fill="none">
+            <rect width="38" height="24" rx="3" fill="#FFB3C7"/>
+            <path d="M8.3 7h-2v10h2V7zm4.4 0c0 2.1-.8 4-2.3 5.5l-.9.8 3.8 5.5h4.5l-3.7-5.4c1.2-1.5 2-3.5 2-5.6V7h-3.4zm6.1 10h3.5V7h-3.5v10zm10.3-4.8c0-1.9-1.4-3.5-3.3-3.5-1.9 0-3.3 1.6-3.3 3.5s1.4 3.5 3.3 3.5c1.9 0 3.3-1.5 3.3-3.5z" fill="#0A0B09"/>
+          </svg>
+        </div>
+
+      </div>
+
+    </div>
+
+    {%- comment -%} INFO CARDS ROW (Full Width Below Grid) {%- endcomment -%}
+    <div class="looptech-summary-card__info-row">
+      <div class="looptech-summary-card__info-item">
+        <svg class="looptech-summary-card__info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+        <div class="looptech-summary-card__info-text">
+          <span class="looptech-summary-card__info-title">Free Delivery</span>
+          <span class="looptech-summary-card__info-subtitle">arriving 4 Dec - 5 Dec</span>
+        </div>
+      </div>
+      <div class="looptech-summary-card__info-item">
+        <svg class="looptech-summary-card__info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        <div class="looptech-summary-card__info-text">
+          <span class="looptech-summary-card__info-title">Free Returns</span>
+          <span class="looptech-summary-card__info-subtitle">until Jan 31</span>
+        </div>
+      </div>
+      <div class="looptech-summary-card__info-item">
+        <svg class="looptech-summary-card__info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <polyline points="9 12 11 14 15 10"></polyline>
+        </svg>
+        <div class="looptech-summary-card__info-text">
+          <span class="looptech-summary-card__info-title">Looptech Guaranteed</span>
+          <span class="looptech-summary-card__info-subtitle">12 month warranty</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

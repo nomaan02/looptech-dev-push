@@ -1,0 +1,515 @@
+{%- comment -%}
+  LoopTech Product Main Section
+  
+  Scroll-down product page with:
+  - Header: Product gallery, title, price, info cards, condition banner, trust badges
+  - Spec Modules: Full-width option selection sections (scroll to reveal)
+  - Summary Card: Sticky footer when all selections complete
+  
+  Integrates with global Brand New/Renewed toggle via SKU parsing.
+{%- endcomment -%}
+
+{{ 'looptech-product.css' | asset_url | stylesheet_tag }}
+{{ 'looptech-spec-modules.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
+{{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
+{{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+{{ 'component-loading-overlay.css' | asset_url | stylesheet_tag }}
+
+{%- if section.settings.image_zoom == 'lightbox' -%}
+  {{ 'photoswipe.css' | asset_url | stylesheet_tag }}
+  {{ 'default-skin.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'photoswipe.js' | asset_url }}" async></script>
+  <script src="{{ 'photoswipe-ui-default.js' | asset_url }}" async></script>
+{%- endif -%}
+
+<script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'looptech-spec-modules.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .looptech-product-section {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+  @media screen and (max-width: 749px) {
+    .looptech-product-section {
+      padding-top: {{ section.settings.padding_top | times: 0.6 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.6 | round: 0 }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  # Parse SKU to determine product condition
+  assign current_variant = product.selected_or_first_available_variant
+  render 'sku-parser', sku: current_variant.sku
+  
+  # Determine condition-specific content
+  if sku_mode == 'renewed'
+    assign banner_bold = section.settings.renewed_banner_bold
+    assign banner_regular = section.settings.renewed_banner_regular
+  else
+    assign banner_bold = section.settings.new_banner_bold
+    assign banner_regular = section.settings.new_banner_regular
+  endif
+  
+  # Get variant images for gallery
+  assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
+  
+  # Check if product has variants for spec modules
+  assign has_variants = false
+  unless product.has_only_default_variant
+    assign has_variants = true
+  endunless
+  
+  # Parse spec_config metafield or build fallback config
+  assign spec_config = nil
+  assign use_fallback_config = true
+  
+  if product.metafields.looptech.spec_config != blank
+    assign spec_config_json = product.metafields.looptech.spec_config
+    assign use_fallback_config = false
+  endif
+-%}
+
+<section 
+  class="looptech-product-section"
+  data-section-id="{{ section.id }}"
+  data-product-condition="{{ sku_mode }}"
+>
+  <product-info
+    id="ProductInfo-{{ section.id }}"
+    class="looptech-product"
+    data-section="{{ section.id }}"
+    data-product-id="{{ product.id }}"
+    data-update-url="true"
+    data-url="{{ product.url }}"
+  >
+    <div class="page-width">
+      {%- comment -%} TWO-COLUMN PRODUCT GRID (HEADER) {%- endcomment -%}
+      <div class="looptech-product__grid">
+        
+        {%- comment -%} LEFT COLUMN: Gallery {%- endcomment -%}
+        <div class="looptech-product__media-column">
+          <div class="{% if section.settings.enable_sticky_info %}looptech-product__sticky{% endif %}">
+            {% render 'looptech-product-gallery',
+              product: product,
+              variant_images: variant_images,
+              current_variant: current_variant,
+              show_color_swatches: section.settings.show_color_swatches,
+              image_zoom: section.settings.image_zoom,
+              section_id: section.id
+            %}
+          </div>
+        </div>
+
+        {%- comment -%} RIGHT COLUMN: Product Info {%- endcomment -%}
+        <div class="looptech-product__info-column">
+          <div class="looptech-product__info-container {% if section.settings.enable_sticky_info %}looptech-product__sticky{% endif %}">
+            
+            {%- comment -%} Product Info Block {%- endcomment -%}
+            {% render 'looptech-product-info',
+              product: product,
+              current_variant: current_variant,
+              show_rating: section.settings.show_rating,
+              show_klarna: section.settings.show_klarna,
+              section_id: section.id,
+              use_scroll_cta: has_variants
+            %}
+
+            {%- comment -%} Info Cards {%- endcomment -%}
+            {%- if section.settings.show_info_cards -%}
+              {% render 'looptech-info-cards',
+                delivery_title: section.settings.delivery_title,
+                delivery_subtitle: section.settings.delivery_subtitle,
+                returns_title: section.settings.returns_title,
+                returns_subtitle: section.settings.returns_subtitle,
+                guarantee_title: section.settings.guarantee_title,
+                guarantee_subtitle: section.settings.guarantee_subtitle
+              %}
+            {%- endif -%}
+
+          </div>
+        </div>
+
+      </div>
+
+      {%- comment -%} FULL WIDTH: Condition Banner {%- endcomment -%}
+      {%- if section.settings.show_condition_banner -%}
+        {% render 'looptech-condition-banner',
+          banner_bold: banner_bold,
+          banner_regular: banner_regular,
+          sku_mode: sku_mode
+        %}
+      {%- endif -%}
+
+      {%- comment -%} FULL WIDTH: Trust Badges {%- endcomment -%}
+      {%- if section.settings.show_trust_badges -%}
+        {% render 'looptech-trust-badges',
+          badge_1_text: section.settings.badge_1_text,
+          badge_2_text: section.settings.badge_2_text,
+          badge_3_text: section.settings.badge_3_text,
+          badge_4_text: section.settings.badge_4_text,
+          badge_5_text: section.settings.badge_5_text
+        %}
+      {%- endif -%}
+
+    </div>
+  </product-info>
+
+  {%- comment -%} ═══════════════════════════════════════════════════════════════════════
+     SPEC SELECTION MODULES (Scroll to reveal)
+     ═══════════════════════════════════════════════════════════════════════ {%- endcomment -%}
+  
+  {%- if has_variants -%}
+    <div class="looptech-spec-modules" data-spec-modules>
+      
+      {%- if use_fallback_config -%}
+        {%- comment -%} FALLBACK: Render all product options with list_rows format {%- endcomment -%}
+        {%- for option in product.options_with_values -%}
+          {%- liquid
+            # Determine display format based on option name
+            assign option_name_downcase = option.name | downcase
+            assign display_format = 'list_rows'
+            
+            if option_name_downcase == 'color' or option_name_downcase == 'colour'
+              assign display_format = 'card_grid'
+            endif
+            
+            # Get image for this module (use product media positions)
+            assign image_position = forloop.index | plus: 1
+            assign module_image = nil
+            if product.media.size > image_position
+              assign module_image = product.media[image_position]
+            endif
+          -%}
+          
+          {% render 'looptech-spec-module',
+            product: product,
+            option: option,
+            option_index: forloop.index0,
+            display_format: display_format,
+            heading: nil,
+            image: module_image,
+            image_url: nil,
+            module_index: forloop.index0,
+            section_id: section.id
+          %}
+        {%- endfor -%}
+        
+      {%- else -%}
+        {%- comment -%} METAFIELD CONFIG: Parse and render based on spec_config {%- endcomment -%}
+        {%- comment -%} 
+          Note: Liquid cannot natively parse JSON metafields as arrays.
+          We'll handle this in JavaScript for complex configs.
+          For now, use fallback approach which works for most cases.
+        {%- endcomment -%}
+        
+        {%- for option in product.options_with_values -%}
+          {%- liquid
+            assign option_name_downcase = option.name | downcase
+            assign display_format = 'list_rows'
+            
+            if option_name_downcase == 'color' or option_name_downcase == 'colour'
+              assign display_format = 'card_grid'
+            endif
+            
+            assign image_position = forloop.index | plus: 1
+            assign module_image = nil
+            if product.media.size > image_position
+              assign module_image = product.media[image_position]
+            endif
+          -%}
+          
+          {% render 'looptech-spec-module',
+            product: product,
+            option: option,
+            option_index: forloop.index0,
+            display_format: display_format,
+            heading: nil,
+            image: module_image,
+            image_url: nil,
+            module_index: forloop.index0,
+            section_id: section.id
+          %}
+        {%- endfor -%}
+      {%- endif -%}
+      
+    </div>
+
+    {%- comment -%} STICKY SUMMARY CARD {%- endcomment -%}
+    {% render 'looptech-summary-card',
+      product: product,
+      current_variant: current_variant,
+      section_id: section.id
+    %}
+  {%- endif -%}
+
+  {%- comment -%} Product JSON for JavaScript {%- endcomment -%}
+  <script type="application/json" data-product-json>
+    {{ product | json }}
+  </script>
+
+  {%- comment -%} PhotoSwipe Lightbox Container {%- endcomment -%}
+  {%- if section.settings.image_zoom == 'lightbox' -%}
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="pswp__bg"></div>
+      <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+        </div>
+        <div class="pswp__ui pswp__ui--hidden">
+          <div class="pswp__top-bar">
+            <div class="pswp__counter"></div>
+            <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+            <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+            <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+            <div class="pswp__preloader">
+              <div class="pswp__preloader__icn">
+                <div class="pswp__preloader__cut">
+                  <div class="pswp__preloader__donut"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="pswp__button pswp__button--arrow--left" title="Previous"></button>
+          <button class="pswp__button pswp__button--arrow--right" title="Next"></button>
+          <div class="pswp__caption">
+            <div class="pswp__caption__center"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "LoopTech Product",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_info",
+      "label": "Enable sticky columns",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "media_size",
+      "label": "Media size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "label": "Gallery layout",
+      "options": [
+        { "value": "vertical_thumbnails", "label": "Vertical thumbnails" },
+        { "value": "horizontal_thumbnails", "label": "Horizontal thumbnails" }
+      ],
+      "default": "vertical_thumbnails"
+    },
+    {
+      "type": "select",
+      "id": "image_zoom",
+      "label": "Image zoom",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "lightbox", "label": "Lightbox" },
+        { "value": "hover", "label": "Hover zoom" }
+      ],
+      "default": "lightbox"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_swatches",
+      "label": "Show color swatches below image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show star rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_klarna",
+      "label": "Show Klarna financing",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_info_cards",
+      "label": "Show info cards",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_condition_banner",
+      "label": "Show condition banner",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_badges",
+      "label": "Show trust badges",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Condition Banner - Brand New"
+    },
+    {
+      "type": "text",
+      "id": "new_banner_bold",
+      "label": "Bold text (Brand New)",
+      "default": "Factory Fresh."
+    },
+    {
+      "type": "text",
+      "id": "new_banner_regular",
+      "label": "Regular text (Brand New)",
+      "default": "Just for you."
+    },
+    {
+      "type": "header",
+      "content": "Condition Banner - Renewed"
+    },
+    {
+      "type": "text",
+      "id": "renewed_banner_bold",
+      "label": "Bold text (Renewed)",
+      "default": "Just Like New."
+    },
+    {
+      "type": "text",
+      "id": "renewed_banner_regular",
+      "label": "Regular text (Renewed)",
+      "default": "Restored for you."
+    },
+    {
+      "type": "header",
+      "content": "Info Cards"
+    },
+    {
+      "type": "text",
+      "id": "delivery_title",
+      "label": "Delivery title",
+      "default": "Free Delivery, arriving 4 Dec - 5 Dec"
+    },
+    {
+      "type": "text",
+      "id": "delivery_subtitle",
+      "label": "Delivery subtitle",
+      "default": "Express Delivery, arriving 3 Dec - 4 Dec"
+    },
+    {
+      "type": "text",
+      "id": "returns_title",
+      "label": "Returns title",
+      "default": "Free Returns, until Jan 31"
+    },
+    {
+      "type": "text",
+      "id": "returns_subtitle",
+      "label": "Returns subtitle",
+      "default": "30-days to change your mind"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_title",
+      "label": "Guarantee title",
+      "default": "Looptech Guaranteed"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_subtitle",
+      "label": "Guarantee subtitle",
+      "default": "We don't mess around. 12 month warranty included."
+    },
+    {
+      "type": "header",
+      "content": "Trust Badges"
+    },
+    {
+      "type": "text",
+      "id": "badge_1_text",
+      "label": "Badge 1 text",
+      "default": "30-Day free hassle-free returns"
+    },
+    {
+      "type": "text",
+      "id": "badge_2_text",
+      "label": "Badge 2 text",
+      "default": "LoopPass device identity included"
+    },
+    {
+      "type": "text",
+      "id": "badge_3_text",
+      "label": "Badge 3 text",
+      "default": "Looptech Guaranteed 12 month warranty included"
+    },
+    {
+      "type": "text",
+      "id": "badge_4_text",
+      "label": "Badge 4 text",
+      "default": "Free delivery on orders over £150"
+    },
+    {
+      "type": "text",
+      "id": "badge_5_text",
+      "label": "Badge 5 text",
+      "default": "Lifetime customer support guaranteed"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "LoopTech Product"
+    }
+  ]
+}
+{% endschema %}

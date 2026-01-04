@@ -1,0 +1,870 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOOPTECH SPEC SELECTION MODULES
+   Scroll-down product page with separate spec selection sections
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CSS VARIABLES
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-modules {
+  --spec-blue: #2563eb;
+  --spec-blue-hover: #1d4ed8;
+  --spec-blue-light: #eff6ff;
+  --spec-text: #1f2937;
+  --spec-text-muted: #6b7280;
+  --spec-border: #e5e7eb;
+  --spec-bg: #ffffff;
+  --spec-bg-subtle: #f9fafb;
+  --spec-radius: 12px;
+  --spec-radius-sm: 8px;
+  --spec-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --spec-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+  --spec-green: #059669;
+  --spec-green-light: #ecfdf5;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SPEC MODULES CONTAINER
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INDIVIDUAL SPEC MODULE
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-module {
+  padding: 4rem 0;
+  background: var(--spec-bg);
+  border-bottom: 1px solid var(--spec-border);
+}
+
+.looptech-spec-module:last-child {
+  border-bottom: none;
+}
+
+.looptech-spec-module__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media screen and (min-width: 990px) {
+  .looptech-spec-module__inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+}
+
+/* Module completed state */
+.looptech-spec-module[data-completed="true"] {
+  opacity: 0.85;
+}
+
+.looptech-spec-module[data-completed="true"]:hover {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODULE IMAGE (Left Column)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-module__image {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--spec-radius);
+  overflow: hidden;
+  background: var(--spec-bg-subtle);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.looptech-spec-module__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.looptech-spec-module:hover .looptech-spec-module__image img {
+  transform: scale(1.02);
+}
+
+/* Placeholder for missing image */
+.looptech-spec-module__image-placeholder,
+.looptech-spec-module__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--spec-text-muted);
+  background: var(--spec-bg-subtle);
+  border-radius: var(--spec-radius);
+  aspect-ratio: 1;
+}
+
+.looptech-spec-module__placeholder svg {
+  width: 64px;
+  height: 64px;
+  color: var(--spec-text-muted);
+}
+
+/* Module image (new class) */
+.looptech-spec-module__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODULE CONTENT (Right Column)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-module__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media screen and (min-width: 990px) {
+  .looptech-spec-module__content {
+    padding-top: 2rem;
+  }
+}
+
+.looptech-spec-module__heading {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--spec-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+@media screen and (min-width: 750px) {
+  .looptech-spec-module__heading {
+    font-size: 2rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CARD GRID FORMAT (for Colour options)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.looptech-spec-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--spec-bg);
+  border: 2px solid var(--spec-border);
+  border-radius: var(--spec-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.looptech-spec-card:hover {
+  border-color: var(--spec-blue);
+  background: var(--spec-blue-light);
+}
+
+.looptech-spec-card--selected {
+  background: var(--spec-blue);
+  border-color: var(--spec-blue);
+}
+
+.looptech-spec-card--selected:hover {
+  background: var(--spec-blue-hover);
+  border-color: var(--spec-blue-hover);
+}
+
+.looptech-spec-card--sold-out {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Colour swatch */
+.looptech-spec-card__swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Card text content */
+.looptech-spec-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.looptech-spec-card__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--spec-text);
+  transition: color 0.2s ease;
+}
+
+.looptech-spec-card--selected .looptech-spec-card__name {
+  color: white;
+}
+
+.looptech-spec-card__price {
+  font-size: 0.8125rem;
+  color: var(--spec-text-muted);
+  transition: color 0.2s ease;
+}
+
+.looptech-spec-card--selected .looptech-spec-card__price {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.looptech-spec-card__sold-out {
+  font-size: 0.75rem;
+  color: var(--spec-text-muted);
+  font-style: italic;
+}
+
+/* Hidden radio input */
+.looptech-spec-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Focus state */
+.looptech-spec-card:focus-within {
+  outline: 2px solid var(--spec-blue);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIST ROWS FORMAT (for Storage, SIM options)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.looptech-spec-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--spec-bg);
+  border: 2px solid var(--spec-border);
+  border-radius: var(--spec-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.looptech-spec-row:hover {
+  border-color: var(--spec-blue);
+  background: var(--spec-blue-light);
+}
+
+.looptech-spec-row--selected {
+  background: var(--spec-blue);
+  border-color: var(--spec-blue);
+}
+
+.looptech-spec-row--selected:hover {
+  background: var(--spec-blue-hover);
+  border-color: var(--spec-blue-hover);
+}
+
+.looptech-spec-row--sold-out {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Radio indicator */
+.looptech-spec-row__radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--spec-border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.looptech-spec-row--selected .looptech-spec-row__radio {
+  border-color: white;
+  background: white;
+}
+
+.looptech-spec-row--selected .looptech-spec-row__radio::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--spec-blue);
+}
+
+/* Row text content */
+.looptech-spec-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.looptech-spec-row__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--spec-text);
+  transition: color 0.2s ease;
+}
+
+.looptech-spec-row--selected .looptech-spec-row__name {
+  color: white;
+}
+
+.looptech-spec-row__subtitle {
+  font-size: 0.8125rem;
+  color: var(--spec-text-muted);
+  transition: color 0.2s ease;
+}
+
+.looptech-spec-row--selected .looptech-spec-row__subtitle {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Price (right aligned) */
+.looptech-spec-row__price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--spec-text);
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.looptech-spec-row--selected .looptech-spec-row__price {
+  color: white;
+}
+
+.looptech-spec-row__sold-out {
+  font-size: 0.8125rem;
+  color: var(--spec-text-muted);
+  font-style: italic;
+}
+
+/* Hidden radio input */
+.looptech-spec-row input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Focus state */
+.looptech-spec-row:focus-within {
+  outline: 2px solid var(--spec-blue);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INLINE SUMMARY CARD (Final selection confirmation - compact card style)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-summary-card {
+  padding: 3rem 0;
+  background: var(--spec-bg);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+
+.looptech-summary-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Compact card grid layout */
+.looptech-summary-card__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: var(--spec-bg);
+  border: 1px solid var(--spec-border);
+  border-radius: var(--spec-radius);
+}
+
+@media screen and (min-width: 750px) {
+  .looptech-summary-card__grid {
+    grid-template-columns: 180px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .looptech-summary-card__grid {
+    grid-template-columns: 220px 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* Product Image (Left Column) - Compact, no shadow */
+.looptech-summary-card__image {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--spec-radius-sm);
+  overflow: hidden;
+  background: var(--spec-bg-subtle);
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 750px) {
+  .looptech-summary-card__image {
+    max-width: none;
+    margin: 0;
+  }
+}
+
+.looptech-summary-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.looptech-summary-card__image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--spec-text-muted);
+}
+
+/* Content (Right Column) */
+.looptech-summary-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Title */
+.looptech-summary-card__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--spec-text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+@media screen and (min-width: 750px) {
+  .looptech-summary-card__title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Specs - displayed as pill badges */
+.looptech-summary-card__specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--spec-text);
+}
+
+.looptech-summary-card__specs:empty {
+  display: none;
+}
+
+/* When specs are rendered as text, style them as inline pills */
+.looptech-summary-card__specs:not(:empty) {
+  padding: 0;
+}
+
+/* Rating - hidden in compact mode to save space */
+.looptech-summary-card__rating {
+  display: none;
+}
+
+.looptech-summary-card__stars {
+  display: flex;
+  gap: 2px;
+}
+
+.looptech-summary-card__star--filled {
+  color: #fbbf24;
+}
+
+.looptech-summary-card__star--partial {
+  color: #fbbf24;
+}
+
+.looptech-summary-card__rating-score {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--spec-text);
+}
+
+.looptech-summary-card__rating-count {
+  font-size: 0.8125rem;
+  color: var(--spec-text-muted);
+}
+
+/* Price Block */
+.looptech-summary-card__price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.looptech-summary-card__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.looptech-summary-card__price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--spec-text);
+}
+
+@media screen and (min-width: 750px) {
+  .looptech-summary-card__price {
+    font-size: 1.75rem;
+  }
+}
+
+.looptech-summary-card__price-label {
+  font-size: 0.8125rem;
+  color: var(--spec-text-muted);
+}
+
+.looptech-summary-card__compare-price {
+  font-size: 0.9375rem;
+  color: var(--spec-text-muted);
+  text-decoration: line-through;
+}
+
+/* Klarna - hidden in compact view */
+.looptech-summary-card__klarna {
+  display: none;
+}
+
+.looptech-summary-card__klarna-text {
+  font-size: 0.8125rem;
+  color: var(--spec-text);
+}
+
+/* Confirmation Message */
+.looptech-summary-card__confirmation {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--spec-green);
+  padding: 0.5rem 0;
+}
+
+.looptech-summary-card__confirmation-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Actions */
+.looptech-summary-card__actions {
+  margin-top: 0.5rem;
+}
+
+.looptech-summary-card__buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.looptech-summary-card__button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.looptech-summary-card__button:hover:not(:disabled) {
+  background: #333333;
+  transform: translateY(-1px);
+}
+
+.looptech-summary-card__button:disabled {
+  background: var(--spec-text-muted);
+  cursor: not-allowed;
+}
+
+.looptech-summary-card__button-text {
+  display: inline;
+}
+
+.looptech-summary-card__button-spinner {
+  display: none;
+  animation: looptech-spin 1s linear infinite;
+}
+
+@keyframes looptech-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.looptech-summary-card__wishlist {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--spec-bg);
+  border: 1px solid var(--spec-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--spec-text-muted);
+  flex-shrink: 0;
+}
+
+.looptech-summary-card__wishlist:hover {
+  border-color: var(--spec-blue);
+  color: var(--spec-blue);
+}
+
+/* Payment Icons */
+.looptech-summary-card__payments {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.looptech-summary-card__payment-icon {
+  height: 20px;
+  width: auto;
+  opacity: 0.6;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INFO CARDS ROW (Compact, inside the card)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-summary-card__info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: var(--spec-bg);
+  border: 1px solid var(--spec-border);
+  border-radius: var(--spec-radius);
+}
+
+@media screen and (min-width: 750px) {
+  .looptech-summary-card__info-row {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+}
+
+.looptech-summary-card__info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.looptech-summary-card__info-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--spec-text-muted);
+}
+
+.looptech-summary-card__info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.looptech-summary-card__info-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--spec-text);
+}
+
+.looptech-summary-card__info-subtitle {
+  font-size: 0.75rem;
+  color: var(--spec-text-muted);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SCROLL CTA BUTTON (in header)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-scroll-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: var(--spec-blue);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.looptech-scroll-cta:hover {
+  background: var(--spec-blue-hover);
+  transform: translateY(-1px);
+}
+
+.looptech-scroll-cta__arrow {
+  width: 20px;
+  height: 20px;
+  animation: looptech-bounce 2s ease-in-out infinite;
+}
+
+@keyframes looptech-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODULE COMPLETE INDICATOR
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.looptech-spec-module__complete {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--spec-green-light);
+  border-radius: 50px;
+  color: var(--spec-green);
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  width: fit-content;
+}
+
+.looptech-spec-module[data-completed="true"] .looptech-spec-module__complete {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.looptech-spec-module__complete-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVE
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@media screen and (max-width: 749px) {
+  .looptech-spec-module {
+    padding: 2.5rem 0;
+  }
+
+  .looptech-spec-module__heading {
+    font-size: 1.5rem;
+  }
+
+  .looptech-spec-card-grid {
+    gap: 0.5rem;
+  }
+
+  .looptech-spec-card {
+    padding: 0.875rem 1rem;
+  }
+
+  .looptech-spec-row {
+    padding: 0.875rem 1rem;
+  }
+
+  .looptech-summary-card__inner {
+    padding: 1rem 0;
+  }
+
+  .looptech-summary-card__button {
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACCESSIBILITY
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .looptech-spec-module__image img,
+  .looptech-summary-card,
+  .looptech-spec-module__complete,
+  .looptech-scroll-cta__arrow {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .looptech-spec-card,
+  .looptech-spec-row {
+    border-width: 3px;
+  }
+
+  .looptech-spec-card--selected,
+  .looptech-spec-row--selected {
+    outline: 3px solid white;
+    outline-offset: -3px;
+  }
+}
+
+/* Spacer removed - summary card is now inline, not sticky */
+

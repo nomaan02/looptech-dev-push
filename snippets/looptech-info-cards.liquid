@@ -1,0 +1,78 @@
+{%- comment -%}
+  LoopTech Info Cards
+  
+  Three stacked info cards for Delivery, Returns, and Guarantee
+  
+  Parameters:
+    - delivery_title: Delivery card title text
+    - delivery_subtitle: Delivery card subtitle text
+    - returns_title: Returns card title text
+    - returns_subtitle: Returns card subtitle text
+    - guarantee_title: Guarantee card title text
+    - guarantee_subtitle: Guarantee card subtitle text
+{%- endcomment -%}
+
+<div class="looptech-cards">
+  
+  {%- comment -%} DELIVERY CARD {%- endcomment -%}
+  <div class="looptech-cards__card">
+    <div class="looptech-cards__icon looptech-cards__icon--delivery">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="1" y="3" width="15" height="13"></rect>
+        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+      </svg>
+    </div>
+    <div class="looptech-cards__content">
+      <span class="looptech-cards__title">{{ delivery_title | default: 'Free Delivery, arriving 4 Dec - 5 Dec' }}</span>
+      <span class="looptech-cards__subtitle">{{ delivery_subtitle | default: 'Express Delivery, arriving 3 Dec - 4 Dec' }}</span>
+    </div>
+    <div class="looptech-cards__chevron">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </div>
+  </div>
+
+  {%- comment -%} RETURNS CARD {%- endcomment -%}
+  <div class="looptech-cards__card">
+    <div class="looptech-cards__icon looptech-cards__icon--returns">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+    </div>
+    <div class="looptech-cards__content">
+      <span class="looptech-cards__title">{{ returns_title | default: 'Free Returns, until Jan 31' }}</span>
+      <span class="looptech-cards__subtitle">{{ returns_subtitle | default: '30-days to change your mind' }}</span>
+    </div>
+    <div class="looptech-cards__chevron">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </div>
+  </div>
+
+  {%- comment -%} GUARANTEE CARD {%- endcomment -%}
+  <div class="looptech-cards__card">
+    <div class="looptech-cards__icon looptech-cards__icon--guarantee">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        <polyline points="9 12 11 14 15 10"></polyline>
+      </svg>
+    </div>
+    <div class="looptech-cards__content">
+      <span class="looptech-cards__title">{{ guarantee_title | default: 'Looptech Guaranteed' }}</span>
+      <span class="looptech-cards__subtitle">{{ guarantee_subtitle | default: "We don't mess around. 12 month warranty included." }}</span>
+    </div>
+    <div class="looptech-cards__chevron">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </div>
+  </div>
+
+</div>
+

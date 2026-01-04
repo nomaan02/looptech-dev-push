@@ -1,0 +1,62 @@
+{%- comment -%}
+  LoopTech Condition Banner
+  
+  Full-width banner showing product condition messaging.
+  Changes based on Brand New vs Renewed (determined by SKU parsing).
+  
+  Parameters:
+    - banner_bold: The bold portion of the banner text
+    - banner_regular: The regular weight portion of the banner text
+    - sku_mode: 'brand-new' or 'renewed' (from SKU parsing)
+{%- endcomment -%}
+
+{%- liquid
+  # Default text if not provided
+  if banner_bold == blank
+    if sku_mode == 'renewed'
+      assign banner_bold = 'Just Like New.'
+    else
+      assign banner_bold = 'Factory Fresh.'
+    endif
+  endif
+  
+  if banner_regular == blank
+    if sku_mode == 'renewed'
+      assign banner_regular = 'Restored for you.'
+    else
+      assign banner_regular = 'Just for you.'
+    endif
+  endif
+-%}
+
+<div class="looptech-banner" data-condition-banner data-mode="{{ sku_mode | default: 'brand-new' }}">
+  <div class="looptech-banner__content">
+    <h2 class="looptech-banner__text">
+      <strong class="looptech-banner__bold" data-banner-bold>{{ banner_bold }}</strong>
+      <span class="looptech-banner__regular" data-banner-regular>{{ banner_regular }}</span>
+    </h2>
+  </div>
+</div>
+
+<script>
+  // Listen for mode changes from global toggle
+  window.addEventListener('looptech-mode-change', function(event) {
+    const banner = document.querySelector('[data-condition-banner]');
+    if (!banner) return;
+    
+    const mode = event.detail && event.detail.mode;
+    const boldElement = banner.querySelector('[data-banner-bold]');
+    const regularElement = banner.querySelector('[data-banner-regular]');
+    
+    if (mode === 'renewed') {
+      banner.setAttribute('data-mode', 'renewed');
+      if (boldElement) boldElement.textContent = 'Just Like New.';
+      if (regularElement) regularElement.textContent = 'Restored for you.';
+    } else {
+      banner.setAttribute('data-mode', 'brand-new');
+      if (boldElement) boldElement.textContent = 'Factory Fresh.';
+      if (regularElement) regularElement.textContent = 'Just for you.';
+    }
+  });
+</script>
+

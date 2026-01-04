@@ -1,0 +1,219 @@
+{%- comment -%}
+  LoopTech Product Info
+  
+  Product title, spec summary, rating, price block, action button, Klarna financing
+  Phase 2B: Variant selectors moved to spec modules below
+  
+  Parameters:
+    - product: The product object
+    - current_variant: The currently selected variant
+    - show_rating: Boolean to show star rating
+    - show_klarna: Boolean to show Klarna financing info
+    - section_id: The section ID for unique identifiers
+    - use_scroll_cta: Boolean to show scroll CTA instead of Add to Cart
+{%- endcomment -%}
+
+{%- liquid
+  assign product_form_id = 'looptech-product-form-' | append: section_id
+  
+  # Get lowest price for "From" display
+  assign lowest_price = product.price_min
+  
+  # Determine if we show scroll CTA or regular Add to Cart
+  assign show_scroll_cta = false
+  if use_scroll_cta == true
+    unless product.has_only_default_variant
+      assign show_scroll_cta = true
+    endunless
+  endif
+-%}
+
+<div 
+  class="looptech-info" 
+  data-product-info-section="{{ section_id }}"
+  data-product-id="{{ product.id }}"
+>
+  
+  {%- comment -%} PRODUCT TITLE {%- endcomment -%}
+  <h1 class="looptech-info__title" data-product-title>{{ product.title }}</h1>
+
+  {%- comment -%} SPEC SUMMARY (builds as user selects options) {%- endcomment -%}
+  {%- if show_scroll_cta -%}
+    <div class="looptech-info__spec-summary" data-spec-summary data-state="empty">
+      {%- comment -%} Will be populated by JS: "256GB • Black • eSIM" {%- endcomment -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} STAR RATING {%- endcomment -%}
+  {%- if show_rating -%}
+    <div class="looptech-info__rating">
+      <div class="looptech-info__stars" aria-label="4.7 out of 5 stars">
+        {%- for i in (1..5) -%}
+          {%- if i <= 4 -%}
+            <svg class="looptech-info__star looptech-info__star--filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+            </svg>
+          {%- elsif i == 5 -%}
+            <svg class="looptech-info__star looptech-info__star--partial" width="16" height="16" viewBox="0 0 24 24">
+              <defs>
+                <linearGradient id="star-partial-{{ section_id }}">
+                  <stop offset="70%" stop-color="currentColor"/>
+                  <stop offset="70%" stop-color="#e5e7eb"/>
+                </linearGradient>
+              </defs>
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="url(#star-partial-{{ section_id }})"></polygon>
+            </svg>
+          {%- else -%}
+            <svg class="looptech-info__star looptech-info__star--empty" width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+            </svg>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <span class="looptech-info__rating-score">4.7/5</span>
+      <a href="#reviews" class="looptech-info__rating-count">(4,974 reviews)</a>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} PRICE BLOCK {%- endcomment -%}
+  <div 
+    class="looptech-info__price-block" 
+    data-price-block
+    data-state="{% if show_scroll_cta %}pending{% else %}ready{% endif %}"
+    data-lowest-price="{{ lowest_price }}"
+  >
+    <div class="looptech-info__price-row">
+      <span class="looptech-info__price" data-product-price>
+        {%- if show_scroll_cta -%}
+          From {{ lowest_price | money }}
+        {%- else -%}
+          {{ current_variant.price | money }}
+        {%- endif -%}
+      </span>
+      <span class="looptech-info__price-label" data-price-label>before trade-in</span>
+    </div>
+    {%- if current_variant.compare_at_price > current_variant.price and show_scroll_cta == false -%}
+      <span class="looptech-info__compare-price" data-compare-price>
+        {{ current_variant.compare_at_price | money }}
+      </span>
+    {%- else -%}
+      <span class="looptech-info__compare-price" data-compare-price style="display: none;"></span>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} ACTIONS {%- endcomment -%}
+  <div class="looptech-info__actions">
+    
+    {%- if show_scroll_cta -%}
+      {%- comment -%} STATEFUL BUTTON - Scroll CTA → Add to Cart {%- endcomment -%}
+      <product-form class="looptech-info__form" data-header-form>
+        {%- form 'product', product, id: product_form_id, class: 'looptech-info__form-inner', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-header-variant-id>
+          
+          <div class="looptech-info__buttons">
+            <button
+              type="button"
+              class="looptech-info__header-button"
+              data-header-button
+              data-state="idle"
+            >
+              <span class="looptech-info__button-text" data-button-text>Select specs below</span>
+              <svg class="looptech-info__button-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+              </svg>
+              <svg class="looptech-info__button-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-linecap="round"/>
+              </svg>
+            </button>
+
+            <button type="button" class="looptech-info__wishlist" aria-label="Add to wishlist">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+        {%- endform -%}
+      </product-form>
+
+      {%- comment -%} HIDDEN VARIANT INPUTS - For Shopify compatibility {%- endcomment -%}
+      <div class="visually-hidden" data-hidden-variant-input>
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            {%- for value in option.values -%}
+              <input
+                type="radio"
+                name="hidden-option-{{ option.name | handle }}"
+                value="{{ value | escape }}"
+                data-option-name="{{ option.name }}"
+                data-option-index="{{ forloop.parentloop.index0 }}"
+                class="visually-hidden"
+              >
+            {%- endfor -%}
+          {%- endfor -%}
+        {%- endunless -%}
+      </div>
+      
+    {%- else -%}
+      {%- comment -%} REGULAR ADD TO CART - For products without variants {%- endcomment -%}
+      <product-form class="looptech-info__form">
+        {%- form 'product', product, id: product_form_id, class: 'looptech-info__form-inner', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+          
+          <div class="looptech-info__buttons">
+            <button
+              type="submit"
+              name="add"
+              class="looptech-info__add-button"
+              data-add-to-cart
+              data-state="ready"
+              {% if current_variant.available == false %}disabled{% endif %}
+            >
+              <span class="looptech-info__add-text" data-add-text>
+                {%- if current_variant.available -%}
+                  Add To Cart
+                {%- else -%}
+                  Sold Out
+                {%- endif -%}
+              </span>
+              <span class="looptech-info__add-loading hidden" data-loading-spinner>
+                <svg class="looptech-info__spinner" viewBox="0 0 24 24" width="20" height="20">
+                  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </button>
+
+            <button type="button" class="looptech-info__wishlist" aria-label="Add to wishlist">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+        {%- endform -%}
+      </product-form>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} KLARNA FINANCING {%- endcomment -%}
+  {%- if show_klarna -%}
+    {%- liquid
+      if show_scroll_cta
+        assign klarna_amount = lowest_price | divided_by: 3
+      else
+        assign klarna_amount = current_variant.price | divided_by: 3
+      endif
+    -%}
+    <div class="looptech-info__klarna" data-klarna-block>
+      <span class="looptech-info__klarna-logo">
+        <svg width="40" height="16" viewBox="0 0 90 36" fill="#FFB3C7">
+          <path d="M10.7 0H0v35.3h10.7V0zM24 0c0 6.2-2.5 12-7 16.3l-2.7 2.5 11.4 16.5h13.5L26.5 18.8C30.3 14.2 32.5 8.4 32.5 2V0H24zM42.3 35.3h10.4V0H42.3v35.3zM89.3 24.8c0-5.8-4.3-10.5-10-10.5-5.8 0-10 4.7-10 10.5 0 5.9 4.2 10.5 10 10.5 5.7 0 10-4.6 10-10.5zM59.3 14.3v21h9.5V23.8c0-4.2 3-6.7 7.2-6.7h2.5v-9h-1.7c-3.3 0-6.3 1.5-8 4v-3.8h-9.5zM69.3 0H59v7.5h10.3V0z"/>
+        </svg>
+      </span>
+      <span class="looptech-info__klarna-text" data-klarna-text>
+        3 payments of <strong data-klarna-amount>{{ klarna_amount | money }}</strong> at 0% interest with Klarna
+      </span>
+      <a href="#" class="looptech-info__klarna-link">Learn more</a>
+    </div>
+  {%- endif -%}
+
+</div>

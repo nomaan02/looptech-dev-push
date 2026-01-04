@@ -1,0 +1,156 @@
+{%- comment -%}
+  LoopTech Spec Module
+  
+  Wrapper for a single spec selection module with lifestyle image and options.
+  
+  Parameters:
+    - product: The product object
+    - option: The product option object (from product.options_with_values)
+    - option_index: Index of this option (0-based)
+    - display_format: "card_grid" or "list_rows"
+    - heading: Display heading text
+    - image: Image object for the lifestyle image
+    - image_url: Alternative image URL if no image object
+    - module_index: Index for scroll targeting
+    - section_id: Parent section ID
+  
+  Image Priority Order:
+    1. product.metafields.looptech.spec_image_X  → Uploaded directly in admin
+    2. image parameter passed from parent        → From spec_config JSON or direct
+    3. image_url parameter                       → External URL
+    4. Auto-fallback                             → product.media[module_index + 1]
+{%- endcomment -%}
+
+{%- liquid
+  # Determine module image with priority order
+  assign module_image = nil
+  assign module_image_url = nil
+  
+  # Priority 1: Dedicated image metafield (looptech.spec_image_1, _2, _3, etc.)
+  assign custom_image = nil
+  case module_index
+    when 0
+      assign custom_image = product.metafields.looptech.spec_image_1
+    when 1
+      assign custom_image = product.metafields.looptech.spec_image_2
+    when 2
+      assign custom_image = product.metafields.looptech.spec_image_3
+    when 3
+      assign custom_image = product.metafields.looptech.spec_image_4
+  endcase
+  
+  if custom_image != blank and custom_image.value != blank
+    # Metafield file type returns a MediaImage object
+    assign module_image = custom_image.value
+  elsif image != blank
+    # Priority 2: Image object passed from parent (spec_config or direct)
+    assign module_image = image
+  elsif image_url != blank
+    # Priority 3: URL from spec_config JSON or direct parameter
+    assign module_image_url = image_url
+  else
+    # Priority 4: Auto-fallback to product media
+    assign fallback_position = module_index | plus: 1
+    if product.media[fallback_position] != blank
+      assign module_image = product.media[fallback_position]
+    endif
+  endif
+  
+  # Default heading if not provided
+  if heading == blank
+    assign heading = 'Select your ' | append: option.name
+  endif
+-%}
+
+<div 
+  class="looptech-spec-module"
+  data-spec-module
+  data-module-index="{{ module_index }}"
+  data-option-name="{{ option.name }}"
+  data-option-index="{{ option_index }}"
+  data-completed="false"
+  id="spec-module-{{ option.name | handle }}"
+>
+  <div class="page-width">
+    <div class="looptech-spec-module__inner">
+      
+      {%- comment -%} LIFESTYLE IMAGE (Left Column) {%- endcomment -%}
+      <div class="looptech-spec-module__image">
+        {%- if module_image != blank -%}
+          {%- if module_image.media_type == 'image' -%}
+            {%- comment -%} Product media image {%- endcomment -%}
+            <img
+              src="{{ module_image | image_url: width: 800 }}"
+              alt="{{ module_image.alt | default: product.title }}"
+              width="800"
+              height="{{ 800 | divided_by: module_image.aspect_ratio | round }}"
+              loading="lazy"
+              class="looptech-spec-module__img"
+            >
+          {%- else -%}
+            {%- comment -%} Metafield file image or other image object {%- endcomment -%}
+            <img
+              src="{{ module_image | image_url: width: 800 }}"
+              alt="{{ module_image.alt | default: product.title }}"
+              width="800"
+              height="800"
+              loading="lazy"
+              class="looptech-spec-module__img"
+            >
+          {%- endif -%}
+        {%- elsif module_image_url != blank -%}
+          {%- comment -%} External URL image {%- endcomment -%}
+          <img
+            src="{{ module_image_url }}"
+            alt="{{ product.title }} - {{ heading }}"
+            width="800"
+            height="800"
+            loading="lazy"
+            class="looptech-spec-module__img"
+          >
+        {%- else -%}
+          {%- comment -%} No image - show placeholder {%- endcomment -%}
+          <div class="looptech-spec-module__placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} OPTIONS CONTENT (Right Column) {%- endcomment -%}
+      <div class="looptech-spec-module__content">
+        <h2 class="looptech-spec-module__heading">{{ heading }}</h2>
+        
+        {%- comment -%} Completion indicator {%- endcomment -%}
+        <div class="looptech-spec-module__complete">
+          <svg class="looptech-spec-module__complete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Selected</span>
+        </div>
+
+        {%- comment -%} Render options based on display format {%- endcomment -%}
+        {%- if display_format == 'card_grid' -%}
+          {% render 'looptech-spec-card-grid',
+            product: product,
+            option: option,
+            option_index: option_index,
+            section_id: section_id
+          %}
+        {%- else -%}
+          {% render 'looptech-spec-list-rows',
+            product: product,
+            option: option,
+            option_index: option_index,
+            section_id: section_id
+          %}
+        {%- endif -%}
+        
+      </div>
+
+    </div>
+  </div>
+</div>

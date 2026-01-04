@@ -1,0 +1,85 @@
+{%- comment -%}
+  LoopTech Spec List Rows
+  
+  Vertical stack of full-width rows, typically used for storage/SIM options.
+  Each row shows: radio indicator + name + optional subtitle + price
+  
+  Parameters:
+    - product: The product object
+    - option: The product option object
+    - option_index: Index of this option (0-based)
+    - section_id: Parent section ID
+{%- endcomment -%}
+
+<div class="looptech-spec-list" data-option-list data-option-index="{{ option_index }}">
+  {%- for value in option.values -%}
+    {%- liquid
+      # Find variant price for this option value
+      assign display_price = nil
+      assign is_sold_out = true
+      assign subtitle = nil
+      
+      for variant in product.variants
+        if variant.options[option_index] == value
+          if display_price == nil
+            assign display_price = variant.price
+          endif
+          if variant.available
+            assign is_sold_out = false
+          endif
+        endif
+      endfor
+      
+      # Generate subtitle for SIM type options
+      assign value_downcase = value | downcase
+      if value_downcase contains 'esim'
+        if value_downcase == 'esim'
+          assign subtitle = '2 virtual SIM slots (no physical SIM slot)'
+        elsif value_downcase contains 'physical'
+          assign subtitle = '1 physical SIM + 1 virtual SIM slot'
+        endif
+      endif
+      
+      # Format storage values with friendly labels
+      assign display_name = value
+      if value contains 'GB' or value contains 'TB'
+        # Already formatted
+      endif
+    -%}
+    
+    <label 
+      class="looptech-spec-row{% if is_sold_out %} looptech-spec-row--sold-out{% endif %}"
+      data-spec-option
+      data-option-value="{{ value | escape }}"
+      data-option-index="{{ option_index }}"
+      data-sold-out="{{ is_sold_out }}"
+    >
+      <input
+        type="radio"
+        name="spec-option-{{ option.name | handle }}"
+        value="{{ value | escape }}"
+        data-option-name="{{ option.name }}"
+        data-option-index="{{ option_index }}"
+        {% if is_sold_out %}disabled{% endif %}
+      >
+      
+      <span class="looptech-spec-row__radio"></span>
+      
+      <span class="looptech-spec-row__text">
+        <span class="looptech-spec-row__name">{{ display_name }}</span>
+        {%- if subtitle != blank -%}
+          <span class="looptech-spec-row__subtitle">{{ subtitle }}</span>
+        {%- endif -%}
+      </span>
+      
+      {%- if is_sold_out -%}
+        <span class="looptech-spec-row__sold-out">Sold out</span>
+      {%- else -%}
+        <span class="looptech-spec-row__price" data-option-price>
+          {{ display_price | money }}
+        </span>
+      {%- endif -%}
+    </label>
+  {%- endfor -%}
+</div>
+

@@ -1,0 +1,72 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "looptech-product-main",
+      "settings": {
+        "enable_sticky_info": true,
+        "media_size": "medium",
+        "gallery_layout": "vertical_thumbnails",
+        "image_zoom": "lightbox",
+        "show_color_swatches": true,
+        "show_rating": true,
+        "show_klarna": true,
+        "show_info_cards": true,
+        "show_condition_banner": true,
+        "show_trust_badges": true,
+        "new_banner_bold": "Factory Fresh.",
+        "new_banner_regular": "Just for you.",
+        "renewed_banner_bold": "Just Like New.",
+        "renewed_banner_regular": "Restored for you.",
+        "delivery_title": "Free Delivery, arriving 4 Dec - 5 Dec",
+        "delivery_subtitle": "Express Delivery, arriving 3 Dec - 4 Dec",
+        "returns_title": "Free Returns, until Jan 31",
+        "returns_subtitle": "30-days to change your mind",
+        "guarantee_title": "Looptech Guaranteed",
+        "guarantee_subtitle": "We don't mess around. 12 month warranty included.",
+        "badge_1_text": "30-Day free hassle-free returns",
+        "badge_2_text": "LoopPass device identity included",
+        "badge_3_text": "Looptech Guaranteed 12 month warranty included",
+        "badge_4_text": "Free delivery on orders over £150",
+        "badge_5_text": "Lifetime customer support guaranteed",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "disabled": true,
+      "settings": {
+        "title": "You May Also Like",
+        "heading_size": "h2",
+        "head_align": "left",
+        "heading_color_scheme": "",
+        "head_space": true,
+        "description": "",
+        "description_style": "body",
+        "products_to_show": 5,
+        "columns_desktop": 4,
+        "show__slider": true,
+        "arrow_position": "top",
+        "color_scheme": "",
+        "card_style": "standard",
+        "show_count_timer": true,
+        "columns_mobile": "2",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main",
+    "related-products"
+  ]
+}
