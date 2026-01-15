@@ -22,6 +22,7 @@
       this.variantMap = new Map();
       this.productData = null;
       this.isScrolling = false;
+      this.suppressAutoScroll = false;
       
       // DOM Elements
       this.elements = {
@@ -84,7 +85,56 @@
       // Auto-select single-value options
       this.autoSelectSingleOptions();
       
+      // Initialize color carousel if present
+      this.initColorCarousel();
+      
+      // Restore scroll position if returning from a color switch
+      this.restoreScrollPosition();
+      
       console.log('[LoopTech Spec Modules] Initialized with', this.requiredOptions.length, 'options');
+    }
+    
+    /**
+     * Restore scroll position after page reload from color switch
+     */
+    restoreScrollPosition() {
+      const savedPosition = sessionStorage.getItem('looptech_scroll_position');
+      const savedModule = sessionStorage.getItem('looptech_scroll_module');
+      const isColorSwitch = sessionStorage.getItem('looptech_color_switch') === 'true';
+      
+      // If this is a color switch, suppress any auto-scroll from showSummaryCard
+      if (isColorSwitch) {
+        this.suppressAutoScroll = true;
+        // Clear the color switch flag now that we've noted it
+        sessionStorage.removeItem('looptech_color_switch');
+        console.log('[LoopTech] Color switch detected, suppressing auto-scroll');
+      }
+      
+      if (savedPosition) {
+        // Clear saved data
+        sessionStorage.removeItem('looptech_scroll_position');
+        sessionStorage.removeItem('looptech_scroll_module');
+        
+        // Use requestAnimationFrame to ensure DOM is fully ready
+        requestAnimationFrame(() => {
+          // Try to scroll to the color module first
+          if (savedModule) {
+            const targetModule = document.getElementById(savedModule);
+            if (targetModule) {
+              const headerOffset = 100;
+              const rect = targetModule.getBoundingClientRect();
+              const absoluteTop = rect.top + window.pageYOffset - headerOffset;
+              window.scrollTo({ top: absoluteTop, behavior: 'instant' });
+              console.log('[LoopTech] Restored scroll to module:', savedModule);
+              return;
+            }
+          }
+          
+          // Fallback to exact saved position
+          window.scrollTo({ top: parseInt(savedPosition, 10), behavior: 'instant' });
+          console.log('[LoopTech] Restored scroll position:', savedPosition);
+        });
+      }
     }
     
     /**
@@ -177,6 +227,40 @@
       const optionInputs = this.container.querySelectorAll('[data-spec-option] input');
       optionInputs.forEach(input => {
         input.addEventListener('change', this.handleOptionSelect);
+      });
+      
+      // Color card click listeners - full page reload with scroll preservation
+      const colorCards = this.container.querySelectorAll('[data-is-color="true"] .looptech-spec-card');
+      colorCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+          // Skip if sold out
+          if (card.classList.contains('looptech-spec-card--sold-out')) return;
+          
+          // Skip if already selected
+          if (card.classList.contains('looptech-spec-card--selected')) {
+            // Just update carousel for already selected card
+            this.updateCarouselImages(card);
+            return;
+          }
+          
+          const variantUrl = card.dataset.variantUrl;
+          if (!variantUrl) return;
+          
+          // Prevent default navigation
+          e.preventDefault();
+          
+          // Save scroll position to sessionStorage for restoration after reload
+          sessionStorage.setItem('looptech_scroll_position', window.scrollY.toString());
+          sessionStorage.setItem('looptech_scroll_module', 'spec-module-color');
+          
+          // Set flag to indicate this is a color switch (only pre-select color, not other options)
+          sessionStorage.setItem('looptech_color_switch', 'true');
+          
+          console.log('[LoopTech] Navigating to variant (color switch):', variantUrl);
+          
+          // Navigate to variant URL (full page reload)
+          window.location.href = variantUrl;
+        });
       });
       
       // Scroll CTA button (legacy)
@@ -283,9 +367,21 @@
       const variant = this.productData.variants.find(v => v.id === parseInt(variantId, 10));
       if (!variant) return;
       
+      // Check if this is a color switch navigation
+      // If so, only pre-select the Color option, not other options like Storage
+      const isColorSwitch = sessionStorage.getItem('looptech_color_switch') === 'true';
+      
       // Pre-select options based on variant
       variant.options.forEach((value, index) => {
         const optionName = this.productData.options[index];
+        const optionNameLower = optionName.toLowerCase();
+        
+        // If this is a color switch, only pre-select Color option
+        if (isColorSwitch && optionNameLower !== 'color' && optionNameLower !== 'colour') {
+          console.log('[LoopTech] Skipping pre-selection of', optionName, '(color switch mode)');
+          return; // Skip non-color options
+        }
+        
         this.selections.set(optionName, value);
         
         // Check the corresponding radio input
@@ -819,6 +915,13 @@
       if (this.elements.summaryCard) {
         this.elements.summaryCard.classList.add('is-visible');
         
+        // Skip auto-scroll if we're restoring from a color switch
+        if (this.suppressAutoScroll) {
+          console.log('[LoopTech] Skipping auto-scroll to summary (color switch restore)');
+          this.suppressAutoScroll = false;
+          return;
+        }
+        
         // Optional: smooth scroll to summary card after fade-in
         setTimeout(() => {
           this.elements.summaryCard.scrollIntoView({ 
@@ -923,6 +1026,220 @@
     formatMoney(cents) {
       return '£' + (cents / 100).toFixed(2);
     }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // COLOR CAROUSEL FUNCTIONALITY
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    /**
+     * Initialize color carousel for a spec module
+     */
+    initColorCarousel() {
+      const colorCarousel = this.container.querySelector('[data-color-carousel]');
+      if (!colorCarousel) return;
+      
+      this.colorCarousel = {
+        container: colorCarousel,
+        track: colorCarousel.querySelector('[data-carousel-track]'),
+        prevBtn: colorCarousel.querySelector('.looptech-color-carousel__nav--prev'),
+        nextBtn: colorCarousel.querySelector('.looptech-color-carousel__nav--next'),
+        currentIndex: 0,
+        thumbsPerView: 4,
+        images: []
+      };
+      
+      // Attach carousel nav listeners
+      if (this.colorCarousel.prevBtn) {
+        this.colorCarousel.prevBtn.addEventListener('click', () => this.slideCarousel(-1));
+      }
+      if (this.colorCarousel.nextBtn) {
+        this.colorCarousel.nextBtn.addEventListener('click', () => this.slideCarousel(1));
+      }
+      
+      // Calculate thumbs per view based on container width
+      this.calculateThumbsPerView();
+      window.addEventListener('resize', () => this.calculateThumbsPerView());
+      
+      // Load initial carousel images from selected color
+      this.loadInitialCarouselImages();
+    }
+    
+    /**
+     * Calculate how many thumbnails fit in view
+     */
+    calculateThumbsPerView() {
+      if (!this.colorCarousel?.track) return;
+      
+      const containerWidth = this.colorCarousel.track.parentElement.offsetWidth;
+      const thumbWidth = 72 + 10; // thumb width + gap
+      this.colorCarousel.thumbsPerView = Math.floor(containerWidth / thumbWidth) || 3;
+    }
+    
+    /**
+     * Load initial carousel images from the selected color card
+     */
+    loadInitialCarouselImages() {
+      // Debug: Log all color cards and their image counts
+      const allColorCards = this.container.querySelectorAll('.looptech-spec-card[data-variant-images]');
+      console.log('[LoopTech Carousel] Found', allColorCards.length, 'color cards');
+      allColorCards.forEach(card => {
+        const color = card.dataset.optionValue;
+        const imageCount = card.dataset.imageCount;
+        const colorSearch = card.dataset.colorSearch;
+        console.log(`[LoopTech Carousel] ${color}: ${imageCount} images (searched for: "${colorSearch}")`);
+      });
+      
+      const selectedCard = this.container.querySelector('.looptech-spec-card--selected[data-variant-images]');
+      if (selectedCard) {
+        console.log('[LoopTech Carousel] Loading images for selected card:', selectedCard.dataset.optionValue);
+        this.updateCarouselImages(selectedCard);
+      } else {
+        // Try first available color card
+        const firstCard = this.container.querySelector('.looptech-spec-card[data-variant-images]:not(.looptech-spec-card--sold-out)');
+        if (firstCard) {
+          console.log('[LoopTech Carousel] No selected card, loading first available:', firstCard.dataset.optionValue);
+          this.updateCarouselImages(firstCard);
+        }
+      }
+    }
+    
+    /**
+     * Update carousel with images from a color card
+     */
+    updateCarouselImages(colorCard) {
+      if (!this.colorCarousel?.track) return;
+      
+      try {
+        const rawData = colorCard.dataset.variantImages || '[]';
+        console.log('[LoopTech Carousel] Raw image data for', colorCard.dataset.optionValue + ':', rawData);
+        
+        const imagesData = JSON.parse(rawData);
+        console.log('[LoopTech Carousel] Parsed', imagesData.length, 'images');
+        
+        this.colorCarousel.images = imagesData;
+        this.colorCarousel.currentIndex = 0;
+        
+        // Clear track
+        this.colorCarousel.track.innerHTML = '';
+        
+        if (imagesData.length === 0) {
+          // Show empty state
+          this.colorCarousel.track.innerHTML = `
+            <div class="looptech-color-carousel__empty">
+              No images available for this color
+            </div>
+          `;
+          this.updateCarouselNav();
+          return;
+        }
+        
+        // Create thumbnails
+        imagesData.forEach((img, index) => {
+          const thumb = document.createElement('button');
+          thumb.type = 'button';
+          thumb.className = 'looptech-color-carousel__thumb' + (index === 0 ? ' looptech-color-carousel__thumb--active' : '');
+          thumb.setAttribute('aria-label', `View image ${index + 1}`);
+          thumb.dataset.index = index;
+          thumb.dataset.fullImage = img.full;
+          thumb.dataset.mediaId = img.id;
+          
+          thumb.innerHTML = `<img src="${img.thumb}" alt="Product image ${index + 1}" loading="lazy">`;
+          
+          thumb.addEventListener('click', () => this.handleThumbnailClick(thumb, index));
+          
+          this.colorCarousel.track.appendChild(thumb);
+        });
+        
+        this.updateCarouselNav();
+        
+      } catch (e) {
+        console.error('[LoopTech Spec Modules] Error parsing variant images:', e);
+      }
+    }
+    
+    /**
+     * Handle thumbnail click
+     */
+    handleThumbnailClick(thumb, index) {
+      // Update active state
+      const allThumbs = this.colorCarousel.track.querySelectorAll('.looptech-color-carousel__thumb');
+      allThumbs.forEach(t => t.classList.remove('looptech-color-carousel__thumb--active'));
+      thumb.classList.add('looptech-color-carousel__thumb--active');
+      
+      // Update main gallery if present
+      const mediaId = thumb.dataset.mediaId;
+      if (mediaId) {
+        this.updateMainGallery(mediaId);
+      }
+    }
+    
+    /**
+     * Update main product gallery to show specific media
+     */
+    updateMainGallery(mediaId) {
+      // Find gallery and trigger media change
+      const gallery = document.querySelector('[data-gallery-section]');
+      if (!gallery) return;
+      
+      // Update thumbnails
+      const thumbnails = gallery.querySelectorAll('.looptech-gallery__thumbnail');
+      const slides = gallery.querySelectorAll('.looptech-gallery__slide');
+      
+      thumbnails.forEach(thumb => {
+        if (thumb.dataset.mediaId === mediaId) {
+          thumb.classList.add('looptech-gallery__thumbnail--active');
+        } else {
+          thumb.classList.remove('looptech-gallery__thumbnail--active');
+        }
+      });
+      
+      slides.forEach(slide => {
+        if (slide.dataset.mediaId === mediaId) {
+          slide.classList.add('looptech-gallery__slide--active');
+          slide.removeAttribute('hidden');
+        } else {
+          slide.classList.remove('looptech-gallery__slide--active');
+          slide.setAttribute('hidden', '');
+        }
+      });
+    }
+    
+    /**
+     * Slide carousel left or right
+     */
+    slideCarousel(direction) {
+      if (!this.colorCarousel?.track) return;
+      
+      const maxIndex = Math.max(0, this.colorCarousel.images.length - this.colorCarousel.thumbsPerView);
+      const newIndex = Math.max(0, Math.min(this.colorCarousel.currentIndex + direction, maxIndex));
+      
+      if (newIndex !== this.colorCarousel.currentIndex) {
+        this.colorCarousel.currentIndex = newIndex;
+        
+        const thumbWidth = 72 + 10; // thumb + gap
+        const offset = newIndex * thumbWidth;
+        this.colorCarousel.track.style.transform = `translateX(-${offset}px)`;
+        
+        this.updateCarouselNav();
+      }
+    }
+    
+    /**
+     * Update carousel navigation button states
+     */
+    updateCarouselNav() {
+      if (!this.colorCarousel) return;
+      
+      const maxIndex = Math.max(0, this.colorCarousel.images.length - this.colorCarousel.thumbsPerView);
+      
+      if (this.colorCarousel.prevBtn) {
+        this.colorCarousel.prevBtn.disabled = this.colorCarousel.currentIndex <= 0;
+      }
+      if (this.colorCarousel.nextBtn) {
+        this.colorCarousel.nextBtn.disabled = this.colorCarousel.currentIndex >= maxIndex;
+      }
+    }
+    
   }
   
   /**

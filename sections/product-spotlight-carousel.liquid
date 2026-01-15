@@ -1294,7 +1294,17 @@
     attachEventListeners();
 
     // Load first tab's products on page load
+    // Call immediately and also after a short delay as fallback
     initCarousel();
+    
+    // Fallback: if products still show loading after 500ms, retry
+    setTimeout(() => {
+      const loadingElement = track.querySelector('.carousel-loading');
+      if (loadingElement) {
+        // Products haven't loaded yet, retry initialization
+        initCarousel();
+      }
+    }, 500);
 
     // recalculate on window resize with debounce
     let resizeTimer;
@@ -1310,15 +1320,37 @@
 
   /**
    * Load products for the first (active) tab on page load
+   * Uses requestAnimationFrame to ensure DOM is fully rendered
    */
   function initCarousel() {
-    const firstTab = section.querySelector('.brand-tab-pill.active');
-    if (firstTab) {
-      const collectionHandle = getCollectionForMode(firstTab);
-      if (collectionHandle) {
-        loadCollectionProducts(collectionHandle);
+    // Use requestAnimationFrame to ensure DOM is fully painted
+    requestAnimationFrame(() => {
+      const firstTab = section.querySelector('.brand-tab-pill.active');
+      if (firstTab) {
+        const collectionHandle = getCollectionForMode(firstTab);
+        if (collectionHandle) {
+          loadCollectionProducts(collectionHandle);
+        } else {
+          // Fallback: try getting collection directly from data attribute
+          const fallbackHandle = firstTab.dataset.collection;
+          if (fallbackHandle) {
+            loadCollectionProducts(fallbackHandle);
+          }
+        }
+      } else {
+        // If no active tab found, activate the first tab and load its products
+        const allTabs = section.querySelectorAll('.brand-tab-pill');
+        if (allTabs.length > 0) {
+          const firstAvailableTab = allTabs[0];
+          firstAvailableTab.classList.add('active');
+          firstAvailableTab.setAttribute('aria-selected', 'true');
+          const collectionHandle = getCollectionForMode(firstAvailableTab) || firstAvailableTab.dataset.collection;
+          if (collectionHandle) {
+            loadCollectionProducts(collectionHandle);
+          }
+        }
       }
-    }
+    });
   }
 
   /**

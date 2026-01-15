@@ -3,6 +3,7 @@
   
   2-column grid of option cards, typically used for colour selection.
   Each card shows: colour swatch + name + variant price
+  Includes a thumbnail carousel below showing selected variant's images.
   
   Parameters:
     - product: The product object
@@ -11,7 +12,27 @@
     - section_id: Parent section ID
 {%- endcomment -%}
 
-<div class="looptech-spec-card-grid" data-option-grid data-option-index="{{ option_index }}">
+{%- liquid
+  # Build variant data for each color option
+  # We'll collect images attached to variants of each color
+  assign color_variant_data = ''
+  assign first_available_color = nil
+  assign selected_color = nil
+  
+  # Check if this is a color option
+  assign option_name_lower = option.name | downcase
+  assign is_color_option = false
+  if option_name_lower == 'color' or option_name_lower == 'colour'
+    assign is_color_option = true
+  endif
+  
+  # Get currently selected variant's color if available
+  if product.selected_or_first_available_variant
+    assign selected_color = product.selected_or_first_available_variant.options[option_index]
+  endif
+-%}
+
+<div class="looptech-spec-card-grid" data-option-grid data-option-index="{{ option_index }}" data-is-color="{{ is_color_option }}">
   {%- for value in option.values -%}
     {%- liquid
       # Determine colour swatch
@@ -62,30 +83,113 @@
           assign swatch_hex = '#9ca3af'
       endcase
       
-      # Find variant price for this option value
-      # We need to find a variant that has this option value
-      # and show its price (will be updated by JS based on other selections)
+      # Find variant info for this option value
       assign display_price = nil
       assign is_sold_out = true
+      assign first_variant_id = nil
+      assign variant_url = nil
+      assign variant_images_json = ''
+      assign variant_image_count = 0
+      assign collected_media_ids = ''
       
       for variant in product.variants
         if variant.options[option_index] == value
           if display_price == nil
             assign display_price = variant.price
+            assign first_variant_id = variant.id
+            assign variant_url = product.url | append: '?variant=' | append: variant.id
           endif
           if variant.available
             assign is_sold_out = false
           endif
+          
+          # Collect images attached to this variant (avoid duplicates)
+          if variant.featured_media != blank
+            assign media_id_check = variant.featured_media.id | append: ','
+            unless collected_media_ids contains media_id_check
+              assign collected_media_ids = collected_media_ids | append: media_id_check
+              if variant_image_count > 0
+                assign variant_images_json = variant_images_json | append: ','
+              endif
+              assign img_url = variant.featured_media | image_url: width: 200
+              assign img_url_full = variant.featured_media | image_url: width: 800
+              assign variant_images_json = variant_images_json | append: '{"thumb":"' | append: img_url | append: '","full":"' | append: img_url_full | append: '","id":"' | append: variant.featured_media.id | append: '"}'
+              assign variant_image_count = variant_image_count | plus: 1
+            endunless
+          endif
         endif
       endfor
+      
+      # Also try to find product images that match this color by alt text
+      # We check for both the full color name and simplified versions
+      assign color_lower = value | downcase
+      assign color_simplified = color_lower | remove: ' titanium' | remove: ' gold' | remove: ' silver'
+      
+      for media in product.media
+        if media.media_type == 'image'
+          assign media_id_check = media.id | append: ','
+          unless collected_media_ids contains media_id_check
+            assign alt_lower = media.alt | downcase | strip
+            assign alt_match = false
+            
+            # Check for full color name match (e.g., "black titanium")
+            if alt_lower contains color_lower
+              assign alt_match = true
+            endif
+            
+            # Also check for simplified match at start of alt text
+            # This handles cases like "Black Titanium front" matching "Black Titanium"
+            assign alt_words = alt_lower | split: ' '
+            assign first_two_words = ''
+            if alt_words.size >= 2
+              assign first_two_words = alt_words[0] | append: ' ' | append: alt_words[1]
+            elsif alt_words.size == 1
+              assign first_two_words = alt_words[0]
+            endif
+            
+            if first_two_words == color_lower
+              assign alt_match = true
+            endif
+            
+            if alt_match
+              assign collected_media_ids = collected_media_ids | append: media_id_check
+              if variant_image_count > 0
+                assign variant_images_json = variant_images_json | append: ','
+              endif
+              assign img_url = media | image_url: width: 200
+              assign img_url_full = media | image_url: width: 800
+              assign variant_images_json = variant_images_json | append: '{"thumb":"' | append: img_url | append: '","full":"' | append: img_url_full | append: '","id":"' | append: media.id | append: '"}'
+              assign variant_image_count = variant_image_count | plus: 1
+            endif
+          endunless
+        endif
+      endfor
+      
+      # Track first available color for default selection
+      if first_available_color == nil and is_sold_out == false
+        assign first_available_color = value
+      endif
+      
+      # Determine if this card should be selected
+      assign is_selected = false
+      if selected_color == value
+        assign is_selected = true
+      elsif selected_color == blank and first_available_color == value
+        assign is_selected = true
+      endif
     -%}
     
     <label 
-      class="looptech-spec-card{% if is_sold_out %} looptech-spec-card--sold-out{% endif %}"
+      class="looptech-spec-card{% if is_sold_out %} looptech-spec-card--sold-out{% endif %}{% if is_selected %} looptech-spec-card--selected{% endif %}"
       data-spec-option
       data-option-value="{{ value | escape }}"
       data-option-index="{{ option_index }}"
       data-sold-out="{{ is_sold_out }}"
+      data-variant-id="{{ first_variant_id }}"
+      data-variant-url="{{ variant_url }}"
+      data-variant-images='[{{ variant_images_json }}]'
+      data-image-count="{{ variant_image_count }}"
+      data-color-search="{{ color_lower }}"
     >
       <input
         type="radio"
@@ -94,6 +198,7 @@
         data-option-name="{{ option.name }}"
         data-option-index="{{ option_index }}"
         {% if is_sold_out %}disabled{% endif %}
+        {% if is_selected %}checked{% endif %}
       >
       
       <span class="looptech-spec-card__swatch" style="background-color: {{ swatch_hex }};"></span>
@@ -112,3 +217,37 @@
   {%- endfor -%}
 </div>
 
+{%- comment -%} VARIANT IMAGE CAROUSEL {%- endcomment -%}
+{%- if is_color_option -%}
+  <div class="looptech-color-carousel" data-color-carousel data-section-id="{{ section_id }}">
+    <div class="looptech-color-carousel__wrapper">
+      {%- comment -%} Left Arrow {%- endcomment -%}
+      <button type="button" class="looptech-color-carousel__nav looptech-color-carousel__nav--prev" aria-label="Previous image" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      
+      {%- comment -%} Thumbnail Track {%- endcomment -%}
+      <div class="looptech-color-carousel__track-container">
+        <div class="looptech-color-carousel__track" data-carousel-track>
+          {%- comment -%} 
+            Thumbnails are populated dynamically via JavaScript 
+            based on the selected color variant's images 
+          {%- endcomment -%}
+          <div class="looptech-color-carousel__loading">
+            <span class="looptech-color-carousel__spinner"></span>
+            <span>Loading images...</span>
+          </div>
+        </div>
+      </div>
+      
+      {%- comment -%} Right Arrow {%- endcomment -%}
+      <button type="button" class="looptech-color-carousel__nav looptech-color-carousel__nav--next" aria-label="Next image" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+{%- endif -%}

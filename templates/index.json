@@ -353,6 +353,15 @@
             "collection_renewed": ""
           }
         },
+        "brand_tab_XtmGft": {
+          "type": "brand_tab",
+          "settings": {
+            "is_all_products": false,
+            "brand_name": "Brand",
+            "collection": "",
+            "collection_renewed": ""
+          }
+        },
         "brand_tab_NJGH7w": {
           "type": "brand_tab",
           "settings": {
@@ -412,6 +421,7 @@
       },
       "block_order": [
         "brand_tab_A66HqC",
+        "brand_tab_XtmGft",
         "brand_tab_NJGH7w",
         "brand_tab_H8RfCB",
         "brand_tab_JRYtcX",

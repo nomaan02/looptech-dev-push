@@ -10,7 +10,7 @@
 .looptech-product-section {
   --looptech-blue: #2563eb;
   --looptech-blue-hover: #1d4ed8;
-  --looptech-text: #1f2937;
+  --looptech-text: #181d23;
   --looptech-text-muted: #6b7280;
   --looptech-border: #e5e7eb;
   --looptech-bg: #ffffff;
@@ -81,7 +81,7 @@
 
 .looptech-gallery__container {
   display: flex;
-  gap: 1rem;
+  gap: 10rem;
 }
 
 /* Thumbnails */
@@ -96,6 +96,7 @@
   flex-direction: column;
   gap: 0.5rem;
   max-height: 500px;
+  max-width: 60px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -103,8 +104,8 @@
 .looptech-gallery__thumbnail {
   width: 60px;
   height: 60px;
-  padding: 0;
-  border: 2px solid transparent;
+  padding: 2;
+  border: 1.5px solid transparent;
   border-radius: var(--looptech-radius);
   overflow: hidden;
   cursor: pointer;
@@ -168,6 +169,7 @@
   position: relative;
   aspect-ratio: 1;
   display: flex;
+  width: 75%;
   align-items: center;
   justify-content: center;
 }
@@ -200,11 +202,11 @@
 }
 
 .looptech-gallery__image-wrapper:hover .looptech-gallery__zoom-trigger {
-  opacity: 1;
+  opacity: 0.1;
 }
 
 .looptech-gallery__video {
-  aspect-ratio: 16/9;
+  aspect-ratio: 1/1;
 }
 
 .looptech-gallery__video video,
@@ -214,6 +216,20 @@
   object-fit: cover;
 }
 
+/* Empty state when no images match color filter */
+.looptech-gallery__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background: var(--looptech-bg-subtle, #f9fafb);
+  border-radius: 12px;
+  color: var(--looptech-text-muted, #6b7280);
+  font-size: 0.9375rem;
+  text-align: center;
+  padding: 2rem;
+}
+
 /* Color Swatches */
 .looptech-gallery__swatches {
   margin-top: 1rem;
@@ -221,27 +237,68 @@
 
 .looptech-gallery__swatches-row {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .looptech-gallery__swatch {
-  width: 24px;
-  height: 24px;
+  display: block;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.25s ease;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  position: relative;
+  text-decoration: none;
+}
+
+.looptech-gallery__swatch::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
 }
 
 .looptech-gallery__swatch:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.looptech-gallery__swatch:focus-visible {
+  outline: none;
+}
+
+.looptech-gallery__swatch:focus-visible::after {
+  border-color: var(--looptech-blue);
 }
 
 .looptech-gallery__swatch--selected {
+  transform: scale(1.1);
   border-color: var(--looptech-blue);
-  box-shadow: 0 0 0 2px var(--looptech-bg), 0 0 0 4px var(--looptech-blue);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 2px var(--looptech-bg), 0 0 0 4px var(--looptech-blue);
+}
+
+.looptech-gallery__swatch--selected:hover {
+  transform: scale(1.15);
+}
+
+/* Swatch selection animation */
+@keyframes looptech-swatch-pulse {
+  0% { transform: scale(1.1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1.1); }
+}
+
+.looptech-gallery__swatch--selected {
+  animation: looptech-swatch-pulse 0.3s ease-out;
 }
 
 /* Mobile Gallery */
@@ -317,7 +374,7 @@
 }
 
 .looptech-info__rating-score {
-  font-size: 0.875rem;
+  font-size: 0.999rem;
   font-weight: 600;
   color: var(--looptech-text);
 }
@@ -359,7 +416,7 @@
 }
 
 .looptech-info__price-label {
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   color: var(--looptech-text-muted);
 }
 
@@ -404,9 +461,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
-  min-width: 3rem;
-  font-size: 0.875rem;
+  padding: 0.625rem 1.125rem;
+  min-width: 3.5rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   color: var(--looptech-text);
   background: var(--looptech-bg);
@@ -504,24 +561,27 @@
 .looptech-info__klarna {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 1rem;
   background: #fdf8f8;
   border-radius: var(--looptech-radius);
 }
 
 .looptech-info__klarna-logo svg {
   display: block;
+  box-sizing: content-box;
+  width: 30px;
+  height: 10px;
 }
 
 .looptech-info__klarna-text {
-  font-size: 0.875rem;
+  font-size: 1.2rem;
   color: var(--looptech-text);
 }
 
 .looptech-info__klarna-link {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--looptech-blue);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -562,8 +622,8 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 1000;
   color: white;
   background: var(--looptech-blue);
   border: none;
@@ -612,6 +672,7 @@
 .looptech-info__button-arrow {
   width: 20px;
   height: 20px;
+  font-weight: bolder;
   flex-shrink: 0;
   animation: looptech-bounce-arrow 2s ease-in-out infinite;
 }
@@ -623,8 +684,8 @@
 }
 
 @keyframes looptech-bounce-arrow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(4px); }
+  0%, 100% { transform: translateY(-2); }
+  50% { transform: translateY(2px); }
 }
 
 /* Loading spinner */
@@ -707,13 +768,13 @@
 }
 
 .looptech-cards__title {
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 300;
   color: var(--looptech-text);
 }
 
 .looptech-cards__subtitle {
-  font-size: 0.8125rem;
+  font-size: 0.905rem;
   color: var(--looptech-text-muted);
 }
 
@@ -740,7 +801,7 @@
 .looptech-banner__text {
   margin: 0;
   font-size: 1.5rem;
-  line-height: 1.3;
+  line-height: 1;
   color: var(--looptech-text);
 }
 
@@ -791,7 +852,7 @@
   }
 }
 
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 1024px){
   .looptech-badges__grid {
     grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
@@ -816,8 +877,8 @@
 }
 
 .looptech-badges__text {
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  font-size: 1.4rem;
+  line-height: 1.5;
   color: var(--looptech-text-muted);
 }
 

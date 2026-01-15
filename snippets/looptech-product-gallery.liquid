@@ -2,6 +2,7 @@
   LoopTech Product Gallery
   
   Vertical thumbnail strip + main product image + color swatches
+  FILTERS images to only show the currently selected color variant's images
   
   Parameters:
     - product: The product object
@@ -14,110 +15,258 @@
 
 {%- liquid
   assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media
+  assign current_variant = product.selected_or_first_available_variant
+  
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DETECT CURRENT COLOR AND FILTER IMAGES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  assign current_color = nil
+  assign color_option_index = -1
+  
+  # Find the color option and get current selection
+  for option in product.options_with_values
+    assign option_name_lower = option.name | downcase
+    if option_name_lower == 'color' or option_name_lower == 'colour'
+      assign color_option_index = forloop.index0
+      assign current_color = current_variant.options[color_option_index]
+      break
+    endif
+  endfor
+  
+  assign current_color_lower = current_color | downcase
+  
+  # Build list of media IDs that belong to this color
+  # Method 1: Collect media IDs attached to variants of this color
+  assign variant_media_ids = ''
+  
+  for variant in product.variants
+    if variant.options[color_option_index] == current_color
+      if variant.featured_media != blank
+        assign variant_media_ids = variant_media_ids | append: variant.featured_media.id | append: ','
+      endif
+    endif
+  endfor
+  
+  # Method 2: Also match by alt text containing color name
+  assign alt_text_media_ids = ''
+  
+  if current_color_lower != blank
+    for media in product.media
+      if media.media_type == 'image'
+        assign alt_lower = media.alt | downcase | strip
+        
+        # Check if alt text contains the color name
+        if alt_lower contains current_color_lower
+          assign alt_text_media_ids = alt_text_media_ids | append: media.id | append: ','
+        endif
+      endif
+    endfor
+  endif
+  
+  # Combine both methods into filtered_media_ids
+  assign filtered_media_ids = variant_media_ids | append: alt_text_media_ids
+  
+  # If no color filtering needed or no matches, show all media
+  assign has_color_filter = false
+  if current_color != blank and filtered_media_ids != ''
+    assign has_color_filter = true
+  endif
+  
+  # Check if featured_media is in the filtered list
+  # If not, we'll fall back to first visible media
+  assign featured_in_filter = false
+  if featured_media != blank and has_color_filter
+    assign featured_check = featured_media.id | append: ','
+    if filtered_media_ids contains featured_check
+      assign featured_in_filter = true
+    endif
+  elsif featured_media != blank and has_color_filter == false
+    # No filter active, so featured_media is always "in filter"
+    assign featured_in_filter = true
+  endif
 -%}
 
-<div class="looptech-gallery" data-gallery-section="{{ section_id }}">
+<div class="looptech-gallery" data-gallery-section="{{ section_id }}" data-current-color="{{ current_color | escape }}">
   <div class="looptech-gallery__container">
     
-    {%- comment -%} VERTICAL THUMBNAILS {%- endcomment -%}
+    {%- comment -%} VERTICAL THUMBNAILS (Filtered by color) {%- endcomment -%}
     <div class="looptech-gallery__thumbnails">
       <div class="looptech-gallery__thumbnails-scroll">
+        {%- assign thumb_index = 0 -%}
+        {%- assign first_thumb_media = nil -%}
         {%- for media in product.media -%}
-          <button
-            type="button"
-            class="looptech-gallery__thumbnail{% if media == featured_media %} looptech-gallery__thumbnail--active{% endif %}"
-            data-media-id="{{ media.id }}"
-            data-thumbnail-index="{{ forloop.index0 }}"
-            aria-label="View {{ media.alt | default: product.title | escape }}"
-          >
-            {%- if media.media_type == 'image' -%}
-              <img
-                src="{{ media | image_url: width: 100 }}"
-                alt="{{ media.alt | default: product.title | escape }}"
-                width="60"
-                height="60"
-                loading="lazy"
-              >
-            {%- elsif media.media_type == 'video' or media.media_type == 'external_video' -%}
-              <div class="looptech-gallery__thumbnail-video">
+          {%- liquid
+            # Check if this media should be shown
+            assign show_media = false
+            
+            if has_color_filter == false
+              # No color filter - show all
+              assign show_media = true
+            else
+              # Check if media ID is in our filtered list
+              assign media_id_check = media.id | append: ','
+              if filtered_media_ids contains media_id_check
+                assign show_media = true
+              endif
+            endif
+          -%}
+          
+          {%- if show_media -%}
+            {%- if first_thumb_media == nil -%}
+              {%- assign first_thumb_media = media -%}
+            {%- endif -%}
+            
+            {%- comment -%} Determine if thumbnail should be active {%- endcomment -%}
+            {%- liquid
+              assign thumb_active = false
+              if featured_in_filter and media == featured_media
+                assign thumb_active = true
+              elsif featured_in_filter == false and media == first_thumb_media
+                assign thumb_active = true
+              endif
+            -%}
+            
+            <button
+              type="button"
+              class="looptech-gallery__thumbnail{% if thumb_active %} looptech-gallery__thumbnail--active{% endif %}"
+              data-media-id="{{ media.id }}"
+              data-thumbnail-index="{{ thumb_index }}"
+              aria-label="View {{ media.alt | default: product.title | escape }}"
+            >
+              {%- if media.media_type == 'image' -%}
                 <img
-                  src="{{ media.preview_image | image_url: width: 100 }}"
+                  src="{{ media | image_url: width: 100 }}"
                   alt="{{ media.alt | default: product.title | escape }}"
                   width="60"
                   height="60"
                   loading="lazy"
                 >
-                <span class="looptech-gallery__play-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5,3 19,12 5,21"></polygon>
-                  </svg>
-                </span>
-              </div>
-            {%- endif -%}
-          </button>
+              {%- elsif media.media_type == 'video' or media.media_type == 'external_video' -%}
+                <div class="looptech-gallery__thumbnail-video">
+                  <img
+                    src="{{ media.preview_image | image_url: width: 100 }}"
+                    alt="{{ media.alt | default: product.title | escape }}"
+                    width="60"
+                    height="60"
+                    loading="lazy"
+                  >
+                  <span class="looptech-gallery__play-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                  </span>
+                </div>
+              {%- endif -%}
+            </button>
+            {%- assign thumb_index = thumb_index | plus: 1 -%}
+          {%- endif -%}
         {%- endfor -%}
       </div>
     </div>
 
-    {%- comment -%} MAIN IMAGE {%- endcomment -%}
+    {%- comment -%} MAIN IMAGE (Filtered by color) {%- endcomment -%}
     <div class="looptech-gallery__main">
       <div class="looptech-gallery__main-wrapper">
+        {%- assign slide_index = 0 -%}
+        {%- assign first_visible_media = nil -%}
+        
         {%- for media in product.media -%}
-          <div 
-            class="looptech-gallery__slide{% if media == featured_media %} looptech-gallery__slide--active{% endif %}"
-            data-media-id="{{ media.id }}"
-            data-slide-index="{{ forloop.index0 }}"
-            {% unless media == featured_media %}hidden{% endunless %}
-          >
-            {%- if media.media_type == 'image' -%}
-              <div 
-                class="looptech-gallery__image-wrapper{% if image_zoom == 'lightbox' %} looptech-gallery__image--zoomable{% endif %}"
-                data-pswp-width="{{ media.width }}"
-                data-pswp-height="{{ media.height }}"
-                data-pswp-src="{{ media | image_url: width: 2000 }}"
-              >
-                <img
-                  src="{{ media | image_url: width: 800 }}"
-                  srcset="
-                    {{ media | image_url: width: 400 }} 400w,
-                    {{ media | image_url: width: 600 }} 600w,
-                    {{ media | image_url: width: 800 }} 800w,
-                    {{ media | image_url: width: 1200 }} 1200w,
-                    {{ media | image_url: width: 1600 }} 1600w
-                  "
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  alt="{{ media.alt | default: product.title | escape }}"
-                  width="{{ media.width }}"
-                  height="{{ media.height }}"
-                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                  class="looptech-gallery__image"
-                >
-                {%- if image_zoom == 'lightbox' -%}
-                  <button type="button" class="looptech-gallery__zoom-trigger" aria-label="Zoom image">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                      <line x1="11" y1="8" x2="11" y2="14"></line>
-                      <line x1="8" y1="11" x2="14" y2="11"></line>
-                    </svg>
-                  </button>
-                {%- endif -%}
-              </div>
-            {%- elsif media.media_type == 'video' -%}
-              <div class="looptech-gallery__video">
-                {{ media | video_tag: autoplay: false, controls: true, muted: false }}
-              </div>
-            {%- elsif media.media_type == 'external_video' -%}
-              <div class="looptech-gallery__video looptech-gallery__video--external">
-                {{ media | external_video_tag }}
-              </div>
-            {%- elsif media.media_type == 'model' -%}
-              <div class="looptech-gallery__model">
-                {{ media | model_viewer_tag }}
-              </div>
+          {%- liquid
+            # Check if this media should be shown
+            assign show_media = false
+            
+            if has_color_filter == false
+              assign show_media = true
+            else
+              assign media_id_check = media.id | append: ','
+              if filtered_media_ids contains media_id_check
+                assign show_media = true
+              endif
+            endif
+          -%}
+          
+          {%- if show_media -%}
+            {%- if first_visible_media == nil -%}
+              {%- assign first_visible_media = media -%}
             {%- endif -%}
-          </div>
+            
+            {%- comment -%} Determine if this slide should be active {%- endcomment -%}
+            {%- liquid
+              assign is_active = false
+              if featured_in_filter and media == featured_media
+                assign is_active = true
+              elsif featured_in_filter == false and media == first_visible_media
+                assign is_active = true
+              endif
+            -%}
+            
+            <div 
+              class="looptech-gallery__slide{% if is_active %} looptech-gallery__slide--active{% endif %}"
+              data-media-id="{{ media.id }}"
+              data-slide-index="{{ slide_index }}"
+              {% unless is_active %}hidden{% endunless %}
+            >
+              {%- if media.media_type == 'image' -%}
+                <div 
+                  class="looptech-gallery__image-wrapper{% if image_zoom == 'lightbox' %} looptech-gallery__image--zoomable{% endif %}"
+                  data-pswp-width="{{ media.width }}"
+                  data-pswp-height="{{ media.height }}"
+                  data-pswp-src="{{ media | image_url: width: 2000 }}"
+                >
+                  <img
+                    src="{{ media | image_url: width: 800 }}"
+                    srcset="
+                      {{ media | image_url: width: 400 }} 400w,
+                      {{ media | image_url: width: 600 }} 600w,
+                      {{ media | image_url: width: 800 }} 800w,
+                      {{ media | image_url: width: 1200 }} 1200w,
+                      {{ media | image_url: width: 1600 }} 1600w
+                    "
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    alt="{{ media.alt | default: product.title | escape }}"
+                    width="{{ media.width }}"
+                    height="{{ media.height }}"
+                    loading="{% if slide_index == 0 %}eager{% else %}lazy{% endif %}"
+                    class="looptech-gallery__image"
+                  >
+                  {%- if image_zoom == 'lightbox' -%}
+                    <button type="button" class="looptech-gallery__zoom-trigger" aria-label="Zoom image">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                      </svg>
+                    </button>
+                  {%- endif -%}
+                </div>
+              {%- elsif media.media_type == 'video' -%}
+                <div class="looptech-gallery__video">
+                  {{ media | video_tag: autoplay: false, controls: true, muted: false }}
+                </div>
+              {%- elsif media.media_type == 'external_video' -%}
+                <div class="looptech-gallery__video looptech-gallery__video--external">
+                  {{ media | external_video_tag }}
+                </div>
+              {%- elsif media.media_type == 'model' -%}
+                <div class="looptech-gallery__model">
+                  {{ media | model_viewer_tag }}
+                </div>
+              {%- endif -%}
+            </div>
+            {%- assign slide_index = slide_index | plus: 1 -%}
+          {%- endif -%}
         {%- endfor -%}
+        
+        {%- comment -%} Fallback if no images match the filter {%- endcomment -%}
+        {%- if slide_index == 0 -%}
+          <div class="looptech-gallery__slide looptech-gallery__slide--active">
+            <div class="looptech-gallery__empty">
+              <p>No images available for {{ current_color }}</p>
+            </div>
+          </div>
+        {%- endif -%}
       </div>
     </div>
 
@@ -130,14 +279,14 @@
       {%- assign option_name_downcase = option.name | downcase -%}
       {%- if option_name_downcase == 'color' or option_name_downcase == 'colour' -%}
         {%- assign color_option = option -%}
-        {%- assign color_option_index = forloop.index0 -%}
+        {%- assign swatch_color_option_index = forloop.index0 -%}
         {%- break -%}
       {%- endif -%}
     {%- endfor -%}
 
     {%- if color_option -%}
       <div class="looptech-gallery__swatches">
-        <div class="looptech-gallery__swatches-row">
+        <div class="looptech-gallery__swatches-row" role="radiogroup" aria-label="Select color">
           {%- for value in color_option.values -%}
             {%- liquid
               assign color_value_downcase = value | downcase | replace: ' ', '-'
@@ -184,20 +333,32 @@
               endcase
               
               assign is_selected = false
-              if current_variant.options[color_option_index] == value
+              if current_variant.options[swatch_color_option_index] == value
                 assign is_selected = true
               endif
+              
+              # Find the variant URL for this color (first available variant of this color)
+              assign color_variant_url = nil
+              for variant in product.variants
+                if variant.options[swatch_color_option_index] == value
+                  assign color_variant_url = product.url | append: '?variant=' | append: variant.id
+                  break
+                endif
+              endfor
             -%}
-            <button
-              type="button"
+            <a
+              href="{{ color_variant_url }}"
               class="looptech-gallery__swatch{% if is_selected %} looptech-gallery__swatch--selected{% endif %}"
               data-color-value="{{ value }}"
               aria-label="Select {{ value }} color"
+              aria-pressed="{% if is_selected %}true{% else %}false{% endif %}"
+              role="radio"
+              aria-checked="{% if is_selected %}true{% else %}false{% endif %}"
               title="{{ value }}"
               style="background-color: {{ swatch_hex }};"
             >
               <span class="visually-hidden">{{ value }}</span>
-            </button>
+            </a>
           {%- endfor -%}
         </div>
       </div>
@@ -266,6 +427,34 @@
         photoSwipe.init();
       });
     });
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // COLOR SWATCH CLICK HANDLER
+    // Swatches are now links - navigate to variant URL for full page reload
+    // This ensures gallery is properly re-filtered for the new color
+    // ═══════════════════════════════════════════════════════════════════════
+    
+    const swatches = gallery.querySelectorAll('.looptech-gallery__swatch');
+    
+    if (swatches.length > 0) {
+      swatches.forEach(function(swatch) {
+        swatch.addEventListener('click', function(e) {
+          // Save scroll position before navigation
+          sessionStorage.setItem('looptech_gallery_scroll', window.scrollY.toString());
+          
+          // Set flag so spec modules only pre-selects Color (not Storage, etc.)
+          sessionStorage.setItem('looptech_color_switch', 'true');
+        });
+      });
+    }
+    
+    // Restore scroll position if coming back from color switch
+    const savedScroll = sessionStorage.getItem('looptech_gallery_scroll');
+    if (savedScroll) {
+      sessionStorage.removeItem('looptech_gallery_scroll');
+      requestAnimationFrame(function() {
+        window.scrollTo({ top: parseInt(savedScroll, 10), behavior: 'instant' });
+      });
+    }
   });
 </script>
-
