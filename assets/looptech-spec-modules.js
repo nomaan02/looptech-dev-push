@@ -79,7 +79,10 @@
       // Attach event listeners
       this.attachEventListeners();
       
-      // Check for URL variant parameter
+      // Detect pre-selected options from the DOM (handles default variant without URL param)
+      this.detectPreSelectedOptions();
+      
+      // Check for URL variant parameter (may override detected selections)
       this.checkUrlVariant();
       
       // Auto-select single-value options
@@ -202,6 +205,36 @@
         const optionName = module.dataset.optionName;
         if (optionName) {
           this.requiredOptions.push(optionName);
+        }
+      });
+    }
+    
+    /**
+     * Detect pre-selected options from the DOM
+     * This handles the case where Liquid renders a default variant as selected
+     * but there's no ?variant= URL parameter
+     */
+    detectPreSelectedOptions() {
+      this.elements.modules.forEach(module => {
+        const optionName = module.dataset.optionName;
+        if (!optionName) return;
+        
+        // Skip if already in selections (e.g., from URL variant)
+        if (this.selections.has(optionName)) return;
+        
+        // Find any checked radio input in this module
+        const checkedInput = module.querySelector('[data-spec-option] input:checked');
+        if (checkedInput) {
+          const optionValue = checkedInput.value;
+          
+          // Add to selections
+          this.selections.set(optionName, optionValue);
+          
+          // Update visuals
+          this.updateOptionVisuals(checkedInput);
+          this.updateModuleState(optionName, true);
+          
+          console.log('[LoopTech Spec Modules] Detected pre-selected option:', optionName, '=', optionValue);
         }
       });
     }

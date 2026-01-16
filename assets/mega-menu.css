@@ -77,4 +77,94 @@
     display: none !important;
   }
 }
-  
+
+/* ─────────────────────────────────────────────
+   Account Dropdown - Hover Activated
+   ───────────────────────────────────────────── */
+
+.mega-menu-account-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.mega-menu-account-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 220px;
+  padding-top: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+}
+
+/* Show dropdown on hover */
+.mega-menu-account-dropdown:hover .mega-menu-account-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.mega-menu-account-dropdown-content {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+/* Header */
+.mega-menu-account-dropdown-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* List */
+.mega-menu-account-dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.mega-menu-account-dropdown-list li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 0.9375rem;
+  color: #1f2937;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.mega-menu-account-dropdown-list li a:hover {
+  background-color: #f3f4f6;
+  color: #2563eb;
+}
+
+.mega-menu-account-dropdown-list li a svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Divider */
+.mega-menu-account-dropdown-divider {
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+  margin: 0;
+}
+
+/* Logout styling */
+.mega-menu-account-logout {
+  color: #dc2626 !important;
+}
+
+.mega-menu-account-logout:hover {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}

@@ -1,0 +1,819 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+{{ 'account.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+/* ============================================
+   LoopTech Login Page - Modern Clean Design
+   Full-page auth experience (no header/footer)
+   ============================================ */
+
+/* Hide header, footer, announcement bar, and toggle on auth pages */
+.section--account-login ~ .shopify-section,
+.shopify-section-group-header-group,
+.shopify-section-group-footer-group,
+.shopify-section-group-overlay-group,
+body:has(.section--account-login) .announcement-bar,
+body:has(.section--account-login) .mode-toggle-section,
+body:has(.section--account-login) header,
+body:has(.section--account-login) footer,
+body:has(.section--account-login) .header-section,
+body:has(.section--account-login) .footer-section,
+body:has(.section--account-login) #shopify-section-announcement-bar,
+body:has(.section--account-login) #shopify-section-header,
+body:has(.section--account-login) #shopify-section-footer,
+body:has(.section--account-login) .shopify-section-header,
+body:has(.section--account-login) [class*="header-group"],
+body:has(.section--account-login) [class*="footer-group"],
+body:has(.section--account-login) .breadcrumbs {
+  display: none !important;
+}
+
+/* Ensure body takes full height for centering */
+body:has(.section--account-login) {
+  min-height: 100vh;
+}
+
+body:has(.section--account-login) main {
+  min-height: 100vh;
+}
+
+.looptech-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: #f5f5f5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+}
+
+.looptech-auth-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+/* Logo */
+.looptech-auth-logo {
+  margin-bottom: 2rem;
+}
+
+.looptech-auth-logo img {
+  height: auto;
+  width: 200px;
+  max-width: 100%;
+}
+
+/* Headings */
+.looptech-auth-greeting {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
+}
+
+.looptech-auth-subtext {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
+  text-align: left;
+}
+
+/* Form Fields */
+.looptech-auth-form {
+  margin-top: 0;
+}
+
+.looptech-field {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.looptech-field label {
+  display: none;
+}
+
+.looptech-field input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1a1a1a;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.looptech-field input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.looptech-field input::placeholder {
+  color: #9ca3af;
+}
+
+/* Divider */
+.looptech-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.25rem 0;
+  gap: 1rem;
+}
+
+.looptech-divider::before,
+.looptech-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.looptech-divider span {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* Social Buttons */
+.looptech-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  margin-bottom: 0.75rem;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.looptech-social-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.looptech-social-btn img,
+.looptech-social-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Primary Button */
+.looptech-btn-primary {
+  display: block;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  margin-top: 0.75rem;
+  text-decoration: none;
+  text-align: center;
+  font-family: inherit;
+}
+
+.looptech-btn-primary:hover,
+.looptech-btn-primary:focus {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.looptech-btn-primary.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.looptech-btn-primary.active:hover {
+  background: #1d4ed8;
+}
+
+/* Error Messages */
+.looptech-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.looptech-error p {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.looptech-error ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.25rem;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+/* Success Messages */
+.looptech-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.looptech-success p {
+  color: #16a34a;
+  font-size: 0.875rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Toggle Link */
+.looptech-toggle-link {
+  display: block;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.looptech-toggle-link a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.looptech-toggle-link a:hover {
+  text-decoration: underline;
+}
+
+/* Forgot Password Link */
+.looptech-forgot-link {
+  display: block;
+  text-align: right;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.looptech-forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* View Toggles (Login/Register/Recover) */
+.looptech-view {
+  display: none;
+}
+
+.looptech-view.active {
+  display: block;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 480px) {
+  .looptech-auth {
+    padding: 1rem;
+    align-items: flex-start;
+    padding-top: 3rem;
+  }
+
+  .looptech-auth-card {
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+  }
+
+  .looptech-auth-greeting {
+    font-size: 1.5rem;
+  }
+}
+{%- endstyle -%}
+
+<div class="looptech-auth">
+  <div class="looptech-auth-card">
+    
+    {%- comment -%} Logo {%- endcomment -%}
+    <div class="looptech-auth-logo">
+      {%- if section.settings.logo != blank -%}
+        {{ section.settings.logo | image_url: width: 400 | image_tag: alt: shop.name }}
+      {%- else -%}
+        {%- comment -%} Default LoopTech logo - matches brand guidelines {%- endcomment -%}
+        <svg width="220" height="50" viewBox="0 0 220 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {%- comment -%} Letter L {%- endcomment -%}
+          <text x="0" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="42" font-weight="700" fill="#1a1a1a">L</text>
+          
+          {%- comment -%} Infinity Symbol (∞) - Blue {%- endcomment -%}
+          <g transform="translate(28, 14)">
+            <path d="M16 11C16 11 12 6 7 6C3.134 6 0 9.134 0 13C0 16.866 3.134 20 7 20C12 20 16 15 16 15C16 15 20 20 25 20C28.866 20 32 16.866 32 13C32 9.134 28.866 6 25 6C20 6 16 11 16 11Z" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </g>
+          
+          {%- comment -%} Letters PTECH {%- endcomment -%}
+          <text x="65" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="42" font-weight="700" fill="#1a1a1a">PTECH</text>
+        </svg>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         LOGIN VIEW
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="looptech-view active" id="login-view" data-view="login">
+      <h1 class="looptech-auth-greeting">{{ section.settings.login_greeting | default: 'Hello there,' }}</h1>
+      <p class="looptech-auth-subtext">{{ section.settings.login_subtext | default: 'Sign in or create an account' }}</p>
+
+      {%- form 'customer_login', class: 'looptech-auth-form', novalidate: 'novalidate' -%}
+        {%- if form.errors -%}
+          <div class="looptech-error" role="alert">
+            <p>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="#dc2626" stroke-width="2"/>
+                <path d="M8 4v4M8 10v2" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              {{ 'templates.contact.form.error_heading' | t }}
+            </p>
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        <div class="looptech-field">
+          <label for="CustomerEmail">Email</label>
+          <input
+            type="email"
+            name="customer[email]"
+            id="CustomerEmail"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            placeholder="Email"
+            required
+            {% if form.errors contains 'form' %}aria-invalid="true"{% endif %}
+          >
+        </div>
+
+        <div class="looptech-field">
+          <label for="CustomerPassword">Password</label>
+          <input
+            type="password"
+            name="customer[password]"
+            id="CustomerPassword"
+            autocomplete="current-password"
+            placeholder="Password"
+            required
+            {% if form.errors contains 'form' %}aria-invalid="true"{% endif %}
+          >
+        </div>
+
+        <a href="#" class="looptech-forgot-link" data-toggle-view="recover">Forgot password?</a>
+
+        <div class="looptech-divider">
+          <span>or</span>
+        </div>
+
+        {%- comment -%} Social Login Buttons (Visual only - requires app integration) {%- endcomment -%}
+        <button type="button" class="looptech-social-btn" disabled title="Coming soon">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <button type="button" class="looptech-social-btn" disabled title="Coming soon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
+            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+          </svg>
+          Continue with Apple
+        </button>
+
+        <button type="submit" class="looptech-btn-primary active">
+          {{ section.settings.login_button | default: 'Continue' }}
+        </button>
+      {%- endform -%}
+
+      <p class="looptech-toggle-link">
+        Don't have an account? <a href="#" data-toggle-view="register">Create one</a>
+      </p>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         REGISTER VIEW
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="looptech-view" id="register-view" data-view="register">
+      <h1 class="looptech-auth-greeting">{{ section.settings.register_greeting | default: 'Create account' }}</h1>
+      <p class="looptech-auth-subtext">{{ section.settings.register_subtext | default: 'Join us and start shopping' }}</p>
+
+      {%- form 'create_customer', class: 'looptech-auth-form', novalidate: 'novalidate' -%}
+        {%- if form.errors -%}
+          <div class="looptech-error" role="alert">
+            <p>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="#dc2626" stroke-width="2"/>
+                <path d="M8 4v4M8 10v2" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              {{ 'templates.contact.form.error_heading' | t }}
+            </p>
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        <div class="looptech-field">
+          <label for="RegisterFirstName">First name</label>
+          <input
+            type="text"
+            name="customer[first_name]"
+            id="RegisterFirstName"
+            autocomplete="given-name"
+            placeholder="First name"
+            required
+          >
+        </div>
+
+        <div class="looptech-field">
+          <label for="RegisterLastName">Last name</label>
+          <input
+            type="text"
+            name="customer[last_name]"
+            id="RegisterLastName"
+            autocomplete="family-name"
+            placeholder="Last name"
+            required
+          >
+        </div>
+
+        <div class="looptech-field">
+          <label for="RegisterEmail">Email</label>
+          <input
+            type="email"
+            name="customer[email]"
+            id="RegisterEmail"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            placeholder="Email"
+            required
+            {% if form.errors contains 'email' %}aria-invalid="true"{% endif %}
+          >
+        </div>
+
+        <div class="looptech-field">
+          <label for="RegisterPassword">Password</label>
+          <input
+            type="password"
+            name="customer[password]"
+            id="RegisterPassword"
+            autocomplete="new-password"
+            placeholder="Password"
+            required
+            {% if form.errors contains 'password' %}aria-invalid="true"{% endif %}
+          >
+        </div>
+
+        <button type="submit" class="looptech-btn-primary active">
+          {{ section.settings.register_button | default: 'Create account' }}
+        </button>
+      {%- endform -%}
+
+      <p class="looptech-toggle-link">
+        Already have an account? <a href="#" data-toggle-view="login">Sign in</a>
+      </p>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         PASSWORD RECOVERY VIEW
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="looptech-view" id="recover-view" data-view="recover">
+      <h1 class="looptech-auth-greeting">{{ section.settings.recover_greeting | default: 'Reset password' }}</h1>
+      <p class="looptech-auth-subtext">{{ section.settings.recover_subtext | default: "We'll send you an email to reset your password" }}</p>
+
+      {%- form 'recover_customer_password', class: 'looptech-auth-form' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="looptech-success" role="status">
+            <p>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="#16a34a" stroke-width="2"/>
+                <path d="M5 8l2 2 4-4" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ 'customer.recover_password.success' | t }}
+            </p>
+          </div>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <div class="looptech-error" role="alert">
+            <p>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="#dc2626" stroke-width="2"/>
+                <path d="M8 4v4M8 10v2" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              {{ form.errors.messages.form }}
+            </p>
+          </div>
+        {%- endif -%}
+
+        <div class="looptech-field">
+          <label for="RecoverEmail">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="RecoverEmail"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            placeholder="Email"
+            required
+          >
+        </div>
+
+        <button type="submit" class="looptech-btn-primary active">
+          {{ section.settings.recover_button | default: 'Send reset link' }}
+        </button>
+      {%- endform -%}
+
+      <p class="looptech-toggle-link">
+        Remember your password? <a href="#" data-toggle-view="login">Sign in</a>
+      </p>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         GUEST ORDER LOOKUP (Optional)
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    {%- if section.settings.show_guest_lookup -%}
+      <div class="looptech-view" id="guest-view" data-view="guest">
+        <h1 class="looptech-auth-greeting">{{ section.settings.guest_greeting | default: 'Track your order' }}</h1>
+        <p class="looptech-auth-subtext">{{ section.settings.guest_subtext | default: 'Enter your order details to check status' }}</p>
+
+        <form action="/tools/order_status" method="get" class="looptech-auth-form" id="GuestOrderLookup">
+          <div class="looptech-field">
+            <label for="GuestOrderNumber">Order number</label>
+            <input
+              type="text"
+              name="order"
+              id="GuestOrderNumber"
+              placeholder="Order number (e.g. #1001)"
+              required
+              autocomplete="off"
+            >
+          </div>
+
+          <div class="looptech-field">
+            <label for="GuestOrderEmail">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="GuestOrderEmail"
+              placeholder="Email address"
+              required
+              autocomplete="email"
+            >
+          </div>
+
+          <button type="submit" class="looptech-btn-primary active">
+            {{ section.settings.guest_button | default: 'Track order' }}
+          </button>
+        </form>
+
+        <p class="looptech-toggle-link">
+          Have an account? <a href="#" data-toggle-view="login">Sign in</a>
+        </p>
+      </div>
+
+      <p class="looptech-toggle-link" id="guest-lookup-toggle" style="margin-top: 1.5rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
+        <a href="#" data-toggle-view="guest">Track an order without signing in</a>
+      </p>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+/**
+ * LoopTech Auth View Toggle
+ * Handles switching between login, register, recover, and guest views
+ */
+(function() {
+  'use strict';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.looptech-auth-card');
+    if (!container) return;
+
+    const views = container.querySelectorAll('.looptech-view');
+    const toggleLinks = container.querySelectorAll('[data-toggle-view]');
+    const guestToggle = document.getElementById('guest-lookup-toggle');
+
+    function showView(viewName) {
+      views.forEach(function(view) {
+        if (view.dataset.view === viewName) {
+          view.classList.add('active');
+        } else {
+          view.classList.remove('active');
+        }
+      });
+
+      // Hide guest toggle when on guest view
+      if (guestToggle) {
+        guestToggle.style.display = viewName === 'guest' ? 'none' : 'block';
+      }
+
+      // Update URL hash for bookmarking
+      if (history.replaceState) {
+        history.replaceState(null, null, '#' + viewName);
+      }
+    }
+
+    // Handle toggle link clicks
+    toggleLinks.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetView = this.dataset.toggleView;
+        showView(targetView);
+      });
+    });
+
+    // Detect which page we're on based on URL
+    const path = window.location.pathname;
+    let defaultView = 'login';
+    
+    if (path.includes('/account/register')) {
+      defaultView = 'register';
+    } else if (path.includes('/account/recover') || path.includes('#recover')) {
+      defaultView = 'recover';
+    }
+
+    // Check URL hash on load (overrides page detection)
+    const hash = window.location.hash.replace('#', '');
+    if (hash && ['login', 'register', 'recover', 'guest'].includes(hash)) {
+      defaultView = hash;
+    }
+
+    // Show the appropriate view
+    showView(defaultView);
+
+    // Handle form errors - show correct view
+    const loginErrors = container.querySelector('#login-view .looptech-error');
+    const registerErrors = container.querySelector('#register-view .looptech-error');
+    const recoverSuccess = container.querySelector('#recover-view .looptech-success');
+    const recoverErrors = container.querySelector('#recover-view .looptech-error');
+
+    if (registerErrors) {
+      showView('register');
+    } else if (recoverSuccess || recoverErrors) {
+      showView('recover');
+    } else if (loginErrors) {
+      showView('login');
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Account Login",
+  "tag": "section",
+  "class": "section section--account-login",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "info": "Recommended: 200px wide. Leave blank for text logo."
+    },
+    {
+      "type": "header",
+      "content": "Login View"
+    },
+    {
+      "type": "text",
+      "id": "login_greeting",
+      "label": "Greeting",
+      "default": "Hello there,"
+    },
+    {
+      "type": "text",
+      "id": "login_subtext",
+      "label": "Subtext",
+      "default": "Sign in or create an account"
+    },
+    {
+      "type": "text",
+      "id": "login_button",
+      "label": "Button Label",
+      "default": "Continue"
+    },
+    {
+      "type": "header",
+      "content": "Register View"
+    },
+    {
+      "type": "text",
+      "id": "register_greeting",
+      "label": "Greeting",
+      "default": "Create account"
+    },
+    {
+      "type": "text",
+      "id": "register_subtext",
+      "label": "Subtext",
+      "default": "Join us and start shopping"
+    },
+    {
+      "type": "text",
+      "id": "register_button",
+      "label": "Button Label",
+      "default": "Create account"
+    },
+    {
+      "type": "header",
+      "content": "Password Recovery"
+    },
+    {
+      "type": "text",
+      "id": "recover_greeting",
+      "label": "Greeting",
+      "default": "Reset password"
+    },
+    {
+      "type": "text",
+      "id": "recover_subtext",
+      "label": "Subtext",
+      "default": "We'll send you an email to reset your password"
+    },
+    {
+      "type": "text",
+      "id": "recover_button",
+      "label": "Button Label",
+      "default": "Send reset link"
+    },
+    {
+      "type": "header",
+      "content": "Guest Order Lookup"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_guest_lookup",
+      "label": "Show Guest Order Lookup",
+      "default": true,
+      "info": "Allow guests to track orders without signing in"
+    },
+    {
+      "type": "text",
+      "id": "guest_greeting",
+      "label": "Greeting",
+      "default": "Track your order"
+    },
+    {
+      "type": "text",
+      "id": "guest_subtext",
+      "label": "Subtext",
+      "default": "Enter your order details to check status"
+    },
+    {
+      "type": "text",
+      "id": "guest_button",
+      "label": "Button Label",
+      "default": "Track order"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Login"
+    }
+  ]
+}
+{% endschema %}

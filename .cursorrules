@@ -1,0 +1,51 @@
+# LoopTech Shopify Theme Rules
+
+## Commands
+
+```bash
+shopify theme dev                    # Local development with hot reload
+shopify theme check                  # Lint for errors (run after changes)
+shopify theme push --theme=[id]      # Deploy to Shopify
+grep -r "pattern" sections/          # Find existing patterns
+```
+
+## Code Style
+
+- **Liquid**: Use `{% liquid %}` for multi-line logic, always `| default:` fallbacks
+- **JavaScript**: Vanilla JS only (NO jQuery), IIFE pattern, event delegation
+- **CSS**: BEM naming (`.block__element--modifier`), mobile-first
+
+See `assets/global.js` for JS patterns.  
+See `assets/base.css` for CSS variables.
+
+## Workflow
+
+1. **Before coding**: Read `CLAUDE.md` and active `tasks/TASK-[N].md`
+2. **Find patterns first**: `grep -r "similar_thing" sections/ snippets/`
+3. **After changes**: Run `shopify theme check`
+4. **Update progress**: Mark subtask ✅ in task file when done
+
+## File Locations
+
+```
+Sections  → sections/[name].liquid
+Snippets  → snippets/[name].liquid
+Assets    → assets/[name].js or .css
+Templates → templates/[type].json
+```
+
+## Critical Rules
+
+- Never modify core theme files (main-*.liquid) unless necessary
+- Always include `{% schema %}` with settings for new sections
+- Always test mobile (375px) before marking complete
+- Use existing CSS variables from `:root` — don't create new ones
+- Reference `docs/PATTERNS.md` for common code snippets
+
+## Toggle System
+
+This theme has Brand New / Renewed filtering. See `CLAUDE.md` section "Toggle Filtering System" before touching any product-displaying section.
+
+## Current Task
+
+Check `tasks/` folder for active task file. Read it before starting work.

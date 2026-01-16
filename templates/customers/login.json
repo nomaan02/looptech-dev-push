@@ -1,1 +1,19 @@
-{"sections":{"main":{"type":"main-login","settings":{"color_scheme":"scheme-abe3bc68-5409-41dd-abcf-8f9ac474947a","padding_top":0,"padding_bottom":60}}},"order":["main"]}
+{
+  "sections": {
+    "main": {
+      "type": "account-login",
+      "settings": {
+        "heading": "Sign In",
+        "button_label": "Sign In",
+        "show_guest_lookup": true,
+        "guest_lookup_heading": "Track Your Order",
+        "guest_lookup_subtext": "Already placed an order? Track it without signing in.",
+        "guest_lookup_button": "Track Order",
+        "color_scheme": "background-1",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": ["main"]
+}

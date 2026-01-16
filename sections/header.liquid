@@ -8,6 +8,7 @@
 {{ 'section-image-banner.css' | asset_url | stylesheet_tag }}
 {{ 'component-cart-notification.css' | asset_url | stylesheet_tag }}
 {{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
+{{ 'account.css' | asset_url | stylesheet_tag }}
 {%- if section.settings.enable_country_selector or section.settings.enable_language_selector -%}
   {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
 {%- endif -%}
@@ -1671,14 +1672,52 @@
                       <div class="customer_account text-left">
                           <ul class="list-unstyled">
                               {% if customer %}
+                              {%- comment -%} Dashboard navigation tabs {%- endcomment -%}
                               <li>
-                                  <a href="{{ routes.account_url }}">
-                                  {% render 'icon-login' %}
-                                  {{ 'wbcustomlabel.wballtext.account' | t }}
+                                  <a href="{{ routes.account_url }}#orders">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                                  Orders
                                   </a>
                               </li>
                               <li>
-                                  <a href="{{ routes.account_logout_url }}">
+                                  <a href="{{ routes.account_url }}#protection">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                                  Protection plans
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ routes.account_url }}#trade-ins">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" /></svg>
+                                  Trade-ins
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ routes.account_url }}#profile">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                                  Profile
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ routes.account_url }}#favourites">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+                                  Favourites
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ routes.account_url }}#refer">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                                  Refer a friend
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ routes.account_url }}#other">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
+                                  Other
+                                  </a>
+                              </li>
+                              <li class="account-dropdown-divider"></li>
+                              <li>
+                                  <a href="{{ routes.account_logout_url }}" class="account-dropdown-logout">
                                   {% render 'icon-signout' %}
                                   {{ 'wbcustomlabel.wballtext.log_out' | t }}
                                   </a>

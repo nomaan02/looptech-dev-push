@@ -1,1 +1,17 @@
-{"sections":{"main":{"type":"main-register","settings":{"color_scheme":"scheme-abe3bc68-5409-41dd-abcf-8f9ac474947a","padding_top":0,"padding_bottom":60}}},"order":["main"]}
+{
+  "sections": {
+    "main": {
+      "type": "account-login",
+      "settings": {
+        "login_greeting": "Hello there,",
+        "login_subtext": "Sign in or create an account",
+        "login_button": "Continue",
+        "register_greeting": "Create account",
+        "register_subtext": "Join us and start shopping",
+        "register_button": "Create account",
+        "show_guest_lookup": false
+      }
+    }
+  },
+  "order": ["main"]
+}

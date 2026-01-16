@@ -1,0 +1,42 @@
+{% comment %}
+  TEMPORARY: Dev link for testing Offers page
+  Remove this snippet and its render call when done testing.
+{% endcomment %}
+
+<style>
+  .dev-offers-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #041c4d 0%, #4563e6 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dev-offers-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    color: white;
+  }
+  .dev-offers-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+</style>
+
+<a href="/pages/offers" class="dev-offers-btn">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+  </svg>
+  Offers Page (DEV)
+</a>

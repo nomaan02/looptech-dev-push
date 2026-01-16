@@ -1,0 +1,1348 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+/* ============================================
+   LoopTech Account Dashboard
+   Matching the reference design exactly
+   ============================================ */
+
+.account-dashboard {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+.account-dashboard .page-width {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Tab Navigation */
+.account-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  height: 52px;
+}
+
+.account-tabs__link {
+  padding: 0.75rem 1.25rem;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.account-tabs__link:hover {
+  color: #1a1a1a;
+}
+
+.account-tabs__link.is-active {
+  color: #1a1a1a;
+  border-bottom-color: #1a1a1a;
+}
+
+/* Page Header */
+.account-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.account-header__title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.account-header__subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Panel Content */
+.account-panel {
+  display: none;
+}
+
+.account-panel.is-active {
+  display: block;
+}
+
+/* Card Grid */
+.account-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media screen and (max-width: 767px) {
+  .account-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card Styles */
+.account-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.account-card--full {
+  grid-column: 1 / -1;
+}
+
+.account-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.account-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.account-card__edit {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.account-card__edit:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.account-card__content {
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.account-card__content p {
+  margin: 0 0 0.25rem 0;
+}
+
+.account-card__name {
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.account-card__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #059669;
+  font-size: 0.875rem;
+  margin: 0.25rem 0;
+}
+
+.account-card__verified svg {
+  width: 16px;
+  height: 16px;
+}
+
+.account-card__email {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.account-card__email:hover {
+  text-decoration: underline;
+}
+
+.account-card__links {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.account-card__link {
+  color: #1a1a1a;
+  text-decoration: underline;
+  font-size: 0.875rem;
+}
+
+.account-card__link:hover {
+  color: #2563eb;
+}
+
+.account-card__link--danger {
+  color: #dc2626;
+}
+
+.account-card__link--danger:hover {
+  color: #b91c1c;
+}
+
+/* Toggle Switch */
+.account-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.account-toggle:last-child {
+  border-bottom: none;
+}
+
+.account-toggle__switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.account-toggle__switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.account-toggle__switch.is-active {
+  background: #2563eb;
+}
+
+.account-toggle__switch.is-active::after {
+  transform: translateX(20px);
+}
+
+.account-toggle__label {
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+/* Bank Details Card */
+.account-card__message {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.account-card__btn {
+  display: inline-block;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: #ffffff;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.account-card__btn:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Orders List - High Fidelity Reference Design */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Order Card Main Layout - 3 Column Grid */
+.order-card__body {
+  display: grid;
+  grid-template-columns: 160px 1fr 200px;
+  column-gap: 44px;
+  row-gap: 29px;
+  padding: 19px 2rem;
+  align-items: flex-start;
+  height: 176px;
+}
+
+/* Product Image - Left Column */
+.order-card__image {
+  width: 160px;
+  height: 140px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.order-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  opacity: 1;
+  background-color: #ffffff;
+}
+
+.order-card__image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d1d5db;
+}
+
+.order-card__image-placeholder svg {
+  width: 48px;
+  height: 48px;
+}
+
+/* Product Info + Progress - Middle Column */
+.order-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 0;
+}
+
+.order-card__number {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #6b7280;
+  margin: 0;
+}
+
+.order-card__number span {
+  color: #374151;
+}
+
+.order-card__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.35;
+}
+
+/* Progress Tracker - Inline */
+.order-progress {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  margin-top: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.order-progress::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  height: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.order-progress__line {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  height: 2px;
+  background: #2563eb;
+  z-index: 1;
+  transition: width 0.3s ease;
+}
+
+.order-progress__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.order-progress__step:first-child {
+  align-items: flex-start;
+}
+
+.order-progress__step:first-child .order-progress__label,
+.order-progress__step:first-child .order-progress__date {
+  text-align: left;
+}
+
+.order-progress__step:last-child {
+  align-items: flex-end;
+}
+
+.order-progress__step:last-child .order-progress__label,
+.order-progress__step:last-child .order-progress__date {
+  text-align: right;
+}
+
+.order-progress__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #e5e7eb;
+  margin-bottom: 0.625rem;
+}
+
+.order-progress__step.is-complete .order-progress__dot,
+.order-progress__step.is-current .order-progress__dot {
+  background: #2563eb;
+  box-shadow: 0 0 0 2px #2563eb;
+}
+
+.order-progress__label {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.order-progress__step.is-complete .order-progress__label,
+.order-progress__step.is-current .order-progress__label {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.order-progress__date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.125rem;
+}
+
+.order-progress__step.is-complete .order-progress__date,
+.order-progress__step.is-current .order-progress__date {
+  color: #6b7280;
+}
+
+/* Actions Panel - Right Column */
+.order-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  align-items: flex-end;
+  text-align: center;
+  vertical-align: middle;
+  padding-left: 3px;
+  padding-right: 3px;
+  column-gap: 11px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.order-card__actions-title {
+  font-size: 10px;
+  font-weight: 400;
+  color: #374151;
+  margin: 0 0 4px 0;
+  text-align: left;
+  padding-left: 46px;
+  padding-right: 46px;
+}
+
+.order-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 180px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border-radius: 25px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.order-card__btn--primary {
+  background: #2563eb;
+  color: #ffffff;
+  border: 2px solid #2563eb;
+}
+
+.order-card__btn--primary:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.order-card__btn--outline {
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 2px solid #d1d5db;
+}
+
+.order-card__btn--outline:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.order-card__contact-link {
+  font-size: 0.875rem;
+  color: #2563eb;
+  text-decoration: underline;
+  margin-top: 0.25rem;
+  padding-left: 29px;
+  padding-right: 29px;
+}
+
+.order-card__contact-link:hover {
+  color: #1d4ed8;
+}
+
+/* See Order Details Expandable */
+.order-card__footer {
+  border-top: 1px solid #f3f4f6;
+}
+
+.order-card__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 2rem;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: #374151;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 0;
+  margin-bottom: 0;
+  gap: 0;
+  height: 40px;
+}
+
+.order-card__toggle:hover {
+  background: #f9fafb;
+}
+
+.order-card__toggle svg {
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+  transition: transform 0.2s ease;
+}
+
+.order-card__toggle.is-open svg {
+  transform: rotate(180deg);
+}
+
+.order-card__details {
+  display: none;
+  padding: 0 2rem 1.5rem;
+}
+
+.order-card__details.is-open {
+  display: block;
+}
+
+@media screen and (max-width: 599px) {
+  .order-card__details {
+    padding: 0 1.25rem 1.25rem;
+  }
+  
+  .order-card__toggle {
+    padding: 1rem 1.25rem;
+  }
+}
+
+.order-card__details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+
+.order-card__detail {
+  font-size: 0.875rem;
+}
+
+.order-card__detail-label {
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.order-card__detail-value {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.order-card__detail-link {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.order-card__detail-link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile Responsive for Orders */
+@media screen and (max-width: 899px) {
+  .order-card__body {
+    grid-template-columns: 120px 1fr;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .order-card__image {
+    width: 120px;
+    height: 110px;
+  }
+
+  .order-card__actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    text-align: left;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  .order-card__actions-title {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .order-card__btn {
+    flex: 1;
+    min-width: 140px;
+    max-width: none;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .order-card__contact-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .order-card__title {
+    font-size: 1.0625rem;
+  }
+
+  .order-progress__label {
+    font-size: 0.6875rem;
+  }
+
+  .order-progress__date {
+    font-size: 0.625rem;
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .order-card__body {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .order-card__image {
+    width: 100%;
+    height: 160px;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .order-card__main {
+    gap: 1rem;
+  }
+
+  .order-card__title {
+    font-size: 1rem;
+  }
+
+  .order-progress {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin: 0 -1.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .order-progress__step {
+    min-width: 70px;
+  }
+
+  .order-progress__label {
+    font-size: 0.625rem;
+    white-space: normal;
+    max-width: 65px;
+  }
+
+  .order-card__actions {
+    flex-direction: column;
+  }
+
+  .order-card__btn {
+    width: 100%;
+  }
+}
+
+/* Empty State */
+.account-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.account-empty__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  color: #d1d5db;
+}
+
+.account-empty__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.account-empty__text {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
+}
+
+.account-empty__link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.account-empty__link:hover {
+  background: #1d4ed8;
+}
+
+/* Coming Soon */
+.account-coming-soon {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.account-coming-soon__icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.account-coming-soon__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.account-coming-soon__text {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 767px) {
+  .account-tabs {
+    padding: 0.5rem 0;
+    gap: 0;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .account-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .account-tabs__link {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .account-header__title {
+    font-size: 1.5rem;
+  }
+
+  .account-card {
+    padding: 1.25rem;
+  }
+
+  .account-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+{%- endstyle -%}
+
+<div class="account-dashboard">
+  <div class="page-width">
+    
+    {%- comment -%} Tab Navigation {%- endcomment -%}
+    <nav class="account-tabs" role="tablist">
+      <a href="#orders" class="account-tabs__link is-active" role="tab" data-tab="orders">Orders</a>
+      <a href="#protection" class="account-tabs__link" role="tab" data-tab="protection">Protection plans</a>
+      <a href="#trade-ins" class="account-tabs__link" role="tab" data-tab="trade-ins">Trade-ins</a>
+      <a href="#profile" class="account-tabs__link" role="tab" data-tab="profile">Profile</a>
+      <a href="#favourites" class="account-tabs__link" role="tab" data-tab="favourites">Favourites</a>
+      <a href="#refer" class="account-tabs__link" role="tab" data-tab="refer">Refer a friend</a>
+      <a href="#other" class="account-tabs__link" role="tab" data-tab="other">Other</a>
+    </nav>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         ORDERS TAB
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="account-panel is-active" id="orders" role="tabpanel" data-panel="orders">
+      <header class="account-header">
+        <h1 class="account-header__title">Orders</h1>
+        <p class="account-header__subtitle">Delivery tracking, customer service, etc.</p>
+      </header>
+
+      {%- if customer.orders.size > 0 -%}
+        <div class="orders-list">
+          {%- for order in customer.orders -%}
+            {%- comment -%} Calculate order progress based on fulfillment status {%- endcomment -%}
+            {%- liquid
+              assign progress_percent = 25
+              assign step_1_complete = true
+              assign step_2_complete = false
+              assign step_3_complete = false
+              assign step_4_complete = false
+              
+              if order.fulfillment_status == 'fulfilled' or order.fulfillment_status == 'partial'
+                assign step_2_complete = true
+                assign step_3_complete = true
+                assign step_4_complete = true
+                assign progress_percent = 100
+              elsif order.financial_status == 'paid'
+                assign step_2_complete = true
+                assign progress_percent = 50
+              endif
+            -%}
+
+            <div class="order-card" data-order-id="{{ order.id }}">
+              {%- comment -%} Main Card Body - 3 Column Layout {%- endcomment -%}
+              <div class="order-card__body">
+                {%- comment -%} Left Column - Product Image {%- endcomment -%}
+                {%- for line_item in order.line_items limit: 1 -%}
+                  <div class="order-card__image">
+                    {%- if line_item.image -%}
+                      <img src="{{ line_item.image | image_url: width: 320 }}" alt="{{ line_item.title }}" loading="lazy">
+                    {%- elsif line_item.product.featured_image -%}
+                      <img src="{{ line_item.product.featured_image | image_url: width: 320 }}" alt="{{ line_item.title }}" loading="lazy">
+                    {%- else -%}
+                      <div class="order-card__image-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                      </div>
+                    {%- endif -%}
+                  </div>
+
+                  {%- comment -%} Middle Column - Order Info + Progress {%- endcomment -%}
+                  <div class="order-card__main">
+                    <div class="order-card__info">
+                      <p class="order-card__number">Order <span>#{{ order.order_number }}</span></p>
+                      <h3 class="order-card__title">{{ line_item.title }}{% if line_item.variant_title != 'Default Title' and line_item.variant_title != blank %} ({{ line_item.variant_title }}){% endif %}</h3>
+                    </div>
+
+                    {%- comment -%} Progress Tracker {%- endcomment -%}
+                    <div class="order-progress">
+                      <div class="order-progress__line" style="width: {{ progress_percent }}%;"></div>
+                      
+                      <div class="order-progress__step {% if step_1_complete %}is-complete{% endif %}">
+                        <div class="order-progress__dot"></div>
+                        <span class="order-progress__label">Ordered</span>
+                        <span class="order-progress__date">{{ order.created_at | date: "%d/%m/%Y" }}</span>
+                      </div>
+                      
+                      <div class="order-progress__step {% if step_2_complete %}is-complete{% endif %}">
+                        <div class="order-progress__dot"></div>
+                        <span class="order-progress__label">Preparing your order</span>
+                        {%- if step_2_complete -%}
+                          <span class="order-progress__date">{{ order.created_at | date: "%d/%m/%Y" }}</span>
+                        {%- endif -%}
+                      </div>
+                      
+                      <div class="order-progress__step {% if step_3_complete %}is-complete{% endif %}">
+                        <div class="order-progress__dot"></div>
+                        <span class="order-progress__label">Shipped</span>
+                        {%- if step_3_complete and order.fulfillments.first -%}
+                          <span class="order-progress__date">{{ order.fulfillments.first.created_at | date: "%d/%m/%Y" }}</span>
+                        {%- endif -%}
+                      </div>
+                      
+                      <div class="order-progress__step {% if step_4_complete %}is-complete{% endif %}">
+                        <div class="order-progress__dot"></div>
+                        <span class="order-progress__label">Delivered</span>
+                        {%- if step_4_complete -%}
+                          <span class="order-progress__date">{{ order.fulfillments.first.created_at | date: "%d/%m/%Y" }}</span>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  </div>
+                {%- endfor -%}
+
+                {%- comment -%} Right Column - Actions {%- endcomment -%}
+                <div class="order-card__actions">
+                  <p class="order-card__actions-title">Manage your order</p>
+                  <a href="{{ order.customer_url }}" class="order-card__btn order-card__btn--primary">Tracking details</a>
+                  <a href="{{ order.customer_url }}" class="order-card__btn order-card__btn--outline">View receipt</a>
+                  <a href="mailto:info@looptech.uk?subject=Help with Order {{ order.name }}" class="order-card__contact-link">Get in touch about your order</a>
+                </div>
+              </div>
+
+              {%- comment -%} Expandable Details {%- endcomment -%}
+              <div class="order-card__footer">
+                <button type="button" class="order-card__toggle" data-toggle-details aria-expanded="false">
+                  <span>See order details</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div class="order-card__details" aria-hidden="true">
+                  <div class="order-card__details-grid">
+                    <div class="order-card__detail">
+                      <div class="order-card__detail-label">Order Date</div>
+                      <div class="order-card__detail-value">{{ order.created_at | date: "%B %d, %Y" }}</div>
+                    </div>
+                    <div class="order-card__detail">
+                      <div class="order-card__detail-label">Order Total</div>
+                      <div class="order-card__detail-value">{{ order.total_price | money }}</div>
+                    </div>
+                    <div class="order-card__detail">
+                      <div class="order-card__detail-label">Items</div>
+                      <div class="order-card__detail-value">{{ order.line_items.size }} item{% if order.line_items.size > 1 %}s{% endif %}</div>
+                    </div>
+                    <div class="order-card__detail">
+                      <div class="order-card__detail-label">Payment Status</div>
+                      <div class="order-card__detail-value" style="text-transform: capitalize;">{{ order.financial_status_label }}</div>
+                    </div>
+                    {%- if order.shipping_address -%}
+                      <div class="order-card__detail">
+                        <div class="order-card__detail-label">Shipping Address</div>
+                        <div class="order-card__detail-value">
+                          {{ order.shipping_address.city }}, {{ order.shipping_address.country }}
+                        </div>
+                      </div>
+                    {%- endif -%}
+                    <div class="order-card__detail">
+                      <div class="order-card__detail-label">Full Details</div>
+                      <div class="order-card__detail-value">
+                        <a href="{{ order.customer_url }}" class="order-card__detail-link">View full order →</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="account-empty">
+          <svg class="account-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+          </svg>
+          <h2 class="account-empty__title">No orders yet</h2>
+          <p class="account-empty__text">You haven't placed any orders. Start shopping to see your orders here.</p>
+          <a href="/collections/all" class="account-empty__link">Start shopping</a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         PROTECTION PLANS TAB
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="account-panel" id="protection" role="tabpanel" data-panel="protection">
+      <header class="account-header">
+        <h1 class="account-header__title">Protection plans</h1>
+        <p class="account-header__subtitle">View and manage your device protection plans</p>
+      </header>
+
+      <div class="account-coming-soon">
+        <div class="account-coming-soon__icon">🛡️</div>
+        <h2 class="account-coming-soon__title">Coming soon</h2>
+        <p class="account-coming-soon__text">Protection plans will be available here soon.</p>
+      </div>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         TRADE-INS TAB
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="account-panel" id="trade-ins" role="tabpanel" data-panel="trade-ins">
+      <header class="account-header">
+        <h1 class="account-header__title">Trade-ins</h1>
+        <p class="account-header__subtitle">Track your trade-in submissions</p>
+      </header>
+
+      <div class="account-coming-soon">
+        <div class="account-coming-soon__icon">🔄</div>
+        <h2 class="account-coming-soon__title">Coming soon</h2>
+        <p class="account-coming-soon__text">Trade-in tracking will be available here soon.</p>
+      </div>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         PROFILE TAB
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="account-panel" id="profile" role="tabpanel" data-panel="profile">
+      <header class="account-header">
+        <h1 class="account-header__title">Profile</h1>
+        <p class="account-header__subtitle">Who am I? Where am I? Why am I? Look no further for the answers.</p>
+      </header>
+
+      <div class="account-cards">
+        {%- comment -%} Personal Details {%- endcomment -%}
+        <div class="account-card">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Personal details</h2>
+            <button type="button" class="account-card__edit" data-edit="personal">Edit</button>
+          </div>
+          <div class="account-card__content">
+            <p class="account-card__name">{{ customer.name | default: 'Not set' }}</p>
+            {%- if customer.email_marketing_consent.state == 'subscribed' or customer.accepts_marketing -%}
+              <p class="account-card__verified">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                </svg>
+                Verified
+              </p>
+            {%- endif -%}
+            <p><a href="mailto:{{ customer.email }}" class="account-card__email">{{ customer.email }}</a></p>
+            <div class="account-card__links">
+              <a href="#" class="account-card__link">Remove connected social accounts</a>
+              <a href="#" class="account-card__link" data-action="change-password">Change password</a>
+              <a href="#" class="account-card__link account-card__link--danger" data-action="delete-account">Delete your account</a>
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} Billing Address {%- endcomment -%}
+        <div class="account-card">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Billing Address</h2>
+            <a href="{{ routes.account_addresses_url }}" class="account-card__edit">Edit</a>
+          </div>
+          <div class="account-card__content">
+            {%- if customer.default_address -%}
+              <p class="account-card__name">{{ customer.default_address.name }}</p>
+              {%- if customer.default_address.address1 -%}<p>{{ customer.default_address.address1 }}</p>{%- endif -%}
+              {%- if customer.default_address.address2 -%}<p>{{ customer.default_address.address2 }}</p>{%- endif -%}
+              {%- if customer.default_address.city -%}<p>{{ customer.default_address.city }}</p>{%- endif -%}
+              {%- if customer.default_address.zip -%}<p>{{ customer.default_address.zip }}</p>{%- endif -%}
+              {%- if customer.default_address.country -%}<p>{{ customer.default_address.country }}</p>{%- endif -%}
+            {%- else -%}
+              <p>No billing address set</p>
+              <a href="{{ routes.account_addresses_url }}" class="account-card__link">Add address</a>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} Delivery Address {%- endcomment -%}
+        <div class="account-card">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Delivery Address</h2>
+            <a href="{{ routes.account_addresses_url }}" class="account-card__edit">Edit</a>
+          </div>
+          <div class="account-card__content">
+            {%- if customer.default_address -%}
+              <p class="account-card__name">{{ customer.default_address.name }}</p>
+              {%- if customer.default_address.address1 -%}<p>{{ customer.default_address.address1 }}</p>{%- endif -%}
+              {%- if customer.default_address.address2 -%}<p>{{ customer.default_address.address2 }}</p>{%- endif -%}
+              {%- if customer.default_address.city -%}<p>{{ customer.default_address.city }}</p>{%- endif -%}
+              {%- if customer.default_address.zip -%}<p>{{ customer.default_address.zip }}</p>{%- endif -%}
+              {%- if customer.default_address.country -%}<p>{{ customer.default_address.country }}</p>{%- endif -%}
+              {%- if customer.default_address.phone -%}<p>{{ customer.default_address.phone }}</p>{%- endif -%}
+            {%- else -%}
+              <p>No delivery address set</p>
+              <a href="{{ routes.account_addresses_url }}" class="account-card__link">Add address</a>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} Email Preferences {%- endcomment -%}
+        <div class="account-card">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Email preferences</h2>
+          </div>
+          <div class="account-card__content">
+            <div class="account-toggle">
+              <button type="button" class="account-toggle__switch {% if customer.accepts_marketing %}is-active{% endif %}" data-toggle="marketing" aria-label="Toggle marketing emails"></button>
+              <span class="account-toggle__label">Get our best deals in your inbox.</span>
+            </div>
+            <div class="account-toggle">
+              <button type="button" class="account-toggle__switch" data-toggle="newsletter" aria-label="Toggle newsletter"></button>
+              <span class="account-toggle__label">Get our newsletter for the latest in reborn tech.</span>
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} Bank Details {%- endcomment -%}
+        <div class="account-card account-card--full">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Bank details</h2>
+          </div>
+          <div class="account-card__content">
+            <p class="account-card__message">
+              You haven't uploaded your bank details yet. Please note that uploading your bank details (including your IBAN and BIC) is mandatory if you have sold items via Trade-in totalling more than £5000.
+            </p>
+            <button type="button" class="account-card__btn">Upload bank details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         FAVOURITES TAB
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="account-panel" id="favourites" role="tabpanel" data-panel="favourites">
+      <header class="account-header">
+        <h1 class="account-header__title">Favourites</h1>
+        <p class="account-header__subtitle">Products you've saved for later</p>
+      </header>
+
+      <div class="account-coming-soon">
+        <div class="account-coming-soon__icon">❤️</div>
+        <h2 class="account-coming-soon__title">Coming soon</h2>
+        <p class="account-coming-soon__text">Your wishlist will be available here soon.</p>
+      </div>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         REFER A FRIEND TAB
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="account-panel" id="refer" role="tabpanel" data-panel="refer">
+      <header class="account-header">
+        <h1 class="account-header__title">Refer a friend</h1>
+        <p class="account-header__subtitle">Share the love and earn rewards</p>
+      </header>
+
+      <div class="account-coming-soon">
+        <div class="account-coming-soon__icon">🎁</div>
+        <h2 class="account-coming-soon__title">Coming soon</h2>
+        <p class="account-coming-soon__text">Referral program will be available here soon.</p>
+      </div>
+    </div>
+
+    {%- comment -%} ═══════════════════════════════════════════════════════════════
+         OTHER TAB
+    ═══════════════════════════════════════════════════════════════ {%- endcomment -%}
+    <div class="account-panel" id="other" role="tabpanel" data-panel="other">
+      <header class="account-header">
+        <h1 class="account-header__title">Other</h1>
+        <p class="account-header__subtitle">Additional account settings</p>
+      </header>
+
+      <div class="account-cards">
+        <div class="account-card">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Account actions</h2>
+          </div>
+          <div class="account-card__content">
+            <div class="account-card__links">
+              <a href="{{ routes.account_logout_url }}" class="account-card__link" onclick="return confirm('Are you sure you want to log out?')">Log out</a>
+              <a href="#" class="account-card__link account-card__link--danger" data-action="delete-account">Delete account</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/**
+ * LoopTech Account Dashboard
+ * Tab switching, order details toggle, and interactions
+ */
+(function() {
+  'use strict';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.account-tabs__link');
+    const panels = document.querySelectorAll('.account-panel');
+    const toggleSwitches = document.querySelectorAll('.account-toggle__switch');
+    const orderToggles = document.querySelectorAll('[data-toggle-details]');
+
+    // Tab switching
+    function showTab(tabId) {
+      // Update tabs
+      tabs.forEach(function(tab) {
+        if (tab.dataset.tab === tabId) {
+          tab.classList.add('is-active');
+        } else {
+          tab.classList.remove('is-active');
+        }
+      });
+
+      // Update panels
+      panels.forEach(function(panel) {
+        if (panel.dataset.panel === tabId) {
+          panel.classList.add('is-active');
+        } else {
+          panel.classList.remove('is-active');
+        }
+      });
+
+      // Update URL hash
+      if (history.replaceState) {
+        history.replaceState(null, null, '#' + tabId);
+      }
+    }
+
+    // Tab click handlers
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function(e) {
+        e.preventDefault();
+        showTab(this.dataset.tab);
+      });
+    });
+
+    // Check URL hash on load
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.querySelector('[data-panel="' + hash + '"]')) {
+      showTab(hash);
+    }
+
+    // Order details toggle
+    orderToggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function() {
+        const isOpen = this.classList.toggle('is-open');
+        const details = this.nextElementSibling;
+        
+        if (details && details.classList.contains('order-card__details')) {
+          details.classList.toggle('is-open', isOpen);
+          this.setAttribute('aria-expanded', isOpen);
+          details.setAttribute('aria-hidden', !isOpen);
+        }
+      });
+    });
+
+    // Toggle switches
+    toggleSwitches.forEach(function(toggle) {
+      toggle.addEventListener('click', function() {
+        this.classList.toggle('is-active');
+        // In a real implementation, this would send an AJAX request to update preferences
+      });
+    });
+
+    // Edit buttons (placeholder functionality)
+    document.querySelectorAll('[data-edit]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        alert('Edit functionality coming soon!');
+      });
+    });
+
+    // Action links
+    document.querySelectorAll('[data-action="change-password"]').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Password change functionality coming soon!');
+      });
+    });
+
+    document.querySelectorAll('[data-action="delete-account"]').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+          alert('Account deletion request submitted. You will receive a confirmation email.');
+        }
+      });
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Account Dashboard",
+  "tag": "section",
+  "class": "section section--account-dashboard",
+  "settings": [
+    {
+      "type": "text",
+      "id": "orders_title",
+      "label": "Orders Tab Title",
+      "default": "Orders"
+    },
+    {
+      "type": "text",
+      "id": "profile_title",
+      "label": "Profile Tab Title",
+      "default": "Profile"
+    },
+    {
+      "type": "text",
+      "id": "profile_subtitle",
+      "label": "Profile Subtitle",
+      "default": "Who am I? Where am I? Why am I? Look no further for the answers."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Dashboard"
+    }
+  ]
+}
+{% endschema %}

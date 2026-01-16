@@ -1,0 +1,180 @@
+{% comment %}
+  Offers Hero Section
+  
+  A simple hero banner for the offers discovery page.
+  Displays a heading, subheading with customizable background colors/gradient.
+  
+  Settings:
+  - heading (text)
+  - subheading (text)
+  - show_subheading (checkbox)
+  - background_style (select: solid/gradient)
+  - background_color (color)
+  - gradient_end_color (color)
+  - text_color (color)
+  - padding_top/bottom (range)
+{% endcomment %}
+
+{%- liquid
+  assign heading = section.settings.heading | default: "Today's Offers"
+  assign subheading = section.settings.subheading | default: "Discover amazing deals on Brand New and Renewed tech"
+  assign show_subheading = section.settings.show_subheading
+  assign background_style = section.settings.background_style | default: 'gradient'
+  assign background_color = section.settings.background_color | default: '#041c4d'
+  assign gradient_end = section.settings.gradient_end_color | default: '#4563e6'
+  assign text_color = section.settings.text_color | default: '#ffffff'
+-%}
+
+{%- style -%}
+  .offers-hero--{{ section.id }} {
+    {% if background_style == 'gradient' %}
+      background: linear-gradient(135deg, {{ background_color }} 0%, {{ gradient_end }} 100%);
+    {% else %}
+      background-color: {{ background_color }};
+    {% endif %}
+    color: {{ text_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  .offers-hero--{{ section.id }} .offers-hero__heading {
+    color: {{ text_color }};
+    margin: 0 0 0.5rem 0;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .offers-hero--{{ section.id }} .offers-hero__subheading {
+    color: {{ text_color }};
+    opacity: 0.9;
+    margin: 0;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 400;
+  }
+
+  @media screen and (max-width: 749px) {
+    .offers-hero--{{ section.id }} {
+      padding-top: {{ section.settings.padding_top | times: 0.6 | round }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.6 | round }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="offers-hero offers-hero--{{ section.id }}">
+  <div class="page-width">
+    <div class="offers-hero__content">
+      {%- if heading != blank -%}
+        <h1 class="offers-hero__heading">{{ heading }}</h1>
+      {%- endif -%}
+
+      {%- if show_subheading and subheading != blank -%}
+        <p class="offers-hero__subheading">{{ subheading }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Offers Hero",
+  "tag": "section",
+  "class": "section section--offers-hero",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Today's Offers"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover amazing deals on Brand New and Renewed tech"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subheading",
+      "label": "Show subheading",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid color"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "gradient"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#041c4d",
+      "info": "Primary color for solid backgrounds or gradient start"
+    },
+    {
+      "type": "color",
+      "id": "gradient_end_color",
+      "label": "Gradient end color",
+      "default": "#4563e6",
+      "info": "Only used when background style is gradient"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Offers Hero"
+    }
+  ]
+}
+{% endschema %}

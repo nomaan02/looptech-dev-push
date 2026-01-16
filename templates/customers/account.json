@@ -1,1 +1,13 @@
-{"sections":{"main":{"type":"main-account","settings":{"color_scheme":"scheme-abe3bc68-5409-41dd-abcf-8f9ac474947a","padding_top":0,"padding_bottom":60}}},"order":["main"]}
+{
+  "sections": {
+    "main": {
+      "type": "account-dashboard",
+      "settings": {
+        "orders_title": "Orders",
+        "profile_title": "Profile",
+        "profile_subtitle": "Who am I? Where am I? Why am I? Look no further for the answers."
+      }
+    }
+  },
+  "order": ["main"]
+}

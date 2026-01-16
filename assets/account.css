@@ -1,0 +1,399 @@
+/* ============================================
+   Account Styles - LoopTech
+   Custom styles for login, dashboard, and account pages
+   ============================================ */
+
+/* ─────────────────────────────────────────────
+   Account Login Section
+   ───────────────────────────────────────────── */
+
+.account-login {
+  margin: 0 auto;
+  max-width: 400px;
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) {
+  .account-login {
+    max-width: 450px;
+  }
+}
+
+.account-login__forgot-link {
+  display: block;
+  text-align: left;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: rgb(var(--color-foreground));
+  text-decoration: underline;
+}
+
+.account-login__forgot-link:hover {
+  opacity: 0.8;
+}
+
+.account-login__submit {
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────────
+   Form Error States
+   ───────────────────────────────────────────── */
+
+.form-error {
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-error .form__message {
+  color: #DC2626;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-error ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #DC2626;
+  font-size: 0.875rem;
+}
+
+.form-success {
+  color: #059669;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────
+   Guest Order Lookup
+   ───────────────────────────────────────────── */
+
+.guest-lookup {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  text-align: left;
+}
+
+.guest-lookup hr {
+  border: none;
+  border-top: 1px solid rgba(var(--color-foreground), 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.guest-lookup__heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.guest-lookup__subtext {
+  color: rgba(var(--color-foreground), 0.7);
+  font-size: 0.875rem;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+.guest-lookup__form {
+  margin-top: 1rem;
+}
+
+.guest-lookup__form .field {
+  margin-bottom: 1rem;
+}
+
+.guest-lookup__form input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  border-radius: var(--inputs-radius, 4px);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+.guest-lookup__form input:focus {
+  outline: none;
+  border-color: rgb(var(--color-foreground));
+  box-shadow: 0 0 0 2px rgba(var(--color-foreground), 0.1);
+}
+
+.guest-lookup__form input::placeholder {
+  color: rgba(var(--color-foreground), 0.5);
+}
+
+.guest-lookup__submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Inline error for guest lookup form */
+.guest-lookup__form .field-error {
+  color: #DC2626;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  display: none;
+}
+
+.guest-lookup__form .field.has-error input {
+  border-color: #DC2626;
+}
+
+.guest-lookup__form .field.has-error .field-error {
+  display: block;
+}
+
+/* ─────────────────────────────────────────────
+   Account Dashboard Layout (placeholder for 2B)
+   ───────────────────────────────────────────── */
+
+.account-layout {
+  display: block;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media screen and (min-width: 768px) {
+  .account-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+  }
+}
+
+/* Account Sidebar - placeholder */
+.account-sidebar {
+  background: rgb(var(--color-background));
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media screen and (min-width: 768px) {
+  .account-sidebar {
+    position: sticky;
+    top: 2rem;
+    margin-bottom: 0;
+    align-self: start;
+  }
+}
+
+.account-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: rgb(var(--color-foreground));
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  transition: background-color 0.2s ease;
+}
+
+.account-sidebar__link:hover {
+  background-color: rgba(var(--color-foreground), 0.05);
+}
+
+.account-sidebar__link.is-active {
+  background-color: rgba(var(--color-foreground), 0.1);
+  font-weight: 600;
+}
+
+.account-sidebar__link--logout {
+  color: #DC2626;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(var(--color-foreground), 0.1);
+  padding-top: 1rem;
+}
+
+/* Account Content Area - placeholder */
+.account-content {
+  background: rgb(var(--color-background));
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-height: 400px;
+}
+
+/* Account Panels - placeholder */
+.account-panel {
+  animation: fadeIn 0.2s ease;
+}
+
+.account-panel[hidden] {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Empty State - placeholder */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(var(--color-foreground), 0.6);
+}
+
+.empty-state a {
+  color: rgb(var(--color-foreground));
+  text-decoration: underline;
+}
+
+/* ─────────────────────────────────────────────
+   Mobile Responsive Overrides
+   ───────────────────────────────────────────── */
+
+@media screen and (max-width: 767px) {
+  .account-login {
+    padding: 1rem;
+  }
+
+  .guest-lookup {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+
+  .account-sidebar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .account-sidebar__link {
+    flex: 1 1 calc(50% - 0.25rem);
+    justify-content: center;
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .account-sidebar__link--logout {
+    flex: 1 1 100%;
+    margin-top: 0.5rem;
+    border-top: none;
+    padding-top: 0.625rem;
+  }
+}
+
+/* Touch targets - ensure all interactive elements are at least 44px */
+.account-login button,
+.account-login input,
+.guest-lookup__form button,
+.guest-lookup__form input,
+.account-sidebar__link {
+  min-height: 44px;
+}
+
+/* ─────────────────────────────────────────────
+   Account Header Dropdown - HOVER Activated
+   ───────────────────────────────────────────── */
+
+/* Make user-popup position relative for dropdown positioning */
+user-popup.slidedown_section.dropdown {
+  position: relative;
+}
+
+/* Dropdown container - hidden by default */
+#userdrop {
+  display: block !important;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 220px;
+  padding: 8px 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  background: #fff;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+}
+
+/* Show dropdown on hover - override hidden class */
+user-popup.slidedown_section:hover #userdrop,
+user-popup.slidedown_section:hover #userdrop.hidden {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Dropdown links with icons */
+.customer_account ul li a {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px !important;
+  font-size: 0.9375rem;
+  color: rgb(var(--color-foreground));
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.customer_account ul li a:hover {
+  background-color: rgba(var(--color-foreground), 0.05);
+  color: rgb(var(--color-link-hover, var(--color-foreground)));
+}
+
+.customer_account ul li a svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Divider between nav items and logout */
+.account-dropdown-divider {
+  height: 1px;
+  background-color: rgba(var(--color-foreground), 0.1);
+  margin: 8px 0 !important;
+  padding: 0 !important;
+}
+
+/* Logout link styling */
+.account-dropdown-logout {
+  color: #dc2626 !important;
+}
+
+.account-dropdown-logout:hover {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.account-dropdown-logout svg {
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+#userdrop .header-panel-top {
+  padding: 0;
+}
+
+#userdrop .customer_account {
+  padding: 0;
+}
+
+#userdrop .list-unstyled {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
